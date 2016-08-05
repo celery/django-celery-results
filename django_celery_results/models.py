@@ -12,21 +12,8 @@ ALL_STATES = sorted(states.ALL_STATES)
 TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
 
 
-class SerializedContent(models.Model):
-
-    content_type = models.CharField(
-        _('content type'), max_length=128,
-    )
-    content_encoding = models.CharField(
-        _('content encoding'), max_length=64,
-    )
-
-    class Meta:
-        abstract = True
-
-
 @python_2_unicode_compatible
-class TaskResult(SerializedContent):
+class TaskResult(models.Model):
     """Task result/status."""
 
     task_id = models.CharField(
@@ -37,6 +24,12 @@ class TaskResult(SerializedContent):
         _('state'),
         max_length=50, default=states.PENDING,
         choices=TASK_STATE_CHOICES,
+    )
+    content_type = models.CharField(
+        _('content type'), max_length=128,
+    )
+    content_encoding = models.CharField(
+        _('content encoding'), max_length=64,
     )
     result = models.TextField(null=True, default=None, editable=False)
     date_done = models.DateTimeField(_('done at'), auto_now=True)

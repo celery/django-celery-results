@@ -12,7 +12,7 @@ class CacheBackend(KeyValueStoreBackend):
     def __init__(self, *args, **kwargs):
         super(CacheBackend, self).__init__(*args, **kwargs)
 
-        # Must make sure backend does not convert exceptions to dict.
+        # Must make sure backend doesn't convert exceptions to dict.
         self.serializer = 'pickle'
 
     def get(self, key):
