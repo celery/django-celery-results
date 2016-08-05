@@ -1,4 +1,4 @@
-PROJ=django_celery_results"
+PROJ=django_celery_results
 PGPIDENT="Celery Security Team"
 PYTHON=python
 GIT=git
