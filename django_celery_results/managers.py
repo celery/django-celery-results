@@ -5,9 +5,8 @@ import warnings
 from functools import wraps
 from itertools import count
 
-from django.db import connection, connections, router, transaction
+from django.db import connections, router, transaction
 from django.db import models
-from django.db.models.query import QuerySet
 from django.conf import settings
 
 from celery.five import items
@@ -55,64 +54,12 @@ def transaction_retry(max_retries=1):
     return _outer
 
 
-class ExtendedQuerySet(QuerySet):
-
-    def update_or_create(self, defaults=None, **kwargs):
-        obj, created = self.get_or_create(defaults=defaults, **kwargs)
-        if not created:
-            self._update_model_with_dict(obj, dict(defaults or {}, **kwargs))
-        return obj
-
-    def _update_model_with_dict(self, obj, fields):
-        [setattr(obj, attr_name, attr_value)
-         for attr_name, attr_value in items(fields)]
-        obj.save()
-        return obj
-
-
-class ExtendedManager(models.Manager.from_queryset(ExtendedQuerySet)):
-
-    def connection_for_write(self):
-        if connections:
-            return connections[router.db_for_write(self.model)]
-        return connection
-
-    def connection_for_read(self):
-        if connections:
-            return connections[self.db]
-        return connection
-
-    def current_engine(self):
-        try:
-            return settings.DATABASES[self.db]['ENGINE']
-        except AttributeError:
-            return settings.DATABASE_ENGINE
-
-
-class ResultManager(ExtendedManager):
-
-    def get_all_expired(self, expires):
-        """Get all expired task results."""
-        return self.filter(date_done__lt=now() - maybe_timedelta(expires))
-
-    def delete_expired(self, expires):
-        """Delete all expired group results."""
-        meta = self.model._meta
-        with transaction.atomic():
-            self.get_all_expired(expires).update(hidden=True)
-            cursor = self.connection_for_write().cursor()
-            cursor.execute(
-                'DELETE FROM {0.db_table} WHERE hidden=%s'.format(meta),
-                (True, ),
-            )
-
-
-class TaskResultManager(ResultManager):
+class TaskResultManager(models.Manager):
     """Manager for :class:`celery.models.TaskResult` models."""
     _last_id = None
 
     def get_task(self, task_id):
-        """Get task meta for task by ``task_id``.
+        """Get result for task by ``task_id``.
 
         Keyword Arguments:
             exception_retry_count (int): How many times to retry by
@@ -129,33 +76,44 @@ class TaskResultManager(ResultManager):
             return self.model(task_id=task_id)
 
     @transaction_retry(max_retries=2)
-    def store_result(self, task_id, result, status,
-                     traceback=None, children=None):
+    def store_result(self, content_type, content_encoding,
+                     task_id, result, status,
+                     traceback=None, meta=None):
         """Store the result and status of a task.
 
         Arguments:
+            content_type (str): Mime-type of result and meta content.
+            content_encoding (str): Type of encoding (e.g. binary/utf-8).
             task_id (str): Id of task.
-            result (Any): The return value of the task, or an exception
-                instance raised by the task.
+            result (str): The serialized return value of the task,
+                or an exception instance raised by the task.
             status (str): Task status.  See :mod:`celery.states` for a list of
                 possible status values.
 
         Keyword Arguments:
             traceback (str): The traceback string taken at the point of
                 exception (only passed if the task failed).
-            children (Sequence): List of serialized results of subtasks
-                of this task.
+            meta (str): Serialized result meta data (this contains e.g.
+                children).
             exception_retry_count (int): How many times to retry by
                 transaction rollback on exception.  This could
                 happen in a race condition if another worker is trying to
                 create the same task.  The default is to retry twice.
         """
-        return self.update_or_create(task_id=task_id, defaults={
+        fields = {
             'status': status,
             'result': result,
             'traceback': traceback,
-            'meta': {'children': children},
-        })
+            'meta': meta,
+            'content_encoding': content_encoding,
+            'content_type': content_type,
+        }
+        obj, created = self.get_or_create(task_id=task_id, defaults=fields)
+        if not created:
+            for k, v in items(fields):
+                setattr(obj, k, v)
+            obj.save()
+        return obj
 
     def warn_if_repeatable_read(self):
         if 'mysql' in self.current_engine().lower():
@@ -165,33 +123,29 @@ class TaskResultManager(ResultManager):
                 if isolation == 'REPEATABLE-READ':
                     warnings.warn(TxIsolationWarning(W_ISOLATION_REP.strip()))
 
+    def connection_for_write(self):
+        return connections[router.db_for_write(self.model)]
 
-class GroupResultManager(ResultManager):
-    """Manager for :class:`celery.models.GroupResult` models."""
+    def connection_for_read(self):
+        return connections[self.db]
 
-    def restore_group(self, group_id):
-        """Get the async result instance by group id."""
+    def current_engine(self):
         try:
-            return self.get(group_id=group_id)
-        except self.model.DoesNotExist:
-            pass
-    restore_taskset = restore_group
+            return settings.DATABASES[self.db]['ENGINE']
+        except AttributeError:
+            return settings.DATABASE_ENGINE
 
-    def delete_group(self, group_id):
-        """Delete a saved group result."""
-        s = self.restore_group(group_id)
-        if s:
-            s.delete()
-    delete_taskset = delete_group
+    def get_all_expired(self, expires):
+        """Get all expired task results."""
+        return self.filter(date_done__lt=now() - maybe_timedelta(expires))
 
-    @transaction_retry(max_retries=2)
-    def store_result(self, group_id, result):
-        """Store the async result instance of a group.
-
-        Arguments:
-            group_id (str): Id of group.
-            result (celery.result.GroupResult): Group result instance.
-        """
-        return self.update_or_create(group_id=group_id, defaults={
-            'result': result,
-        })
+    def delete_expired(self, expires):
+        """Delete all expired results."""
+        meta = self.model._meta
+        with transaction.atomic():
+            self.get_all_expired(expires).update(hidden=True)
+            cursor = self.connection_for_write().cursor()
+            cursor.execute(
+                'DELETE FROM {0.db_table} WHERE hidden=%s'.format(meta),
+                (True, ),
+            )

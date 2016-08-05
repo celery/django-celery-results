@@ -14,16 +14,6 @@ from __future__ import absolute_import, unicode_literals
 import os
 import sys
 
-CELERY_DEFAULT_EXCHANGE = 'testcelery'
-CELERY_DEFAULT_ROUTING_KEY = 'testcelery'
-CELERY_DEFAULT_QUEUE = 'testcelery'
-
-CELERY_QUEUES = {'testcelery': {'binding_key': 'testcelery'}}
-
-CELERY_ACCEPT_CONTENT = ['pickle', 'json']
-CELERY_TASK_SERIALIZER = 'pickle'
-CELERY_RESULT_SERIALIZER = 'pickle'
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -93,6 +83,14 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    },
+    'dummy': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators

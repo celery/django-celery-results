@@ -9,6 +9,12 @@ from celery.backends.base import KeyValueStoreBackend
 class CacheBackend(KeyValueStoreBackend):
     """Backend using the Django cache framework to store task metadata."""
 
+    def __init__(self, *args, **kwargs):
+        super(CacheBackend, self).__init__(*args, **kwargs)
+
+        # Must make sure backend does not convert exceptions to dict.
+        self.serializer = 'pickle'
+
     def get(self, key):
         return self.cache_backend.get(key)
 
@@ -17,6 +23,12 @@ class CacheBackend(KeyValueStoreBackend):
 
     def delete(self, key):
         self.cache_backend.delete(key)
+
+    def encode(self, data):
+        return data
+
+    def decode(self, data):
+        return data
 
     @property
     def cache_backend(self):

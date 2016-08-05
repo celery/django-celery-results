@@ -59,12 +59,12 @@ class test_CacheBackend(AppCase):
     @depends_on_current_app
     def test_save_restore_delete_group(self):
         group_id = uuid()
-        subtask_ids = [uuid() for i in range(10)]
-        subtasks = list(map(result.AsyncResult, subtask_ids))
-        res = result.GroupResult(group_id, subtasks)
+        result_ids = [uuid() for i in range(10)]
+        results = list(map(result.AsyncResult, result_ids))
+        res = result.GroupResult(group_id, results)
         res.save(backend=self.b)
         saved = result.GroupResult.restore(group_id, backend=self.b)
-        self.assertListEqual(saved.subtasks, subtasks)
+        self.assertListEqual(saved.results, results)
         self.assertEqual(saved.id, group_id)
         saved.delete(backend=self.b)
         self.assertIsNone(result.GroupResult.restore(
