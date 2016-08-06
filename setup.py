@@ -168,8 +168,8 @@ setup(
     long_description=long_description,
     entry_points={
         'celery.result_backends': [
-            'djangodb = django_celery_results.backends:DatabaseBackend',
-            'djangocache = django_celery_results.backends:CacheBackend',
+            'django-db = django_celery_results.backends:DatabaseBackend',
+            'django-cache = django_celery_results.backends:CacheBackend',
         ],
     },
 )
