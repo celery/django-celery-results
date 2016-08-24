@@ -1,8 +1,8 @@
 [run]
 branch = 1
 cover_pylib = 0
-include = *django_celery_beat/*
-omit = django_celery_beat.tests.*
+include = *django_celery_results/*
+omit = t/*
 
 [report]
 omit =

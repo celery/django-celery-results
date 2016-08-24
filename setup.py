@@ -143,7 +143,7 @@ setuptools.setup(
     license='BSD',
     classifiers=classifiers,
     install_requires=reqs('default.txt'),
-    tests_require=reqs('test.txt'),
+    tests_require=reqs('test.txt') + reqs('test-django.txt'),
     cmdclass={'test': pytest},
     entry_points={
         'celery.result_backends': [
