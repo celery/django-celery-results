@@ -10,7 +10,7 @@ from django.db import models
 from django.conf import settings
 
 from celery.five import items
-from celery.utils.timeutils import maybe_timedelta
+from celery.utils.time import maybe_timedelta
 
 from .utils import now
 

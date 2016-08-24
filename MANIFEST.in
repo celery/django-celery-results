@@ -4,10 +4,13 @@ include README.rst
 include MANIFEST.in
 include setup.cfg
 include setup.py
+include manage.py
 recursive-include docs *
 recursive-include extra/*
 recursive-include examples *
 recursive-include requirements *.txt *.rst
+recursive-include t *.py
+
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
-recursive-exclude * .*.sw[a-z]
+recursive-exclude * .*.sw*
