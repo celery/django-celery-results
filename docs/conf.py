@@ -22,7 +22,7 @@ globals().update(conf.build_config(
     html_favicon='images/favicon.ico',
     html_prepend_sidebars=[],
     apicheck_ignore_modules=[
-        'django_celery_results'
+        'django_celery_results',
         'django_celery_results.apps',
         r'django_celery_results.migrations.*',
     ],

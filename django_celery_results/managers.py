@@ -10,9 +10,13 @@ from django.db import models
 from django.conf import settings
 
 from celery.five import items
-from celery.utils.time import maybe_timedelta
 
 from .utils import now
+
+try:
+    from celery.utils.time import maybe_timedelta
+except ImportError:  # pragma: no cover
+    from celery.utils.timeutils import maybe_timedelta  # noqa
 
 W_ISOLATION_REP = """
 Polling results with transaction isolation level 'repeatable-read'
