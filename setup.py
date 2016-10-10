@@ -136,6 +136,7 @@ setuptools.setup(
     version=meta['version'],
     description=meta['doc'],
     long_description=long_description,
+    keywords='celery django database result backend',
     author=meta['author'],
     author_email=meta['contact'],
     url=meta['homepage'],
