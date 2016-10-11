@@ -1,3 +1,4 @@
+"""Database models."""
 from __future__ import absolute_import, unicode_literals
 
 from django.db import models
@@ -40,6 +41,8 @@ class TaskResult(models.Model):
     objects = managers.TaskResultManager()
 
     class Meta:
+        """Table information."""
+
         verbose_name = _('task result')
         verbose_name_plural = _('task results')
 

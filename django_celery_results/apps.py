@@ -1,4 +1,4 @@
-"""django-celery-results application configurations."""
+"""Application configuration."""
 from __future__ import absolute_import, unicode_literals
 
 from django.apps import AppConfig
@@ -8,6 +8,8 @@ __all__ = ['CeleryResultConfig']
 
 
 class CeleryResultConfig(AppConfig):
+    """Default configuration for the django_celery_results app."""
+
     name = 'django_celery_results'
     label = 'celery_results'
     verbose_name = _('Celery Results')

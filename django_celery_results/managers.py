@@ -1,3 +1,4 @@
+"""Model managers."""
 from __future__ import absolute_import, unicode_literals
 
 import warnings
@@ -27,12 +28,14 @@ Be sure to commit the transaction for each poll iteration.
 
 
 class TxIsolationWarning(UserWarning):
-    pass
+    """Warning emitted if the transaction isolation level is suboptimal."""
 
 
 def transaction_retry(max_retries=1):
-    """Decorator for functions doing database operations, adding
-    retrying if the oepration fails.
+    """Decorator to retry database operations.
+
+    For functions doing database operations, adding
+    retrying if the operation fails.
 
     Keyword Arguments:
         max_retries (int): Maximum number of retries.  Default one retry.
@@ -60,6 +63,7 @@ def transaction_retry(max_retries=1):
 
 class TaskResultManager(models.Manager):
     """Manager for :class:`celery.models.TaskResult` models."""
+
     _last_id = None
 
     def get_task(self, task_id):

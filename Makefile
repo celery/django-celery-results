@@ -7,6 +7,7 @@ TOX=tox
 ICONV=iconv
 FLAKE8=flake8
 FLAKEPLUS=flakeplus
+PYDOCSTYLE=pydocstyle
 SPHINX2RST=sphinx2rst
 
 TESTDIR=t
@@ -35,6 +36,7 @@ help:
 	@echo "    flakes --------  - Check code for syntax and style errors."
 	@echo "      flakecheck     - Run flake8 on the source code."
 	@echo "      flakepluscheck - Run flakeplus on the source code."
+	@echo "      pep257check    - Run pydocstyle on the source code."
 	@echo "readme               - Regenerate README.rst file."
 	@echo "contrib              - Regenerate CONTRIBUTING.rst file"
 	@echo "clean-dist --------- - Clean all distribution build artifacts."
@@ -82,10 +84,13 @@ configcheck:
 	true
 
 flakecheck:
-	$(FLAKE8) --ignore=X999 "$(PROJ)" "$(TESTDIR)"
+	$(FLAKE8) "$(PROJ)" "$(TESTDIR)"
 
 flakediag:
 	-$(MAKE) flakecheck
+
+pep257check:
+	$(PYDOCSTYLE) "$(PROJ)"
 
 flakepluscheck:
 	$(FLAKEPLUS) --$(FLAKEPLUSTARGET) "$(PROJ)" "$(TESTDIR)"
@@ -93,7 +98,7 @@ flakepluscheck:
 flakeplusdiag:
 	-$(MAKE) flakepluscheck
 
-flakes: flakediag flakeplusdiag
+flakes: flakediag flakeplusdiag pep257check
 
 clean-readme:
 	-rm -f $(README)
