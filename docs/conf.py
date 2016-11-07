@@ -24,6 +24,7 @@ globals().update(conf.build_config(
     apicheck_ignore_modules=[
         'django_celery_results',
         'django_celery_results.apps',
+        'django_celery_results.admin',
         r'django_celery_results.migrations.*',
     ],
 ))
