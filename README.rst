@@ -8,12 +8,28 @@
 :Web: http://django-celery-results.readthedocs.org/
 :Download: http://pypi.python.org/pypi/django-celery-results
 :Source: http://github.com/celery/django-celery-results
-:Keywords: KEYWORDS
+:Keywords: django, celery, database, results
 
 About
 =====
 
-# I'm too lazy to edit the defaults.
+This extension enables you to store Celery task results using the Django ORM.
+
+It defines a single model (``django_celery_results.models.TaskResult``)
+used to store task results, and you can query this database table like
+any other Django model.
+
+Installing
+==========
+
+The installation instructions for this extension is available
+from the `Celery documentation`_:
+
+http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
+
+
+.. _`Celery documentation`:
+    http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
 
 .. _installation:
 
