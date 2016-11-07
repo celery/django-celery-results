@@ -28,6 +28,7 @@ class test_DatabaseBackend:
 
     def test_backend__pickle_serialization(self):
         self.app.conf.result_serializer = 'pickle'
+        self.app.conf.accept_content = {'pickle', 'json'}
         self.b = DatabaseBackend(app=self.app)
 
         tid2 = uuid()
