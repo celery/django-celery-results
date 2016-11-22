@@ -34,4 +34,5 @@ class TaskResultAdmin(admin.ModelAdmin):
         }),
     )
 
+
 admin.site.register(TaskResult, TaskResultAdmin)
