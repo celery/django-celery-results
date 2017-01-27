@@ -15,6 +15,10 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='taskresult',
             name='task_name',
-            field=models.CharField(max_length=255, null=True, verbose_name='task_name'),
+            field=models.CharField(
+                max_length=255,
+                null=True,
+                verbose_name='task_name'
+            ),
         ),
     ]
