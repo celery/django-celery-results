@@ -133,7 +133,7 @@ class pytest(setuptools.command.test.test):
 setuptools.setup(
     name=NAME,
     packages=setuptools.find_packages(exclude=['ez_setup', 't', 't.*']),
-    version='1.0.3',
+    version='1.0.4',
     description=meta['doc'],
     long_description=long_description,
     keywords='celery django database result backend',
