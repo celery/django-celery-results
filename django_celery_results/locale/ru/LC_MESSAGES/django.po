@@ -1,0 +1,57 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-21 12:02+0000\n"
+"PO-Revision-Date: 2017-07-21 17:02+0300\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.8.11\n"
+
+#: django_celery_results/apps.py:15
+msgid "Celery Results"
+msgstr "Журнал выполнения задач"
+
+#: django_celery_results/models.py:21
+msgid "task id"
+msgstr "id задания"
+
+#: django_celery_results/models.py:25
+msgid "state"
+msgstr "состояние"
+
+#: django_celery_results/models.py:30
+msgid "content type"
+msgstr "Тип контента"
+
+#: django_celery_results/models.py:33
+msgid "content encoding"
+msgstr "Кодировка контента"
+
+#: django_celery_results/models.py:36
+msgid "done at"
+msgstr "завершено в"
+
+#: django_celery_results/models.py:37
+msgid "traceback"
+msgstr "отслеживание"
+
+#: django_celery_results/models.py:46
+msgid "task result"
+msgstr "Журнал выполнения заданий"
+
+#: django_celery_results/models.py:47
+msgid "task results"
+msgstr "Журналы выполненния заданий"
