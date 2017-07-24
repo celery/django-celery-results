@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from .models import TaskResult
 
@@ -22,7 +23,7 @@ class TaskResultAdmin(admin.ModelAdmin):
             ),
             'classes': ('extrapretty', 'wide')
         }),
-        ('Result', {
+        (_('Result'), {
             'fields': (
                 'result',
                 'date_done',
