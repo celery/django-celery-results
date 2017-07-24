@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-07-24 08:19+0000\n"
-"PO-Revision-Date: 2017-07-24 11:20+0300\n"
+"PO-Revision-Date: 2017-07-24 12:09+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -26,7 +26,7 @@ msgstr "Результат"
 
 #: django_celery_results/apps.py:15
 msgid "Celery Results"
-msgstr "Журнал выполнения задач"
+msgstr "Журнал выполнения заданий"
 
 #: django_celery_results/models.py:21
 msgid "task id"
