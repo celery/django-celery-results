@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-24 08:19+0000\n"
-"PO-Revision-Date: 2017-07-24 12:09+0300\n"
+"POT-Creation-Date: 2017-07-24 09:39+0000\n"
+"PO-Revision-Date: 2017-07-24 12:52+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -66,8 +66,8 @@ msgstr "Мета"
 
 #: django_celery_results/models.py:52
 msgid "task result"
-msgstr "Журнал выполнения заданий"
+msgstr "Запись журнала"
 
 #: django_celery_results/models.py:53
 msgid "task results"
-msgstr "Журналы выполненния заданий"
+msgstr "Журнал выполнения заданий"
