@@ -11,6 +11,8 @@ recursive-include examples *
 recursive-include requirements *.txt *.rst
 recursive-include t *.py
 recursive-include django_celery_results *.py
+recursive-include django_celery_results .po
+recursive-include django_celery_results .mo
 
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
