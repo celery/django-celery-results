@@ -19,7 +19,7 @@ class TaskResult(models.Model):
 
     task_id = models.CharField(
         _('task id'),
-        max_length=255, unique=True,
+        max_length=191, unique=True,
     )
     status = models.CharField(
         _('state'),
