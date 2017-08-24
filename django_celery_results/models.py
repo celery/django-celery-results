@@ -1,6 +1,7 @@
 """Database models."""
 from __future__ import absolute_import, unicode_literals
 
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -16,8 +17,11 @@ TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
 @python_2_unicode_compatible
 class TaskResult(models.Model):
     """Task result/status."""
-
-    task_id = models.CharField(_('task id'), max_length=255, unique=True)
+    task_id = models.CharField(
+        _('task id'),
+        max_length=getattr(settings, 'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH', 255),
+        unique=True
+    )
     task_name = models.CharField(_('task name'), null=True, max_length=255)
     task_args = models.TextField(_('task arguments'), null=True)
     task_kwargs = models.TextField(_('task kwargs'), null=True)
