@@ -22,11 +22,18 @@ class DatabaseBackend(BaseDictBackend):
             'children': self.current_task_children(request),
         })
 
+        task_name = getattr(request, 'task', None) if request else None
+        task_args = getattr(request, 'args', None) if request else None
+        task_kwargs = getattr(request, 'kwargs', None) if request else None
+
         self.TaskModel._default_manager.store_result(
             content_type, content_encoding,
             task_id, result, status,
             traceback=traceback,
             meta=meta,
+            task_name=task_name,
+            task_args=task_args,
+            task_kwargs=task_kwargs,
         )
         return result
 
