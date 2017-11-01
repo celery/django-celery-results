@@ -23,7 +23,7 @@ class DatabaseBackend(BaseDictBackend):
         })
         task_name = getattr(request, 'task', '') if request else ''
         task_args = getattr(request, 'args', '') if request else ''
-        task_kwargs = getattr(request, 'kargs', '') if request else ''
+        task_kwargs = getattr(request, 'kwargs', '') if request else ''
 
         self.TaskModel._default_manager.store_result(
             content_type, content_encoding,
