@@ -21,6 +21,11 @@ class TaskResult(models.Model):
         _('task id'),
         max_length=255, unique=True,
     )
+    task = models.CharField(
+        _('task name'),
+        null=True,
+        max_length=255,
+    )
     status = models.CharField(
         _('state'),
         max_length=50, default=states.PENDING,
@@ -49,6 +54,7 @@ class TaskResult(models.Model):
     def as_dict(self):
         return {
             'task_id': self.task_id,
+            'task': self.task,
             'status': self.status,
             'result': self.result,
             'date_done': self.date_done,

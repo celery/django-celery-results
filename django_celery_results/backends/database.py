@@ -22,9 +22,14 @@ class DatabaseBackend(BaseDictBackend):
             'children': self.current_task_children(request),
         })
 
+        task = 'unknown'
+        if request and hasattr(request, 'task'):
+            task = request.task
+
         self.TaskModel._default_manager.store_result(
             content_type, content_encoding,
             task_id, result, status,
+            task=task,
             traceback=traceback,
             meta=meta,
         )

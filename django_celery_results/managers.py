@@ -86,7 +86,7 @@ class TaskResultManager(models.Manager):
     @transaction_retry(max_retries=2)
     def store_result(self, content_type, content_encoding,
                      task_id, result, status,
-                     traceback=None, meta=None):
+                     traceback=None, meta=None, task=None):
         """Store the result and status of a task.
 
         Arguments:
@@ -115,6 +115,7 @@ class TaskResultManager(models.Manager):
             'meta': meta,
             'content_encoding': content_encoding,
             'content_type': content_type,
+            'task': task
         }
         obj, created = self.get_or_create(task_id=task_id, defaults=fields)
         if not created:
