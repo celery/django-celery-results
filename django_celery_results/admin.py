@@ -22,6 +22,13 @@ class TaskResultAdmin(admin.ModelAdmin):
             ),
             'classes': ('extrapretty', 'wide')
         }),
+        ('Invocation', {
+            'fields': (
+                'task_name',
+                'task_args',
+                'task_kwargs',
+            )
+        }),
         ('Result', {
             'fields': (
                 'result',
