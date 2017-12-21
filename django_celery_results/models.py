@@ -32,6 +32,18 @@ class TaskResult(models.Model):
     content_encoding = models.CharField(
         _('content encoding'), max_length=64,
     )
+    task_name = models.CharField(
+        _('task name'),
+        null=True, max_length=255
+    )
+    task_args = models.TextField(
+        _('task arguments'),
+        null=True
+    )
+    task_kwargs = models.TextField(
+        _('task keyword arguments'),
+        null=True
+    )
     result = models.TextField(null=True, default=None, editable=False)
     date_done = models.DateTimeField(_('done at'), auto_now=True)
     traceback = models.TextField(_('traceback'), blank=True, null=True)
