@@ -1,8 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
-from base64 import b64encode, b64decode
-
 from celery.backends.base import BaseDictBackend
+from celery.utils.serialization import b64encode, b64decode
 
 from ..models import TaskResult
 
