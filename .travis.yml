@@ -10,7 +10,6 @@ env:
     PYTHONUNBUFFERED=yes
   matrix:
     - TOXENV=2.7-django1.11
-    - TOXENV=pypy-django1.11
     - TOXENV=3.4-django2.0
     - TOXENV=3.4-django1.11
     - TOXENV=3.5-django2.0
@@ -24,6 +23,12 @@ env:
     - TOXENV=apicheck
     - TOXENV=pydocstyle
     - TOXENV=cov
+
+matrix:
+  include:
+    - python: pypy
+      env: TOXENV=pypy-django1.11
+
 install: travis_retry pip install -U tox
 script: tox -v -- -v
 after_success:
