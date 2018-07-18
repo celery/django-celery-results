@@ -36,7 +36,7 @@ matrix:
     - python: pypy
       env: TOXENV=pypy-django1.11
 
-install: travis_retry pip install -U tox
+install: travis_retry pip install -U tox | cat
 script: tox -v -- -v
 after_success:
   - .tox/$TRAVIS_PYTHON_VERSION/bin/coverage xml
