@@ -3,6 +3,13 @@ from __future__ import absolute_import, unicode_literals
 
 from django.contrib import admin
 
+from django.conf import settings
+try:
+    ALLOW_EDITS = settings.DJANGO_CELERY_RESULTS['ALLOW_EDITS']
+except (AttributeError, KeyError) as e:
+    ALLOW_EDITS = True
+    pass
+
 from .models import TaskResult
 
 
@@ -43,5 +50,12 @@ class TaskResultAdmin(admin.ModelAdmin):
         }),
     )
 
+    def get_readonly_fields(self, request, obj=None):
+        if ALLOW_EDITS:
+            return self.readonly_fields
+        else:
+            return list(set(
+                [field.name for field in self.opts.local_fields]
+            ))
 
 admin.site.register(TaskResult, TaskResultAdmin)
