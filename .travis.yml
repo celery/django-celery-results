@@ -33,7 +33,7 @@ matrix:
       env: TOXENV=3.6-django2.0
     - python: 3.6
       env: TOXENV=3.6-django1.11
-    - python: pypy
+    - python: pypy2
       env: TOXENV=pypy-django1.11
 
 install: travis_retry pip install -U tox | cat
