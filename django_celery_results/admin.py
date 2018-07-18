@@ -58,4 +58,5 @@ class TaskResultAdmin(admin.ModelAdmin):
                 [field.name for field in self.opts.local_fields]
             ))
 
+
 admin.site.register(TaskResult, TaskResultAdmin)

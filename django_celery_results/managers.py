@@ -32,7 +32,7 @@ class TxIsolationWarning(UserWarning):
 
 
 def transaction_retry(max_retries=1):
-    """Decorator to retry database operations.
+    """Decorate a function to retry database operations.
 
     For functions doing database operations, adding
     retrying if the operation fails.
