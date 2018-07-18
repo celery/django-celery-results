@@ -38,6 +38,8 @@ class TaskResult(models.Model):
     class Meta:
         """Table information."""
 
+        ordering = ['-date_done']
+
         verbose_name = _('task result')
         verbose_name_plural = _('task results')
 
