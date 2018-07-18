@@ -2,15 +2,15 @@ language: python
 sudo: false
 cache: pip
 python:
-    - '3.7'
+    - '3.6'
 os:
     - linux
 env:
   global:
     PYTHONUNBUFFERED=yes
   matrix:
-    - TOXENV=3.7-django2.0
-    - TOXENV=3.7-django1.11
+    # - TOXENV=3.7-django2.0
+    # - TOXENV=3.7-django1.11
     - TOXENV=flake8
     - TOXENV=flakeplus
     - TOXENV=apicheck
