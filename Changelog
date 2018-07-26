@@ -8,8 +8,8 @@
 
 1.0.2
 =====
-:release-date: 2018-07-25 08:30 pm. CST
-:release-by: Munavvar Khan
+:release-date:
+:release-by:
 
 - Store task name, args, kwargs as part of the task results in database.
     Contributed by :github_user: `wardal`.
