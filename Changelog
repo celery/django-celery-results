@@ -17,6 +17,8 @@
 - Admin screen changes - task name filter, search on task_name, task_id, status.
     Contributed by :github_user: `jaylynch`.
 
+.. _version-1.0.1:
+
 1.0.1
 =====
 :release-date: 2016-11-07 02:00 p.m. PST
