@@ -1,15 +1,17 @@
 from __future__ import absolute_import, unicode_literals
 
-from celery.backends.base import BaseDictBackend
-from celery.utils.serialization import b64encode, b64decode
+from base64 import b64encode, b64decode
 
-from ..models import TaskResult
+from celery.backends.base import BaseDictBackend
+
+from ..models import TaskResult, TaskSetMeta
 
 
 class DatabaseBackend(BaseDictBackend):
     """The Django database backend, using models to store task state."""
 
     TaskModel = TaskResult
+    TaskSetModel = TaskSetMeta
 
     subpolling_interval = 0.5
 
@@ -21,19 +23,17 @@ class DatabaseBackend(BaseDictBackend):
             'children': self.current_task_children(request),
         })
 
-        task_name = getattr(request, 'task', None) if request else None
-        task_args = getattr(request, 'args', None) if request else None
-        task_kwargs = getattr(request, 'kwargs', None) if request else None
-
         self.TaskModel._default_manager.store_result(
             content_type, content_encoding,
             task_id, result, status,
             traceback=traceback,
             meta=meta,
-            task_name=task_name,
-            task_args=task_args,
-            task_kwargs=task_kwargs,
         )
+        return result
+
+    def _save_group(self, group_id, result):
+        """Store the result of an executed group."""
+        self.TaskSetModel._default_manager.store_result(group_id, result)
         return result
 
     def _get_task_meta_for(self, task_id):
@@ -44,6 +44,12 @@ class DatabaseBackend(BaseDictBackend):
         res.update(meta,
                    result=self.decode_content(obj, res.get('result')))
         return self.meta_from_decoded(res)
+
+    def _restore_group(self, group_id):
+        """Get group metadata for a group by id."""
+        meta = self.TaskSetModel._default_manager.restore_taskset(group_id)
+        if meta:
+            return meta.to_dict()
 
     def encode_content(self, data):
         content_type, content_encoding, content = self._encode(data)
@@ -57,6 +63,9 @@ class DatabaseBackend(BaseDictBackend):
                 content = b64decode(content)
             return self.decode(content)
 
+    def _delete_group(self, group_id):
+        self.TaskSetModel._default_manager.delete_taskset(group_id)
+
     def _forget(self, task_id):
         try:
             self.TaskModel._default_manager.get(task_id=task_id).delete()
@@ -66,3 +75,4 @@ class DatabaseBackend(BaseDictBackend):
     def cleanup(self):
         """Delete expired metadata."""
         self.TaskModel._default_manager.delete_expired(self.expires)
+	self.TaskSetModel._default_manager.delete_expired(self.expires)

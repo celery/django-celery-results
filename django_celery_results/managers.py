@@ -86,17 +86,13 @@ class TaskResultManager(models.Manager):
     @transaction_retry(max_retries=2)
     def store_result(self, content_type, content_encoding,
                      task_id, result, status,
-                     traceback=None, meta=None,
-                     task_name=None, task_args=None, task_kwargs=None):
+                     traceback=None, meta=None):
         """Store the result and status of a task.
 
         Arguments:
             content_type (str): Mime-type of result and meta content.
             content_encoding (str): Type of encoding (e.g. binary/utf-8).
             task_id (str): Id of task.
-            task_name (str): Celery task name.
-            task_args (str): Task arguments.
-            task_kwargs (str): Task kwargs.
             result (str): The serialized return value of the task,
                 or an exception instance raised by the task.
             status (str): Task status.  See :mod:`celery.states` for a list of
@@ -119,9 +115,6 @@ class TaskResultManager(models.Manager):
             'meta': meta,
             'content_encoding': content_encoding,
             'content_type': content_type,
-            'task_name': task_name,
-            'task_args': task_args,
-            'task_kwargs': task_kwargs,
         }
         obj, created = self.get_or_create(task_id=task_id, defaults=fields)
         if not created:
@@ -138,6 +131,57 @@ class TaskResultManager(models.Manager):
                 if isolation == 'REPEATABLE-READ':
                     warnings.warn(TxIsolationWarning(W_ISOLATION_REP.strip()))
 
+    def connection_for_write(self):
+        return connections[router.db_for_write(self.model)]
+
+    def connection_for_read(self):
+        return connections[self.db]
+
+    def current_engine(self):
+        try:
+            return settings.DATABASES[self.db]['ENGINE']
+        except AttributeError:
+            return settings.DATABASE_ENGINE
+
+    def get_all_expired(self, expires):
+        """Get all expired task results."""
+        return self.filter(date_done__lt=now() - maybe_timedelta(expires))
+
+    def delete_expired(self, expires):
+        """Delete all expired results."""
+        meta = self.model._meta
+        with transaction.atomic():
+            self.get_all_expired(expires).update(hidden=True)
+            cursor = self.connection_for_write().cursor()
+            cursor.execute(
+                'DELETE FROM {0.db_table} WHERE hidden=%s'.format(meta),
+                (True, ),
+            )
+
+class TaskSetManager(models.Manager):
+    """Manager for :class:`celery.models.TaskSet` models."""
+
+    def restore_taskset(self, taskset_id):
+        """Get the async result instance by taskset id."""
+        try:
+            return self.get(taskset_id=taskset_id)
+        except self.model.DoesNotExist:
+            pass
+
+    def delete_taskset(self, taskset_id):
+        """Delete a saved taskset result."""
+        s = self.restore_taskset(taskset_id)
+        if s:
+            s.delete()
+
+    @transaction_retry(max_retries=2)
+    def store_result(self, taskset_id, result):
+        """Store the async result instance of a taskset.
+        :param taskset_id: task set id
+        :param result: The return value of the taskset
+        """
+        return self.update_or_create(taskset_id=taskset_id,
+                                     defaults={'result': result})
     def connection_for_write(self):
         return connections[router.db_for_write(self.model)]
 
