@@ -75,4 +75,4 @@ class DatabaseBackend(BaseDictBackend):
     def cleanup(self):
         """Delete expired metadata."""
         self.TaskModel._default_manager.delete_expired(self.expires)
-	self.TaskSetModel._default_manager.delete_expired(self.expires)
+        self.TaskSetModel._default_manager.delete_expired(self.expires)
