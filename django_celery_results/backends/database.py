@@ -16,7 +16,7 @@ class DatabaseBackend(BaseDictBackend):
     def _store_result(self, task_id, result, status,
                       traceback=None, request=None):
         """Store return value and status of an executed task."""
-        content_type, content_encoding, result = self.encode_content(result)
+        content_type, content_encoding, _ = self.encode_content(result)
         _, _, meta = self.encode_content({
             'children': self.current_task_children(request),
         })
