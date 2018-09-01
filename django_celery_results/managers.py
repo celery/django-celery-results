@@ -87,7 +87,7 @@ class TaskResultManager(models.Manager):
     def store_result(self, content_type, content_encoding,
                      task_id, result, status,
                      traceback=None, meta=None,
-                     task_name=None, task_args=None, task_kwargs=None
+                     task_name=None, task_args=None, task_kwargs=None,
                      using=None):
         """Store the result and status of a task.
 
