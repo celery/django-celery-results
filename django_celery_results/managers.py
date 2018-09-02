@@ -124,7 +124,8 @@ class TaskResultManager(models.Manager):
             'task_args': task_args,
             'task_kwargs': task_kwargs,
         }
-        obj, created = self.using(using).get_or_create(task_id=task_id, defaults=fields)
+        obj, created = self.using(using).get_or_create(task_id=task_id,
+                                                       defaults=fields)
         if not created:
             for k, v in items(fields):
                 setattr(obj, k, v)
