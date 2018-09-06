@@ -102,6 +102,7 @@ class TaskResultManager(models.Manager):
                 or an exception instance raised by the task.
             status (str): Task status.  See :mod:`celery.states` for a list of
                 possible status values.
+            using (str): Django database connection to use.
 
         Keyword Arguments:
             traceback (str): The traceback string taken at the point of

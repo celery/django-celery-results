@@ -4,6 +4,8 @@ import pytest
 
 from datetime import datetime, timedelta
 
+from django.db import transaction
+
 from celery import states, uuid
 from celery.five import text_t
 
@@ -43,7 +45,7 @@ class test_Models:
             ctype, cenc, m2.task_id, True, status=states.SUCCESS)
         TaskResult.objects.store_result(
             ctype, cenc, m3.task_id, True, status=states.SUCCESS,
-            using='default')
+            using='secondary')
         assert TaskResult.objects.get_task(m1.task_id).status == states.SUCCESS
         assert TaskResult.objects.get_task(m2.task_id).status == states.SUCCESS
         assert TaskResult.objects.get_task(m3.task_id).status == states.SUCCESS
@@ -64,3 +66,31 @@ class test_Models:
             self.app.conf.result_expires,
         )
         assert m1 not in TaskResult.objects.all()
+
+    def test_store_result(self, ctype='application/json', cenc='utf-8'):
+        """
+        Test the `using` argument.
+        With the `using` kwarg, we can specify the database to use for updating
+        results. By specifying a different database than the one used by the
+        transaction, we can bypass the transaction and update a result.
+        This is useful for things like progress updates, where a long
+        running transaction has not been committed, but we still want to
+        allow clients to receive updates.
+        """
+        m1 = self.create_task_result()
+        m2 = self.create_task_result()
+        try:
+            with transaction.atomic():
+                TaskResult.objects.store_result(
+                    ctype, cenc, m1.task_id, True, status=states.SUCCESS)
+                TaskResult.objects.store_result(
+                    ctype, cenc, m2.task_id, True, status=states.SUCCESS,
+                    using='secondary')
+                raise Exception('abort')
+        except:
+            pass
+
+        assert TaskResult.objects.get_task(m1.task_id).status != states.SUCCESS
+        assert TaskResult.objects.get_task(m2.task_id).status == states.SUCCESS
+
+
