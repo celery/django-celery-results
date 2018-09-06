@@ -77,6 +77,9 @@ class test_Models:
         running transaction has not been committed, but we still want to
         allow clients to receive updates.
         """
+        class TransactionError(Exception):
+            pass
+
         m1 = self.create_task_result()
         m2 = self.create_task_result()
         try:
@@ -86,11 +89,9 @@ class test_Models:
                 TaskResult.objects.store_result(
                     ctype, cenc, m2.task_id, True, status=states.SUCCESS,
                     using='secondary')
-                raise Exception('abort')
-        except:
+                raise TransactionError()
+        except TransactionError:
             pass
 
         assert TaskResult.objects.get_task(m1.task_id).status != states.SUCCESS
         assert TaskResult.objects.get_task(m2.task_id).status == states.SUCCESS
-
-
