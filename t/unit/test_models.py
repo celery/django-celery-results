@@ -5,6 +5,7 @@ import pytest
 from datetime import datetime, timedelta
 
 from django.db import transaction
+from django.test import TransactionTestCase
 
 from celery import states, uuid
 from celery.five import text_t
@@ -13,9 +14,9 @@ from django_celery_results.models import TaskResult
 from django_celery_results.utils import now
 
 
-@pytest.mark.django_db()
 @pytest.mark.usefixtures('depends_on_current_app')
-class test_Models:
+class test_Models(TransactionTestCase):
+    multi_db = True
 
     @pytest.fixture(autouse=True)
     def setup_app(self, app):
@@ -82,6 +83,9 @@ class test_Models:
 
         m1 = self.create_task_result()
         m2 = self.create_task_result()
+        assert set(TaskResult.objects.all()) == set(
+            TaskResult.objects.using("secondary").all()
+        )
         try:
             with transaction.atomic():
                 TaskResult.objects.store_result(

@@ -89,6 +89,9 @@ DATABASES = {
         'OPTIONS': {
             'timeout': 1000,
         },
+        'TEST': {
+            'MIRROR': 'default',
+        },
     },
 }
 
