@@ -44,12 +44,8 @@ class test_Models(TransactionTestCase):
             ctype, cenc, m1.task_id, True, status=states.SUCCESS)
         TaskResult.objects.store_result(
             ctype, cenc, m2.task_id, True, status=states.SUCCESS)
-        TaskResult.objects.store_result(
-            ctype, cenc, m3.task_id, True, status=states.SUCCESS,
-            using='secondary')
         assert TaskResult.objects.get_task(m1.task_id).status == states.SUCCESS
         assert TaskResult.objects.get_task(m2.task_id).status == states.SUCCESS
-        assert TaskResult.objects.get_task(m3.task_id).status == states.SUCCESS
 
         # Have to avoid save() because it applies the auto_now=True.
         TaskResult.objects.filter(
