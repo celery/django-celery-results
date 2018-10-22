@@ -17,9 +17,14 @@ TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
 @python_2_unicode_compatible
 class TaskResult(models.Model):
     """Task result/status."""
+
     task_id = models.CharField(
         _('task id'),
-        max_length=getattr(settings, 'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH', 255),
+        max_length=getattr(
+            settings,
+            'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
+            255
+        ),
         unique=True
     )
     task_name = models.CharField(_('task name'), null=True, max_length=255)

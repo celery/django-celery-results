@@ -92,5 +92,6 @@ class test_custom_CacheBackend:
     def test_custom_cache_backend(self):
         self.app.conf.cache_backend = 'dummy'
         b = CacheBackend(app=self.app)
-        assert (b.cache_backend.__class__.__module__ ==
-                'django.core.cache.backends.dummy')
+        assert (
+            b.cache_backend.__class__.__module__ == 'django.core.cache.backends.dummy'  # noqa
+        )
