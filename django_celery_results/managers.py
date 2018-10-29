@@ -32,7 +32,7 @@ class TxIsolationWarning(UserWarning):
 
 
 def transaction_retry(max_retries=1):
-    """Decorator to retry database operations.
+    """Decorate a function to retry database operations.
 
     For functions doing database operations, adding
     retrying if the operation fails.
@@ -86,13 +86,17 @@ class TaskResultManager(models.Manager):
     @transaction_retry(max_retries=2)
     def store_result(self, content_type, content_encoding,
                      task_id, result, status,
-                     traceback=None, meta=None):
+                     traceback=None, meta=None,
+                     task_name=None, task_args=None, task_kwargs=None):
         """Store the result and status of a task.
 
         Arguments:
             content_type (str): Mime-type of result and meta content.
             content_encoding (str): Type of encoding (e.g. binary/utf-8).
             task_id (str): Id of task.
+            task_name (str): Celery task name.
+            task_args (str): Task arguments.
+            task_kwargs (str): Task kwargs.
             result (str): The serialized return value of the task,
                 or an exception instance raised by the task.
             status (str): Task status.  See :mod:`celery.states` for a list of
@@ -115,6 +119,9 @@ class TaskResultManager(models.Manager):
             'meta': meta,
             'content_encoding': content_encoding,
             'content_type': content_type,
+            'task_name': task_name,
+            'task_args': task_args,
+            'task_kwargs': task_kwargs,
         }
         obj, created = self.get_or_create(task_id=task_id, defaults=fields)
         if not created:

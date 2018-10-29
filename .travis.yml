@@ -1,32 +1,42 @@
 language: python
 sudo: false
-cache: false
+cache: pip
 python:
-    - '3.5'
+    - '3.6'
 os:
     - linux
 env:
   global:
     PYTHONUNBUFFERED=yes
   matrix:
-    - TOXENV=2.7-django1.10
-    - TOXENV=2.7-django1.9
-    - TOXENV=2.7-django1.8
-    - TOXENV=pypy-django1.10
-    - TOXENV=pypy-django1.9
-    - TOXENV=pypy-django1.8
-    - TOXENV=3.4-django1.10
-    - TOXENV=3.4-django1.9
-    - TOXENV=3.4-django1.8
-    - TOXENV=3.5-django1.10
-    - TOXENV=3.5-django1.9
-    - TOXENV=3.5-django1.8
+    # - TOXENV=3.7-django2.0
+    # - TOXENV=3.7-django1.11
     - TOXENV=flake8
     - TOXENV=flakeplus
     - TOXENV=apicheck
     - TOXENV=pydocstyle
     - TOXENV=cov
-install: travis_retry pip install -U tox
+
+matrix:
+  include:
+    - python: 2.7
+      env: TOXENV=2.7-django1.11
+    - python: 3.4
+      env: TOXENV=3.4-django2.0
+    - python: 3.4
+      env: TOXENV=3.4-django1.11
+    - python: 3.5
+      env: TOXENV=3.5-django2.0
+    - python: 3.5
+      env: TOXENV=3.5-django1.11
+    - python: 3.6
+      env: TOXENV=3.6-django2.0
+    - python: 3.6
+      env: TOXENV=3.6-django1.11
+    - python: pypy
+      env: TOXENV=pypy-django1.11
+
+install: travis_retry pip install -U tox | cat
 script: tox -v -- -v
 after_success:
   - .tox/$TRAVIS_PYTHON_VERSION/bin/coverage xml

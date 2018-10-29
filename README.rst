@@ -4,7 +4,7 @@
 
 |build-status| |coverage| |license| |wheel| |pyversion| |pyimp|
 
-:Version: 1.0.1
+:Version: 1.0.2
 :Web: http://django-celery-results.readthedocs.io/
 :Download: http://pypi.python.org/pypi/django-celery-results
 :Source: http://github.com/celery/django-celery-results
@@ -74,7 +74,7 @@ pip command::
 
     $ pip install https://github.com/celery/django-celery-results/zipball/master#egg=django-celery-results
 
-.. |build-status| image:: https://secure.travis-ci.org/celery/django-celery-results.png?branch=master
+.. |build-status| image:: https://secure.travis-ci.org/celery/django-celery-results.svg?branch=master
     :alt: Build status
     :target: https://travis-ci.org/celery/django-celery-results
 
