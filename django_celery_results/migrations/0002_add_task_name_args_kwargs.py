@@ -3,6 +3,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.db import migrations, models
+import django_celery_results.models
 
 
 class Migration(migrations.Migration):
@@ -30,3 +31,23 @@ class Migration(migrations.Migration):
                                    ),
         ),
     ]
+
+    custom_operations = [
+        migrations.AlterModelOptions(
+            name='taskresult',
+            options={
+                'ordering': ['-date_done'],
+                'verbose_name': 'task result',
+                'verbose_name_plural': 'task results'
+            },
+        ),
+        migrations.AddIndex(
+            model_name='taskresult',
+            index=django_celery_results.models.CeleryMySQLIndex(
+                fields=['task_id'],
+                name='celery_resu_task_id_4f2892_idx'
+            ),
+        ),
+    ]
+
+    operations = operations + custom_operations
