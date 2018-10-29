@@ -4,6 +4,19 @@
  Change history
 ================
 
+.. _version-1.0.2:
+
+1.0.2
+=====
+:release-date:
+:release-by:
+
+- Store task name, args, kwargs as part of the task results in database.
+    Contributed by :github_user: `wardal`.
+
+- Admin screen changes - task name filter, search on task_name, task_id, status.
+    Contributed by :github_user: `jaylynch`.
+
 .. _version-1.0.1:
 
 1.0.1
