@@ -35,8 +35,10 @@ class test_Models:
         assert m1.task_id
         assert isinstance(m1.date_done, datetime)
 
-        assert TaskResult.objects.get_task(m1.task_id).task_id == m1.task_id
-        assert TaskResult.objects.get_task(m1.task_id).status != states.SUCCESS
+        task = TaskResult.objects.get_task(m1.task_id)
+        assert task._meta.get_field('task_id').max_length == 191
+        assert task.task_id == m1.task_id
+        assert task.status != states.SUCCESS
         TaskResult.objects.store_result(
             ctype, cenc, m1.task_id, True, status=states.SUCCESS)
         TaskResult.objects.store_result(

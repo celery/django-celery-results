@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from django.conf import settings
 from django.db import migrations, models
 
 
@@ -19,9 +20,15 @@ class Migration(migrations.Migration):
                                         primary_key=True,
                                         serialize=False,
                                         verbose_name='ID')),
-                ('task_id', models.CharField(max_length=255,
-                                             unique=True,
-                                             verbose_name='task id')),
+                ('task_id', models.CharField(
+                    max_length=getattr(
+                        settings,
+                        'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
+                        255
+                    ),
+                    unique=True,
+                    verbose_name='task id'
+                )),
                 ('status', models.CharField(choices=[('FAILURE', 'FAILURE'),
                                                      ('PENDING', 'PENDING'),
                                                      ('RECEIVED', 'RECEIVED'),
