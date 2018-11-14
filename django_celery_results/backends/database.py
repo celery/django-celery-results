@@ -31,11 +31,13 @@ class DatabaseBackend(BaseDictBackend):
             'children': self.current_task_children(request),
         })
 
-        task_name = getattr(request, 'task', None) if request else None
-        task_args = getattr(request,
-                            'argsrepr', getattr(request, 'args', None))
-        task_kwargs = getattr(request,
-                              'kwargsrepr', getattr(request, 'kwargs', None))
+        task_name = getattr(request, 'task', None)
+        _, _, task_args = self.encode_content(
+            getattr(request, 'argsrepr', getattr(request, 'args', None))
+        )
+        _, _, task_kwargs = self.encode_content(
+            getattr(request, 'kwargsrepr', getattr(request, 'kwargs', None))
+        )
         worker = getattr(request, 'hostname', None)
 
         self.TaskModel._default_manager.store_result(
@@ -56,8 +58,13 @@ class DatabaseBackend(BaseDictBackend):
         obj = self.TaskModel._default_manager.get_task(task_id)
         res = obj.as_dict()
         meta = self.decode_content(obj, res.pop('meta', None)) or {}
-        res.update(meta,
-                   result=self.decode_content(obj, res.get('result')))
+        result = self.decode_content(obj, res.get('result'))
+        task_args = self.decode_content(obj, res.get('task_args'))
+        task_kwargs = self.decode_content(obj, res.get('task_kwargs'))
+        res.update(
+            meta, result=result, task_args=task_args,
+            task_kwargs=task_kwargs,
+        )
         return self.meta_from_decoded(res)
 
     def encode_content(self, data):
