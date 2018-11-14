@@ -27,18 +27,36 @@ class test_DatabaseBackend:
             'django_celery_results.backends:DatabaseBackend')
         self.b = DatabaseBackend(app=self.app)
 
-    def test_backend__pickle_serialization(self):
+    def test_backend__pickle_serialization__dict_result(self):
         self.app.conf.result_serializer = 'pickle'
         self.app.conf.accept_content = {'pickle', 'json'}
         self.b = DatabaseBackend(app=self.app)
 
         tid2 = uuid()
         result = {'foo': 'baz', 'bar': SomeClass(12345)}
-        self.b.mark_as_done(tid2, result)
-        # is serialized properly.
-        rindb = self.b.get_result(tid2)
-        assert rindb.get('foo') == 'baz'
-        assert rindb.get('bar').data == 12345
+        request = mock.MagicMock()
+        request.task = 'my_task'
+        request.args = ['a', 1, SomeClass(67)]
+        request.kwargs = {'c': 6, 'd': 'e', 'f': SomeClass(89)}
+        request.hostname = 'celery@ip-0-0-0-0'
+        del request.argsrepr, request.kwargsrepr
+
+        self.b.mark_as_done(tid2, result, request=request)
+        mindb = self.b.get_task_meta(tid2)
+
+        assert mindb.get('result').get('foo') == 'baz'
+        assert mindb.get('result').get('bar').data == 12345
+        assert mindb.get('task_name') == 'my_task'
+
+        assert len(mindb.get('task_args')) == 3
+        assert mindb.get('task_args')[0] == 'a'
+        assert mindb.get('task_args')[1] == 1
+        assert mindb.get('task_args')[2].data == 67
+
+        assert len(mindb.get('task_kwargs')) == 3
+        assert mindb.get('task_kwargs')['c'] == 6
+        assert mindb.get('task_kwargs')['d'] == 'e'
+        assert mindb.get('task_kwargs')['f'].data == 89
 
         tid3 = uuid()
         try:
@@ -48,6 +66,66 @@ class test_DatabaseBackend:
 
         assert self.b.get_status(tid3) == states.FAILURE
         assert isinstance(self.b.get_result(tid3), KeyError)
+
+    def test_backend__pickle_serialization__str_result(self):
+        self.app.conf.result_serializer = 'pickle'
+        self.app.conf.accept_content = {'pickle', 'json'}
+        self.b = DatabaseBackend(app=self.app)
+
+        tid2 = uuid()
+        result = 'foo'
+        request = mock.MagicMock()
+        request.task = 'my_task'
+        request.args = ['a', 1, SomeClass(67)]
+        request.kwargs = {'c': 6, 'd': 'e', 'f': SomeClass(89)}
+        request.hostname = 'celery@ip-0-0-0-0'
+        del request.argsrepr, request.kwargsrepr
+
+        self.b.mark_as_done(tid2, result, request=request)
+        mindb = self.b.get_task_meta(tid2)
+
+        assert mindb.get('result') == 'foo'
+        assert mindb.get('task_name') == 'my_task'
+
+        assert len(mindb.get('task_args')) == 3
+        assert mindb.get('task_args')[0] == 'a'
+        assert mindb.get('task_args')[1] == 1
+        assert mindb.get('task_args')[2].data == 67
+
+        assert len(mindb.get('task_kwargs')) == 3
+        assert mindb.get('task_kwargs')['c'] == 6
+        assert mindb.get('task_kwargs')['d'] == 'e'
+        assert mindb.get('task_kwargs')['f'].data == 89
+
+    def test_backend__pickle_serialization__bytes_result(self):
+        self.app.conf.result_serializer = 'pickle'
+        self.app.conf.accept_content = {'pickle', 'json'}
+        self.b = DatabaseBackend(app=self.app)
+
+        tid2 = uuid()
+        result = b'foo'
+        request = mock.MagicMock()
+        request.task = 'my_task'
+        request.args = ['a', 1, SomeClass(67)]
+        request.kwargs = {'c': 6, 'd': 'e', 'f': SomeClass(89)}
+        request.hostname = 'celery@ip-0-0-0-0'
+        del request.argsrepr, request.kwargsrepr
+
+        self.b.mark_as_done(tid2, result, request=request)
+        mindb = self.b.get_task_meta(tid2)
+
+        assert mindb.get('result') == b'foo'
+        assert mindb.get('task_name') == 'my_task'
+
+        assert len(mindb.get('task_args')) == 3
+        assert mindb.get('task_args')[0] == 'a'
+        assert mindb.get('task_args')[1] == 1
+        assert mindb.get('task_args')[2].data == 67
+
+        assert len(mindb.get('task_kwargs')) == 3
+        assert mindb.get('task_kwargs')['c'] == 6
+        assert mindb.get('task_kwargs')['d'] == 'e'
+        assert mindb.get('task_kwargs')['f'].data == 89
 
     def xxx_backend(self):
         tid = uuid()
