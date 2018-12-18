@@ -133,7 +133,11 @@ class TaskResultManager(models.Manager):
     def warn_if_repeatable_read(self):
         if 'mysql' in self.current_engine().lower():
             cursor = self.connection_for_read().cursor()
-            if cursor.execute('SELECT @@tx_isolation' if self.connection_for_read().mysql_version < (5,7,20) else 'SELECT @@transaction_isolation'):
+            # MySQL 5.7.20 deprecated the tx_isolation system variable and replaced
+            # it with transaction_isolation. 
+            if cursor.execute('SELECT @@tx_isolation'
+                              if self.connection_for_read().mysql_version < (5,7,20)
+                              else 'SELECT @@transaction_isolation'):
                 isolation = cursor.fetchone()[0]
                 if isolation == 'REPEATABLE-READ':
                     warnings.warn(TxIsolationWarning(W_ISOLATION_REP.strip()))
