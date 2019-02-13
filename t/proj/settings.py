@@ -14,6 +14,11 @@ from __future__ import absolute_import, unicode_literals
 import os
 import sys
 
+# configure psycopg2cffi for psycopg2 compatibility. We must use this package
+# support pypy.
+from psycopg2cffi import compat
+compat.register()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
