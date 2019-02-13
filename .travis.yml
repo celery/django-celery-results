@@ -5,6 +5,8 @@ python:
     - '3.6'
 os:
     - linux
+services:
+  - postgresql
 env:
   global:
     PYTHONUNBUFFERED=yes
