@@ -21,10 +21,6 @@ matrix:
   include:
     - python: 2.7
       env: TOXENV=2.7-django1.11
-    - python: 3.4
-      env: TOXENV=3.4-django2.0
-    - python: 3.4
-      env: TOXENV=3.4-django1.11
     - python: 3.5
       env: TOXENV=3.5-django2.0
     - python: 3.5
