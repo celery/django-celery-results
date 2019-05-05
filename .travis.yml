@@ -38,7 +38,7 @@ matrix:
     - { python: pypy, env: DJANGO=2.1 }
     - { python: pypy, env: DJANGO=2.2 }
 
-install: travis_retry pip install -U tox | cat
+install: travis_retry pip install -U tox-travis
 script: tox -v -- -v
 after_success:
   - .tox/$TRAVIS_PYTHON_VERSION/bin/coverage xml
