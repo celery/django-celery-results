@@ -3,6 +3,8 @@ sudo: True
 cache: pip
 os:
     - linux
+services:
+  - postgresql
 dist: xenial
 python:
   - 2.7

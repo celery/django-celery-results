@@ -87,7 +87,8 @@ class TaskResultManager(models.Manager):
     def store_result(self, content_type, content_encoding,
                      task_id, result, status,
                      traceback=None, meta=None,
-                     task_name=None, task_args=None, task_kwargs=None):
+                     task_name=None, task_args=None, task_kwargs=None,
+                     using=None):
         """Store the result and status of a task.
 
         Arguments:
@@ -101,6 +102,7 @@ class TaskResultManager(models.Manager):
                 or an exception instance raised by the task.
             status (str): Task status.  See :mod:`celery.states` for a list of
                 possible status values.
+            using (str): Django database connection to use.
 
         Keyword Arguments:
             traceback (str): The traceback string taken at the point of
@@ -123,11 +125,12 @@ class TaskResultManager(models.Manager):
             'task_args': task_args,
             'task_kwargs': task_kwargs,
         }
-        obj, created = self.get_or_create(task_id=task_id, defaults=fields)
+        obj, created = self.using(using).get_or_create(task_id=task_id,
+                                                       defaults=fields)
         if not created:
             for k, v in items(fields):
                 setattr(obj, k, v)
-            obj.save()
+            obj.save(using=using)
         return obj
 
     def warn_if_repeatable_read(self):

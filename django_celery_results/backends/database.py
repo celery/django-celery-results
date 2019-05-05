@@ -14,7 +14,7 @@ class DatabaseBackend(BaseDictBackend):
     subpolling_interval = 0.5
 
     def _store_result(self, task_id, result, status,
-                      traceback=None, request=None):
+                      traceback=None, request=None, using=None):
         """Store return value and status of an executed task."""
         content_type, content_encoding, result = self.encode_content(result)
         _, _, meta = self.encode_content({
@@ -35,6 +35,7 @@ class DatabaseBackend(BaseDictBackend):
             task_name=task_name,
             task_args=task_args,
             task_kwargs=task_kwargs,
+            using=using,
         )
         return result
 
