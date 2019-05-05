@@ -47,6 +47,7 @@ classes = """
     Programming Language :: Python :: Implementation :: CPython
     Programming Language :: Python :: Implementation :: PyPy
     Framework :: Django
+    Framework :: Django :: 2.2
     Framework :: Django :: 2.1
     Framework :: Django :: 2.0
     Framework :: Django :: 1.11
