@@ -1,10 +1,11 @@
 language: python
-sudo: false
+sudo: True
 cache: pip
 python:
     - '3.6'
 os:
     - linux
+dist: xenial
 env:
   global:
     PYTHONUNBUFFERED=yes
