@@ -4,9 +4,11 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib import admin
 
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
+
 try:
     ALLOW_EDITS = settings.DJANGO_CELERY_RESULTS['ALLOW_EDITS']
-except (AttributeError, KeyError) as e:
+except (AttributeError, KeyError):
     ALLOW_EDITS = True
     pass
 
@@ -33,14 +35,14 @@ class TaskResultAdmin(admin.ModelAdmin):
             ),
             'classes': ('extrapretty', 'wide')
         }),
-        ('Parameters', {
+        (_('Parameters'), {
             'fields': (
                 'task_args',
                 'task_kwargs',
             ),
             'classes': ('extrapretty', 'wide')
         }),
-        ('Result', {
+        (_('Result'), {
             'fields': (
                 'result',
                 'date_done',
