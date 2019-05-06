@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='taskresult',
             name='date_done',
-            field=models.DateTimeField(auto_now=True, help_text='Datetime field when the task was completed in UTC', verbose_name='Completed DateTime'),
+            field=models.DateTimeField(auto_now=True, db_index=True, help_text='Datetime field when the task was completed in UTC', verbose_name='Completed DateTime'),
         ),
         migrations.AlterField(
             model_name='taskresult',
@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='taskresult',
             name='status',
-            field=models.CharField(choices=[('FAILURE', 'FAILURE'), ('PENDING', 'PENDING'), ('RECEIVED', 'RECEIVED'), ('RETRY', 'RETRY'), ('REVOKED', 'REVOKED'), ('STARTED', 'STARTED'), ('SUCCESS', 'SUCCESS')], default='PENDING', help_text='Current state of the task being run', max_length=50, verbose_name='Task State'),
+            field=models.CharField(db_index=True, choices=[('FAILURE', 'FAILURE'), ('PENDING', 'PENDING'), ('RECEIVED', 'RECEIVED'), ('RETRY', 'RETRY'), ('REVOKED', 'REVOKED'), ('STARTED', 'STARTED'), ('SUCCESS', 'SUCCESS')], default='PENDING', help_text='Current state of the task being run', max_length=50, verbose_name='Task State'),
         ),
         migrations.AlterField(
             model_name='taskresult',
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='taskresult',
             name='task_id',
-            field=models.CharField(help_text='Celery ID for the Task that was run', max_length=191, unique=True, verbose_name='Task ID'),
+            field=models.CharField(db_index=True, help_text='Celery ID for the Task that was run', max_length=191, unique=True, verbose_name='Task ID'),
         ),
         migrations.AlterField(
             model_name='taskresult',
@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='taskresult',
             name='task_name',
-            field=models.CharField(help_text='Name of the Task which was run', max_length=255, null=True, verbose_name='Task Name'),
+            field=models.CharField(db_index=True, help_text='Name of the Task which was run', max_length=255, null=True, verbose_name='Task Name'),
         ),
         migrations.AlterField(
             model_name='taskresult',

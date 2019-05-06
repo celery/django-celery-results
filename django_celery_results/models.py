@@ -24,11 +24,11 @@ class TaskResult(models.Model):
             'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
             255
         ),
-        unique=True,
+        unique=True, db_index=True,
         verbose_name=_('Task ID'),
         help_text=_('Celery ID for the Task that was run'))
     task_name = models.CharField(
-        null=True, max_length=255,
+        null=True, max_length=255, db_index=True,
         verbose_name=_('Task Name'),
         help_text=_('Name of the Task which was run'))
     task_args = models.TextField(
@@ -42,7 +42,7 @@ class TaskResult(models.Model):
         help_text=_('JSON representation of the named arguments '
                     'used with the task'))
     status = models.CharField(
-        max_length=50, default=states.PENDING,
+        max_length=50, default=states.PENDING, db_index=True,
         choices=TASK_STATE_CHOICES,
         verbose_name=_('Task State'),
         help_text=_('Current state of the task being run'))
@@ -60,7 +60,7 @@ class TaskResult(models.Model):
         help_text=_('The data returned by the task.  '
                     'Use content_encoding and content_type fields to read.'))
     date_done = models.DateTimeField(
-        auto_now=True,
+        auto_now=True, db_index=True,
         verbose_name=_('Completed DateTime'),
         help_text=_('Datetime field when the task was completed in UTC'))
     traceback = models.TextField(
