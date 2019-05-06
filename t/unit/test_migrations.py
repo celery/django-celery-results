@@ -8,7 +8,7 @@ from django.db.migrations.autodetector import MigrationAutodetector
 from django.db.migrations.loader import MigrationLoader
 from django.db.migrations.questioner import NonInteractiveMigrationQuestioner
 
-from django_celery_beat import migrations as beat_migrations
+from django_celery_results import migrations as result_migrations
 
 
 class MigrationTests(TestCase):
@@ -18,7 +18,7 @@ class MigrationTests(TestCase):
         Migration files with the same number can cause issues with
         backward migrations, so avoid them.
         """
-        path = os.path.dirname(beat_migrations.__file__)
+        path = os.path.dirname(result_migrations.__file__)
         files = [f[:4] for f in os.listdir(path) if f.endswith('.py')]
         self.assertEqual(
             len(files), len(set(files)),
@@ -31,7 +31,7 @@ class MigrationTests(TestCase):
         Here just detect if model changes exist that require
         a migration, and if so we fail.
         """
-        app_labels = ['django_celery_beat']
+        app_labels = ['django_celery_results']
         loader = MigrationLoader(None, ignore_no_migrations=True)
         questioner = NonInteractiveMigrationQuestioner(
             specified_apps=app_labels, dry_run=False)
