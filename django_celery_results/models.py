@@ -19,28 +19,64 @@ class TaskResult(models.Model):
     """Task result/status."""
 
     task_id = models.CharField(
-        _('task id'),
         max_length=getattr(
             settings,
             'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
             255
         ),
-        unique=True
-    )
-    task_name = models.CharField(_('task name'), null=True, max_length=255)
-    task_args = models.TextField(_('task arguments'), null=True)
-    task_kwargs = models.TextField(_('task kwargs'), null=True)
-    status = models.CharField(_('state'), max_length=50,
-                              default=states.PENDING,
-                              choices=TASK_STATE_CHOICES
-                              )
-    content_type = models.CharField(_('content type'), max_length=128)
-    content_encoding = models.CharField(_('content encoding'), max_length=64)
-    result = models.TextField(null=True, default=None, editable=False)
-    date_done = models.DateTimeField(_('done at'), auto_now=True)
-    traceback = models.TextField(_('traceback'), blank=True, null=True)
-    hidden = models.BooleanField(editable=False, default=False, db_index=True)
-    meta = models.TextField(null=True, default=None, editable=False)
+        unique=True, db_index=True,
+        verbose_name=_('Task ID'),
+        help_text=_('Celery ID for the Task that was run'))
+    task_name = models.CharField(
+        null=True, max_length=255, db_index=True,
+        verbose_name=_('Task Name'),
+        help_text=_('Name of the Task which was run'))
+    task_args = models.TextField(
+        null=True,
+        verbose_name=_('Task Positional Arguments'),
+        help_text=_('JSON representation of the positional arguments '
+                    'used with the task'))
+    task_kwargs = models.TextField(
+        null=True,
+        verbose_name=_('Task Named Arguments'),
+        help_text=_('JSON representation of the named arguments '
+                    'used with the task'))
+    status = models.CharField(
+        max_length=50, default=states.PENDING, db_index=True,
+        choices=TASK_STATE_CHOICES,
+        verbose_name=_('Task State'),
+        help_text=_('Current state of the task being run'))
+    content_type = models.CharField(
+        max_length=128,
+        verbose_name=_('Result Content Type'),
+        help_text=_('Content type of the result data'))
+    content_encoding = models.CharField(
+        max_length=64,
+        verbose_name=_('Result Encoding'),
+        help_text=_('The encoding used to save the task result data'))
+    result = models.TextField(
+        null=True, default=None, editable=False,
+        verbose_name=_('Result Data'),
+        help_text=_('The data returned by the task.  '
+                    'Use content_encoding and content_type fields to read.'))
+    date_done = models.DateTimeField(
+        auto_now=True, db_index=True,
+        verbose_name=_('Completed DateTime'),
+        help_text=_('Datetime field when the task was completed in UTC'))
+    traceback = models.TextField(
+        blank=True, null=True,
+        verbose_name=_('Traceback'),
+        help_text=_('Text of the traceback if the task generated one'))
+    hidden = models.BooleanField(
+        editable=False, default=False, db_index=True,
+        verbose_name=_('Hidden'),
+        help_text=_('Soft Delete flag that can be used '
+                    'instead of full delete'))
+    meta = models.TextField(
+        null=True, default=None, editable=False,
+        verbose_name=_('Task Meta Information'),
+        help_text=_('JSON meta information about the task, '
+                    'such as information on child tasks'))
 
     objects = managers.TaskResultManager()
 
