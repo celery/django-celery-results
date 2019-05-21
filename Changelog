@@ -4,6 +4,20 @@
  Change history
 ================
 
+.. _version-1.1.0:
+
+1.1.0
+=====
+:release-date: 2019-05-21 17:00 p.m. UTC+6:00
+:release-by: Asif Saif Uddin
+
+
+- Django 2.2+.
+- Drop python 3.4 and django 2.0
+- Support specifying the database to use for the store_result method (#63)
+- Fix MySQL8 system variable tx_isolation issue (#84)
+
+
 .. _version-1.0.4:
 
 1.0.4
