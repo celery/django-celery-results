@@ -6,6 +6,7 @@
 
 from __future__ import absolute_import, unicode_literals
 
+from django.conf import settings
 from django.db import migrations, models
 
 
@@ -59,7 +60,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='taskresult',
             name='task_id',
-            field=models.CharField(db_index=True, help_text='Celery ID for the Task that was run', max_length=191, unique=True, verbose_name='Task ID'),
+            field=models.CharField(
+                db_index=True,
+                help_text='Celery ID for the Task that was run',
+                max_length=getattr(
+                    settings,
+                    'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
+                    255
+                ),
+                unique=True,
+                verbose_name='Task ID'
+            ),
         ),
         migrations.AlterField(
             model_name='taskresult',
