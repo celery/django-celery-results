@@ -136,13 +136,12 @@ class TaskResultManager(models.Manager):
     def warn_if_repeatable_read(self):
         if 'mysql' in self.current_engine().lower():
             cursor = self.connection_for_read().cursor()
-            # MySQL 5.7.20 deprecated the tx_isolation system variable
-            #  and replaced it with transaction_isolation.
-            tx_isolation_sql = 'SELECT @@transaction_isolation'
-            if self.connection_for_read().mysql_version < (5, 7, 20):
-                tx_isolation_sql = 'SELECT @@tx_isolation'
-            if cursor.execute(tx_isolation_sql):
-                isolation = cursor.fetchone()[0]
+            # MariaDB and MySQL since 8.0 have different transaction isolation
+            # variables: the former has tx_isolation, while the latter has
+            # transaction_isolation
+            if cursor.execute('SHOW VARIABLES WHERE variable_name IN '
+                              '("tx_isolation", "transaction_isolation");'):
+                isolation = cursor.fetchone()[1]
                 if isolation == 'REPEATABLE-READ':
                     warnings.warn(TxIsolationWarning(W_ISOLATION_REP.strip()))
 
