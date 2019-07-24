@@ -88,7 +88,7 @@ class TaskResultManager(models.Manager):
                      task_id, result, status,
                      traceback=None, meta=None,
                      task_name=None, task_args=None, task_kwargs=None,
-                     using=None):
+                     worker=None, using=None):
         """Store the result and status of a task.
 
         Arguments:
@@ -102,6 +102,7 @@ class TaskResultManager(models.Manager):
                 or an exception instance raised by the task.
             status (str): Task status.  See :mod:`celery.states` for a list of
                 possible status values.
+            worker (str): Worker that executes the task.
             using (str): Django database connection to use.
 
         Keyword Arguments:
@@ -124,6 +125,7 @@ class TaskResultManager(models.Manager):
             'task_name': task_name,
             'task_args': task_args,
             'task_kwargs': task_kwargs,
+            'worker': worker
         }
         obj, created = self.using(using).get_or_create(task_id=task_id,
                                                        defaults=fields)
