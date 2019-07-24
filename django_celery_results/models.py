@@ -47,7 +47,7 @@ class TaskResult(models.Model):
         verbose_name=_('Task State'),
         help_text=_('Current state of the task being run'))
     worker = models.CharField(
-        max_length=100, db_index=True, default=None,
+        max_length=100, db_index=True, default=None, null=True,
         verbose_name=_('Worker'), help_text=_('Worker that executes the task')
     )
     content_type = models.CharField(
