@@ -87,7 +87,7 @@ class test_DatabaseBackend:
         request.kwargs = {'c': 3, 'd': 'e', 'password': 'password'}
         request.argsrepr = 'argsrepr'
         request.kwargsrepr = 'kwargsrepr'
-        request.worker = 'celery@ip-0-0-0-0'
+        request.hostname = 'celery@ip-0-0-0-0'
         result = {'foo': 'baz'}
 
         self.b.mark_as_done(tid, result, request=request)
