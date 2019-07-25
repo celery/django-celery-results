@@ -38,7 +38,7 @@ def transaction_retry(max_retries=1):
     retrying if the operation fails.
 
     Keyword Arguments:
-    ------------------
+    -----------------
         max_retries (int): Maximum number of retries.  Default one retry.
 
     """
@@ -72,7 +72,7 @@ class TaskResultManager(models.Manager):
         """Get result for task by ``task_id``.
 
         Keyword Arguments:
-        ------------------
+        -----------------
             exception_retry_count (int): How many times to retry by
                 transaction rollback on exception.  This could
                 happen in a race condition if another worker is trying to
@@ -96,7 +96,7 @@ class TaskResultManager(models.Manager):
         """Store the result and status of a task.
 
         Arguments:
-        ----------
+        ---------
             content_type (str): Mime-type of result and meta content.
             content_encoding (str): Type of encoding (e.g. binary/utf-8).
             task_id (str): Id of task.
@@ -111,7 +111,7 @@ class TaskResultManager(models.Manager):
             using (str): Django database connection to use.
 
         Keyword Arguments:
-        ------------------
+        -----------------
             traceback (str): The traceback string taken at the point of
                 exception (only passed if the task failed).
             meta (str): Serialized result meta data (this contains e.g.
