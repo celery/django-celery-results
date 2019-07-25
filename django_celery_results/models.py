@@ -103,6 +103,7 @@ class TaskResult(models.Model):
             'date_done': self.date_done,
             'traceback': self.traceback,
             'meta': self.meta,
+            'worker': self.worker
         }
 
     def __str__(self):

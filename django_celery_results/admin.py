@@ -30,6 +30,7 @@ class TaskResultAdmin(admin.ModelAdmin):
                 'task_id',
                 'task_name',
                 'status',
+                'worker',
                 'content_type',
                 'content_encoding',
             ),

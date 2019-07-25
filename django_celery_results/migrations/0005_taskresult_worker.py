@@ -15,6 +15,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='taskresult',
             name='worker',
-            field=models.CharField(db_index=True, default=None, help_text='Worker that executes the task', max_length=100, verbose_name='Worker'),
+            field=models.CharField(db_index=True, default=None,
+                                   help_text='Worker that executes the task',
+                                   max_length=100, null=True,
+                                   verbose_name='Worker'),
         ),
     ]
