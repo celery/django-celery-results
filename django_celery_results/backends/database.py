@@ -26,6 +26,7 @@ class DatabaseBackend(BaseDictBackend):
                             'argsrepr', getattr(request, 'args', None))
         task_kwargs = getattr(request,
                               'kwargsrepr', getattr(request, 'kwargs', None))
+        worker = getattr(request, 'hostname', None)
 
         self.TaskModel._default_manager.store_result(
             content_type, content_encoding,
@@ -35,6 +36,7 @@ class DatabaseBackend(BaseDictBackend):
             task_name=task_name,
             task_args=task_args,
             task_kwargs=task_kwargs,
+            worker=worker,
             using=using,
         )
         return result

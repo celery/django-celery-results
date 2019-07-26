@@ -46,6 +46,10 @@ class TaskResult(models.Model):
         choices=TASK_STATE_CHOICES,
         verbose_name=_('Task State'),
         help_text=_('Current state of the task being run'))
+    worker = models.CharField(
+        max_length=100, db_index=True, default=None, null=True,
+        verbose_name=_('Worker'), help_text=_('Worker that executes the task')
+    )
     content_type = models.CharField(
         max_length=128,
         verbose_name=_('Result Content Type'),
@@ -99,6 +103,7 @@ class TaskResult(models.Model):
             'date_done': self.date_done,
             'traceback': self.traceback,
             'meta': self.meta,
+            'worker': self.worker
         }
 
     def __str__(self):

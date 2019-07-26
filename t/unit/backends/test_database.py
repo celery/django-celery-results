@@ -87,6 +87,7 @@ class test_DatabaseBackend:
         request.kwargs = {'c': 3, 'd': 'e', 'password': 'password'}
         request.argsrepr = 'argsrepr'
         request.kwargsrepr = 'kwargsrepr'
+        request.hostname = 'celery@ip-0-0-0-0'
         result = {'foo': 'baz'}
 
         self.b.mark_as_done(tid, result, request=request)
@@ -94,3 +95,4 @@ class test_DatabaseBackend:
         mindb = self.b.get_task_meta(tid)
         assert mindb.get('task_args') == 'argsrepr'
         assert mindb.get('task_kwargs') == 'kwargsrepr'
+        assert mindb.get('worker') == 'celery@ip-0-0-0-0'
