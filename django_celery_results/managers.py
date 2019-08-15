@@ -148,8 +148,8 @@ class TaskResultManager(models.Manager):
             # MariaDB and MySQL since 8.0 have different transaction isolation
             # variables: the former has tx_isolation, while the latter has
             # transaction_isolation
-            if cursor.execute('SHOW VARIABLES WHERE variable_name IN '
-                              '("tx_isolation", "transaction_isolation");'):
+            if cursor.execute("SHOW VARIABLES WHERE variable_name IN "
+                              "('tx_isolation", "transaction_isolation');"):
                 isolation = cursor.fetchone()[1]
                 if isolation == 'REPEATABLE-READ':
                     warnings.warn(TxIsolationWarning(W_ISOLATION_REP.strip()))
