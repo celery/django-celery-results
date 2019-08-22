@@ -63,6 +63,10 @@ class TaskResult(models.Model):
         verbose_name=_('Result Data'),
         help_text=_('The data returned by the task.  '
                     'Use content_encoding and content_type fields to read.'))
+    date_created = models.DateTimeField(
+        auto_now_add=True, db_index=True,
+        verbose_name=_('Created DateTime'),
+        help_text=_('Datetime field when the task result was created in UTC'))
     date_done = models.DateTimeField(
         auto_now=True, db_index=True,
         verbose_name=_('Completed DateTime'),
