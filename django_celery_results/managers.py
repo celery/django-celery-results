@@ -125,6 +125,11 @@ class TaskResultManager(models.Manager):
             'task_args': task_args,
             'task_kwargs': task_kwargs,
         }
+
+        #Fix temporary (2006, 'MySQL server has gone away')
+        from django.db import close_old_connections
+        close_old_connections()
+
         obj, created = self.using(using).get_or_create(task_id=task_id,
                                                        defaults=fields)
         if not created:
