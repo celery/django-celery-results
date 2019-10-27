@@ -75,11 +75,6 @@ class TaskResult(models.Model):
         blank=True, null=True,
         verbose_name=_('Traceback'),
         help_text=_('Text of the traceback if the task generated one'))
-    hidden = models.BooleanField(
-        editable=False, default=False, db_index=True,
-        verbose_name=_('Hidden'),
-        help_text=_('Soft Delete flag that can be used '
-                    'instead of full delete'))
     meta = models.TextField(
         null=True, default=None, editable=False,
         verbose_name=_('Task Meta Information'),
