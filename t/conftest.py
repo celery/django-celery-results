@@ -2,10 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 import pytest
 
-from celery.contrib.pytest import depends_on_current_app
 from celery.contrib.testing.app import TestApp, Trap
-
-__all__ = ['app', 'depends_on_current_app']
 
 
 @pytest.fixture(scope='session', autouse=True)

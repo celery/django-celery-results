@@ -27,6 +27,7 @@ matrix:
     - { python: 2.7, env: TOXENV=flakeplus }
     - { python: 3.6, env: TOXENV=pydocstyle }
     - { python: 3.6, env: TOXENV=cov }
+    - { python: 3.6, env: TOXENV=integration }
     # disabled temporarily due to upstream bug
     # https://github.com/celery/sphinx_celery/issues/9
     # - { python: 3.5, env: TOXENV=apicheck }

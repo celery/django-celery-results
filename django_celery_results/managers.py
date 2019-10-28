@@ -173,5 +173,4 @@ class TaskResultManager(models.Manager):
     def delete_expired(self, expires):
         """Delete all expired results."""
         with transaction.atomic():
-            self.get_all_expired(expires).update(hidden=True)
-            self.filter(hidden=True).delete()
+            self.get_all_expired(expires).delete()
