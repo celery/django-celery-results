@@ -14,10 +14,61 @@ from __future__ import absolute_import, unicode_literals
 import os
 import sys
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 sys.path.insert(0, os.path.abspath(os.path.join(BASE_DIR, os.pardir)))
+
+
+# configure psycopg2cffi for psycopg2 compatibility. We must use this package
+# support pypy.
+# if not installed, use sqlite as a backup (some tests may fail),
+# otherwise even makemigrations won't run.
+try:
+    from psycopg2cffi import compat
+    compat.register()
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'HOST': 'localhost',
+            'PORT': '5432',
+            'OPTIONS': {
+                'connect_timeout': 1000,
+            }
+        },
+        'secondary': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'HOST': 'localhost',
+            'PORT': '5432',
+            'OPTIONS': {
+                'connect_timeout': 1000,
+            },
+            'TEST': {
+                'MIRROR': 'default',
+            },
+        },
+    }
+except ImportError:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'OPTIONS': {
+                'timeout': 1000,
+            }
+        },
+        'secondary': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'OPTIONS': {
+                'timeout': 1000,
+            }
+        },
+    }
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -71,20 +122,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 't.proj.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'OPTIONS': {
-            'timeout': 1000,
-        },
-    }
-}
-
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -115,6 +152,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH = 191
 
 
 # Static files (CSS, JavaScript, Images)

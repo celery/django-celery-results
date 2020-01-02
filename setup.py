@@ -23,7 +23,7 @@ E_UNSUPPORTED_PYTHON = '%s 1.0 requires %%s %%s or later!' % (NAME,)
 PYIMP = _pyimp()
 PY26_OR_LESS = sys.version_info < (2, 7)
 PY3 = sys.version_info[0] == 3
-PY33_OR_LESS = PY3 and sys.version_info < (3, 4)
+PY33_OR_LESS = PY3 and sys.version_info < (3, 5)
 PYPY_VERSION = getattr(sys, 'pypy_version_info', None)
 PYPY = PYPY_VERSION is not None
 PYPY24_ATLEAST = PYPY_VERSION and PYPY_VERSION >= (2, 4)
@@ -31,7 +31,7 @@ PYPY24_ATLEAST = PYPY_VERSION and PYPY_VERSION >= (2, 4)
 if PY26_OR_LESS:
     raise Exception(E_UNSUPPORTED_PYTHON % (PYIMP, '2.7'))
 elif PY33_OR_LESS and not PYPY24_ATLEAST:
-    raise Exception(E_UNSUPPORTED_PYTHON % (PYIMP, '3.4'))
+    raise Exception(E_UNSUPPORTED_PYTHON % (PYIMP, '3.5'))
 
 # -*- Classifiers -*-
 
@@ -42,14 +42,15 @@ classes = """
     Programming Language :: Python :: 2
     Programming Language :: Python :: 2.7
     Programming Language :: Python :: 3
-    Programming Language :: Python :: 3.4
+    Programming Language :: Python :: 3.6
     Programming Language :: Python :: 3.5
     Programming Language :: Python :: Implementation :: CPython
     Programming Language :: Python :: Implementation :: PyPy
     Framework :: Django
-    Framework :: Django :: 1.8
-    Framework :: Django :: 1.9
-    Framework :: Django :: 1.10
+    Framework :: Django :: 2.2
+    Framework :: Django :: 2.1
+    Framework :: Django :: 2.0
+    Framework :: Django :: 1.11
     Operating System :: OS Independent
     Topic :: Communications
     Topic :: System :: Distributed Computing
@@ -120,7 +121,7 @@ else:
 
 
 class pytest(setuptools.command.test.test):
-    user_options = [('pytest-args=', 'a', 'Arguments to pass to py.test')]
+    user_options = [('pytest-args=', 'a', 'Arguments to pass to pytest')]
 
     def initialize_options(self):
         setuptools.command.test.test.initialize_options(self)
