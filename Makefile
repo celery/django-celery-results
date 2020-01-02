@@ -1,7 +1,7 @@
 PROJ=django_celery_results
 PGPIDENT="Celery Security Team"
 PYTHON=python
-PYTEST=py.test
+PYTEST=pytest
 GIT=git
 TOX=tox
 ICONV=iconv
@@ -141,7 +141,7 @@ test:
 	$(PYTHON) setup.py test
 
 cov: covbuild
-	(cd $(TESTDIR); py.test -x --cov=django_celery_results --cov-report=html)
+	(cd $(TESTDIR); pytest -x --cov=django_celery_results --cov-report=html)
 
 build:
 	$(PYTHON) setup.py sdist bdist_wheel

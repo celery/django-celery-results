@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
+import mock
 import celery
 import pytest
 
@@ -77,3 +78,21 @@ class test_DatabaseBackend:
             # bug in 3.1.10 means result did not clear cache after forget.
             x._cache = None
         assert x.result is None
+
+    def test_backend_secrets(self):
+        tid = uuid()
+        request = mock.MagicMock()
+        request.task = 'my_task'
+        request.args = ['a', 1, 'password']
+        request.kwargs = {'c': 3, 'd': 'e', 'password': 'password'}
+        request.argsrepr = 'argsrepr'
+        request.kwargsrepr = 'kwargsrepr'
+        request.hostname = 'celery@ip-0-0-0-0'
+        result = {'foo': 'baz'}
+
+        self.b.mark_as_done(tid, result, request=request)
+
+        mindb = self.b.get_task_meta(tid)
+        assert mindb.get('task_args') == 'argsrepr'
+        assert mindb.get('task_kwargs') == 'kwargsrepr'
+        assert mindb.get('worker') == 'celery@ip-0-0-0-0'

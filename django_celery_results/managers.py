@@ -32,13 +32,15 @@ class TxIsolationWarning(UserWarning):
 
 
 def transaction_retry(max_retries=1):
-    """Decorator to retry database operations.
+    """Decorate a function to retry database operations.
 
     For functions doing database operations, adding
     retrying if the operation fails.
 
     Keyword Arguments:
+    -----------------
         max_retries (int): Maximum number of retries.  Default one retry.
+
     """
     def _outer(fun):
 
@@ -70,10 +72,12 @@ class TaskResultManager(models.Manager):
         """Get result for task by ``task_id``.
 
         Keyword Arguments:
+        -----------------
             exception_retry_count (int): How many times to retry by
                 transaction rollback on exception.  This could
                 happen in a race condition if another worker is trying to
                 create the same task.  The default is to retry once.
+
         """
         try:
             return self.get(task_id=task_id)
@@ -86,10 +90,13 @@ class TaskResultManager(models.Manager):
     @transaction_retry(max_retries=2)
     def store_result(self, content_type, content_encoding,
                      task_id, result, status,
-                     traceback=None, meta=None):
+                     traceback=None, meta=None,
+                     task_name=None, task_args=None, task_kwargs=None,
+                     worker=None, using=None):
         """Store the result and status of a task.
 
         Arguments:
+        ---------
             content_type (str): Mime-type of result and meta content.
             content_encoding (str): Type of encoding (e.g. binary/utf-8).
             task_id (str): Id of task.
@@ -97,8 +104,11 @@ class TaskResultManager(models.Manager):
                 or an exception instance raised by the task.
             status (str): Task status.  See :mod:`celery.states` for a list of
                 possible status values.
+            worker (str): Worker that executes the task.
+            using (str): Django database connection to use.
 
         Keyword Arguments:
+        -----------------
             traceback (str): The traceback string taken at the point of
                 exception (only passed if the task failed).
             meta (str): Serialized result meta data (this contains e.g.
@@ -107,6 +117,7 @@ class TaskResultManager(models.Manager):
                 transaction rollback on exception.  This could
                 happen in a race condition if another worker is trying to
                 create the same task.  The default is to retry twice.
+
         """
         fields = {
             'status': status,
@@ -115,19 +126,28 @@ class TaskResultManager(models.Manager):
             'meta': meta,
             'content_encoding': content_encoding,
             'content_type': content_type,
+            'task_name': task_name,
+            'task_args': task_args,
+            'task_kwargs': task_kwargs,
+            'worker': worker
         }
-        obj, created = self.get_or_create(task_id=task_id, defaults=fields)
+        obj, created = self.using(using).get_or_create(task_id=task_id,
+                                                       defaults=fields)
         if not created:
             for k, v in items(fields):
                 setattr(obj, k, v)
-            obj.save()
+            obj.save(using=using)
         return obj
 
     def warn_if_repeatable_read(self):
         if 'mysql' in self.current_engine().lower():
             cursor = self.connection_for_read().cursor()
-            if cursor.execute('SELECT @@tx_isolation'):
-                isolation = cursor.fetchone()[0]
+            # MariaDB and MySQL since 8.0 have different transaction isolation
+            # variables: the former has tx_isolation, while the latter has
+            # transaction_isolation
+            if cursor.execute("SHOW VARIABLES WHERE variable_name IN "
+                              "('tx_isolation", "transaction_isolation');"):
+                isolation = cursor.fetchone()[1]
                 if isolation == 'REPEATABLE-READ':
                     warnings.warn(TxIsolationWarning(W_ISOLATION_REP.strip()))
 
@@ -149,14 +169,8 @@ class TaskResultManager(models.Manager):
 
     def delete_expired(self, expires):
         """Delete all expired results."""
-        meta = self.model._meta
         with transaction.atomic():
-            self.get_all_expired(expires).update(hidden=True)
-            cursor = self.connection_for_write().cursor()
-            cursor.execute(
-                'DELETE FROM {0.db_table} WHERE hidden=%s'.format(meta),
-                (True, ),
-            )
+            self.get_all_expired(expires).delete()
 
 class TaskSetManager(models.Manager):
     """Manager for :class:`celery.models.TaskSet` models."""

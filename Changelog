@@ -4,6 +4,68 @@
  Change history
 ================
 
+.. _version-1.1.2:
+
+1.1.2
+=====
+:release-date: 2019-06-06 00:00 a.m. UTC+6:00
+:release-by: Asif Saif Uddin
+
+
+- Fixed few regressions
+
+.. _version-1.1.0:
+
+1.1.0
+=====
+:release-date: 2019-05-21 17:00 p.m. UTC+6:00
+:release-by: Asif Saif Uddin
+
+
+- Django 2.2+.
+- Drop python 3.4 and django 2.0
+- Support specifying the database to use for the store_result method (#63)
+- Fix MySQL8 system variable tx_isolation issue (#84)
+
+
+.. _version-1.0.4:
+
+1.0.4
+=====
+:release-date: 2018-11-12 19:00 p.m. UTC+2:00
+:release-by: Omer Katz
+
+1.0.3 is broken. Use 1.0.4
+
+- Revert renaming label as it is a breaking change.
+
+.. _version-1.0.3:
+
+1.0.3
+=====
+:release-date: 2018-11-12 18:00 p.m. UTC+2:00
+:release-by: Omer Katz
+
+- Revert renaming label as it is a breaking change.
+
+.. _version-1.0.2:
+
+1.0.2
+=====
+:release-date: 2018-11-12 18:00 p.m. UTC+2:00
+:release-by: Omer Katz
+
+- Store task name, args, kwargs as part of the task results in database.
+    Contributed by :github_user: `wardal`.
+
+- Admin screen changes - task name filter, search on task_name, task_id, status.
+    Contributed by :github_user: `jaylynch`.
+
+- Added default_app_config.
+- Added missing migration.
+- Fix MySQL max length issue.
+- Drop support for Django<1.11.
+
 .. _version-1.0.1:
 
 1.0.1
