@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 try:
     ALLOW_EDITS = settings.DJANGO_CELERY_RESULTS['ALLOW_EDITS']
 except (AttributeError, KeyError):
-    ALLOW_EDITS = True
+    ALLOW_EDITS = False
     pass
 
 from .models import TaskResult
