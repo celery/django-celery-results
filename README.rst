@@ -4,7 +4,7 @@
 
 |build-status| |coverage| |license| |wheel| |pyversion| |pyimp|
 
-:Version: 1.1.2
+:Version: 1.2.0
 :Web: http://django-celery-results.readthedocs.io/
 :Download: http://pypi.python.org/pypi/django-celery-results
 :Source: http://github.com/celery/django-celery-results
