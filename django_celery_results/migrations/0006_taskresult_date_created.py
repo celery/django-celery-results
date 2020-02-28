@@ -18,6 +18,12 @@ def copy_date_done_to_date_created(apps, schema_editor):
     )
 
 
+def reverse_copy_date_done_to_date_created(app, schema_editor):
+    # the reverse of 'copy_date_done_to_date_created' is do nothing
+    # because the 'date_created' will be removed.
+    pass
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -37,5 +43,6 @@ class Migration(migrations.Migration):
             ),
             preserve_default=False,
         ),
-        migrations.RunPython(copy_date_done_to_date_created),
+        migrations.RunPython(copy_date_done_to_date_created,
+                             reverse_copy_date_done_to_date_created),
     ]
