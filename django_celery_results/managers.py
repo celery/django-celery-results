@@ -71,6 +71,10 @@ class TaskResultManager(models.Manager):
     def get_task(self, task_id):
         """Get result for task by ``task_id``.
 
+        Arguments:
+        ---------
+            task_id (str): Id of task.
+
         Keyword Arguments:
         -----------------
             exception_retry_count (int): How many times to retry by
@@ -100,15 +104,10 @@ class TaskResultManager(models.Manager):
             content_type (str): Mime-type of result and meta content.
             content_encoding (str): Type of encoding (e.g. binary/utf-8).
             task_id (str): Id of task.
-            task_name (str): Celery task name.
-            task_args (str): Task arguments.
-            task_kwargs (str): Task kwargs.
             result (str): The serialized return value of the task,
                 or an exception instance raised by the task.
             status (str): Task status.  See :mod:`celery.states` for a list of
                 possible status values.
-            worker (str): Worker that executes the task.
-            using (str): Django database connection to use.
 
         Keyword Arguments:
         -----------------
@@ -116,6 +115,11 @@ class TaskResultManager(models.Manager):
                 exception (only passed if the task failed).
             meta (str): Serialized result meta data (this contains e.g.
                 children).
+            task_name (str): Celery task name.
+            task_args (str): Task arguments.
+            task_kwargs (str): Task kwargs.
+            worker (str): Worker that executes the task.
+            using (str): Django database connection to use.
             exception_retry_count (int): How many times to retry by
                 transaction rollback on exception.  This could
                 happen in a race condition if another worker is trying to
