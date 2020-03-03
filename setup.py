@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import codecs
 import os
 import re
 import sys
-import codecs
 
 import setuptools
 import setuptools.command.test
@@ -42,15 +42,15 @@ classes = """
     Programming Language :: Python :: 2
     Programming Language :: Python :: 2.7
     Programming Language :: Python :: 3
-    Programming Language :: Python :: 3.6
     Programming Language :: Python :: 3.5
+    Programming Language :: Python :: 3.6
     Programming Language :: Python :: 3.7
+    Programming Language :: Python :: 3.8
     Programming Language :: Python :: Implementation :: CPython
     Programming Language :: Python :: Implementation :: PyPy
     Framework :: Django
+    Framework :: Django :: 3.0
     Framework :: Django :: 2.2
-    Framework :: Django :: 2.1
-    Framework :: Django :: 2.0
     Framework :: Django :: 1.11
     Operating System :: OS Independent
     Topic :: Communications
