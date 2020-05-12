@@ -6,8 +6,10 @@ import pytest
 
 from celery import uuid
 from celery import states
+from celery.result import GroupResult, AsyncResult
 
 from django_celery_results.backends.database import DatabaseBackend
+from django_celery_results.models import ChordCounter, TaskResult
 
 
 class SomeClass(object):
@@ -88,6 +90,7 @@ class test_DatabaseBackend:
         request.argsrepr = 'argsrepr'
         request.kwargsrepr = 'kwargsrepr'
         request.hostname = 'celery@ip-0-0-0-0'
+        request.chord = None
         result = {'foo': 'baz'}
 
         self.b.mark_as_done(tid, result, request=request)
@@ -96,3 +99,121 @@ class test_DatabaseBackend:
         assert mindb.get('task_args') == 'argsrepr'
         assert mindb.get('task_kwargs') == 'kwargsrepr'
         assert mindb.get('worker') == 'celery@ip-0-0-0-0'
+
+    def test_on_chord_part_return(self):
+        """Test if the ChordCounter is properly decremented and the callback is
+        triggered after all chord parts have returned"""
+        gid = uuid()
+        tid1 = uuid()
+        tid2 = uuid()
+        subtasks = [AsyncResult(tid1), AsyncResult(tid2)]
+        group = GroupResult(id=gid, results=subtasks)
+        self.b.apply_chord(group, self.add.s())
+
+        chord_counter = ChordCounter.objects.get(group_id=gid)
+        assert chord_counter.count == 2
+
+        request = mock.MagicMock()
+        request.id = subtasks[0].id
+        request.group = gid
+        request.task = "my_task"
+        request.args = ["a", 1, "password"]
+        request.kwargs = {"c": 3, "d": "e", "password": "password"}
+        request.argsrepr = "argsrepr"
+        request.kwargsrepr = "kwargsrepr"
+        request.hostname = "celery@ip-0-0-0-0"
+        result = {"foo": "baz"}
+
+        self.b.mark_as_done(tid1, result, request=request)
+
+        chord_counter.refresh_from_db()
+        assert chord_counter.count == 1
+
+        self.b.mark_as_done(tid2, result, request=request)
+
+        with pytest.raises(ChordCounter.DoesNotExist):
+            ChordCounter.objects.get(group_id=gid)
+
+        request.chord.delay.assert_called_once()
+
+    def test_callback_failure(self):
+        """Test if a failure in the chord callback is properly handled"""
+        gid = uuid()
+        tid1 = uuid()
+        tid2 = uuid()
+        cid = uuid()
+        subtasks = [AsyncResult(tid1), AsyncResult(tid2)]
+        group = GroupResult(id=gid, results=subtasks)
+        self.b.apply_chord(group, self.add.s())
+
+        chord_counter = ChordCounter.objects.get(group_id=gid)
+        assert chord_counter.count == 2
+
+        request = mock.MagicMock()
+        request.id = subtasks[0].id
+        request.group = gid
+        request.task = "my_task"
+        request.args = ["a", 1, "password"]
+        request.kwargs = {"c": 3, "d": "e", "password": "password"}
+        request.argsrepr = "argsrepr"
+        request.kwargsrepr = "kwargsrepr"
+        request.hostname = "celery@ip-0-0-0-0"
+        request.chord.id = cid
+        result = {"foo": "baz"}
+
+        # Trigger an exception when the callback is triggered
+        request.chord.delay.side_effect = ValueError()
+
+        self.b.mark_as_done(tid1, result, request=request)
+
+        chord_counter.refresh_from_db()
+        assert chord_counter.count == 1
+
+        self.b.mark_as_done(tid2, result, request=request)
+
+        with pytest.raises(ChordCounter.DoesNotExist):
+            ChordCounter.objects.get(group_id=gid)
+
+        request.chord.delay.assert_called_once()
+
+        assert TaskResult.objects.get(task_id=cid).status == states.FAILURE
+
+    def test_on_chord_part_return_failure(self):
+        """Test if a failure in one of the chord header tasks is properly handled
+        and the callback was not triggered
+        """
+        gid = uuid()
+        tid1 = uuid()
+        tid2 = uuid()
+        cid = uuid()
+        subtasks = [AsyncResult(tid1), AsyncResult(tid2)]
+        group = GroupResult(id=gid, results=subtasks)
+        self.b.apply_chord(group, self.add.s())
+
+        chord_counter = ChordCounter.objects.get(group_id=gid)
+        assert chord_counter.count == 2
+
+        request = mock.MagicMock()
+        request.id = tid1
+        request.group = gid
+        request.task = "my_task"
+        request.args = ["a", 1, "password"]
+        request.kwargs = {"c": 3, "d": "e", "password": "password"}
+        request.argsrepr = "argsrepr"
+        request.kwargsrepr = "kwargsrepr"
+        request.hostname = "celery@ip-0-0-0-0"
+        request.chord.id = cid
+        result = {"foo": "baz"}
+
+        self.b.mark_as_done(tid1, result, request=request)
+
+        chord_counter.refresh_from_db()
+        assert chord_counter.count == 1
+
+        request.id = tid2
+        self.b.mark_as_failure(tid2, ValueError(), request=request)
+
+        with pytest.raises(ChordCounter.DoesNotExist):
+            ChordCounter.objects.get(group_id=gid)
+
+        request.chord.delay.assert_not_called()

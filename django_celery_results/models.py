@@ -1,12 +1,15 @@
 """Database models."""
 from __future__ import absolute_import, unicode_literals
 
+import json
+
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from celery import states
 from celery.five import python_2_unicode_compatible
+from celery.result import GroupResult, result_from_tuple
 
 from . import managers
 
@@ -107,3 +110,45 @@ class TaskResult(models.Model):
 
     def __str__(self):
         return '<Task: {0.task_id} ({0.status})>'.format(self)
+
+
+class ChordCounter(models.Model):
+    """Chord synchronisation."""
+
+    group_id = models.CharField(
+        max_length=getattr(
+            settings,
+            "DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH",
+            255),
+        unique=True,
+        db_index=True,
+        verbose_name=_("Group ID"),
+        help_text=_("Celery ID for the Chord header group"),
+    )
+    sub_tasks = models.TextField(
+        help_text=_(
+            "JSON serialized list of task result tuples. "
+            "use .group_result() to decode"
+        )
+    )
+    count = models.PositiveIntegerField(
+        help_text=_(
+            "Starts at len(chord header) and decrements after each task is "
+            "finished"
+        )
+    )
+
+    def group_result(self, app=None):
+        """Return the GroupResult of self.
+
+        Arguments:
+        ---------
+            app (Celery): app instance to create the GroupResult with.
+
+        """
+        return GroupResult(
+            self.group_id,
+            [result_from_tuple(r, app=app)
+             for r in json.loads(self.sub_tasks)],
+            app=app,
+        )

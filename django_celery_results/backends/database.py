@@ -1,9 +1,19 @@
 from __future__ import absolute_import, unicode_literals
 
-from celery.backends.base import BaseDictBackend
-from celery.utils.serialization import b64encode, b64decode
+import json
 
-from ..models import TaskResult
+from celery import maybe_signature
+from celery.backends.base import BaseDictBackend
+from celery.exceptions import ChordError
+from celery.result import allow_join_result
+from celery.utils.serialization import b64encode, b64decode
+from celery.utils.log import get_logger
+from django.db import transaction
+
+from ..models import TaskResult, ChordCounter
+
+
+logger = get_logger(__name__)
 
 
 class DatabaseBackend(BaseDictBackend):
@@ -71,3 +81,76 @@ class DatabaseBackend(BaseDictBackend):
     def cleanup(self):
         """Delete expired metadata."""
         self.TaskModel._default_manager.delete_expired(self.expires)
+
+    def apply_chord(self, header_result, body, **kwargs):
+        """Add a ChordCounter with the expected number of results"""
+        results = [r.as_tuple() for r in header_result]
+        data = json.dumps(results)
+        ChordCounter.objects.create(
+            group_id=header_result.id, sub_tasks=data, count=len(results)
+        )
+
+    def on_chord_part_return(self, request, state, result, **kwargs):
+        """Called on finishing each part of a Chord header"""
+        tid, gid = request.id, request.group
+        if not gid or not tid:
+            return
+        call_callback = False
+        with transaction.atomic():
+            # We need to know if `count` hits 0.
+            # wrap the update in a transaction
+            # with a `select_for_update` lock to prevent race conditions.
+            # SELECT FOR UPDATE is not supported on all databases
+            chord_counter = (
+                ChordCounter.objects.select_for_update()
+                .get(group_id=gid)
+            )
+            chord_counter.count -= 1
+            if chord_counter.count != 0:
+                chord_counter.save()
+            else:
+                # Last task in the chord header has finished
+                call_callback = True
+                chord_counter.delete()
+
+        if call_callback:
+            deps = chord_counter.group_result(app=self.app)
+            if deps.ready():
+                callback = maybe_signature(request.chord, app=self.app)
+                trigger_callback(
+                    app=self.app,
+                    callback=callback,
+                    group_result=deps
+                )
+
+
+def trigger_callback(app, callback, group_result):
+    """Add the callback to the queue or mark the callback as failed
+
+    Implementation borrowed from `celery.app.builtins.unlock_chord`
+    """
+    j = (
+        group_result.join_native
+        if group_result.supports_native_join
+        else group_result.join
+    )
+
+    try:
+        with allow_join_result():
+            ret = j(timeout=app.conf.result_chord_join_timeout, propagate=True)
+    except Exception as exc:  # pylint: disable=broad-except
+        try:
+            culprit = next(group_result._failed_join_report())
+            reason = "Dependency {0.id} raised {1!r}".format(culprit, exc)
+        except StopIteration:
+            reason = repr(exc)
+        logger.exception("Chord %r raised: %r", group_result.id, exc)
+        app.backend.chord_error_from_stack(callback, ChordError(reason))
+    else:
+        try:
+            callback.delay(ret)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.exception("Chord %r raised: %r", group_result.id, exc)
+            app.backend.chord_error_from_stack(
+                callback, exc=ChordError("Callback error: {0!r}".format(exc))
+            )
