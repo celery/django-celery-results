@@ -19,6 +19,7 @@ env:
   - DJANGO=1.11
   - DJANGO=2.1
   - DJANGO=2.2
+  - DJANGO=3.0
 os:
   - linux
 matrix:
@@ -35,8 +36,10 @@ matrix:
   exclude:
     - { python: 2.7, env: DJANGO=2.1 }
     - { python: 2.7, env: DJANGO=2.2 }
+    - { python: 3.5, env: DJANGO=3.0 }
     - { python: pypy, env: DJANGO=2.1 }
     - { python: pypy, env: DJANGO=2.2 }
+    - { python: pypy, env: DJANGO=3.0 }
 
 install: travis_retry pip install -U tox-travis
 script: tox -v -- -v
