@@ -18,7 +18,7 @@ class CacheBackend(KeyValueStoreBackend):
     def get(self, key):
         return self.cache_backend.get(key)
 
-    def set(self, key, value):
+    def set(self, key, value, state):
         self.cache_backend.set(key, value, self.expires)
 
     def delete(self, key):
