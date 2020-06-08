@@ -7,25 +7,19 @@ services:
   - postgresql
 dist: xenial
 python:
-  - 2.7
   - 3.5
   - 3.6
   - 3.7
-  - pypy
 # pypy3.5 not yet supported due to compilation errors with pyephem
 # https://github.com/celery/django-celery-beat/issues/245
 #  - pypy3.5
 env:
-  - DJANGO=1.11
-  - DJANGO=2.1
   - DJANGO=2.2
   - DJANGO=3.0
-os:
-  - linux
+
 matrix:
   include:
     - { python: 3.6, env: TOXENV=flake8 }
-    - { python: 2.7, env: TOXENV=flakeplus }
     - { python: 3.6, env: TOXENV=pydocstyle }
     - { python: 3.6, env: TOXENV=cov }
     - { python: 3.6, env: TOXENV=integration }
@@ -34,12 +28,7 @@ matrix:
     # - { python: 3.5, env: TOXENV=apicheck }
     # - { python: 3.5, env: TOXENV=linkcheck }
   exclude:
-    - { python: 2.7, env: DJANGO=2.1 }
-    - { python: 2.7, env: DJANGO=2.2 }
     - { python: 3.5, env: DJANGO=3.0 }
-    - { python: pypy, env: DJANGO=2.1 }
-    - { python: pypy, env: DJANGO=2.2 }
-    - { python: pypy, env: DJANGO=3.0 }
 
 install: travis_retry pip install -U tox-travis
 script: tox -v -- -v
