@@ -16,8 +16,7 @@ python:
 env:
   - DJANGO=2.2
   - DJANGO=3.0
-os:
-  - linux
+
 matrix:
   include:
     - { python: 3.8, env: TOXENV=flake8 }
