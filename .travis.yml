@@ -5,9 +5,9 @@ os:
     - linux
 services:
   - postgresql
-dist: xenial
+dist: focal
 python:
-  - 3.5
+  - 3.8
   - 3.6
   - 3.7
 # pypy3.5 not yet supported due to compilation errors with pyephem
@@ -19,16 +19,15 @@ env:
 
 matrix:
   include:
-    - { python: 3.6, env: TOXENV=flake8 }
-    - { python: 3.6, env: TOXENV=pydocstyle }
-    - { python: 3.6, env: TOXENV=cov }
-    - { python: 3.6, env: TOXENV=integration }
+    - { python: 3.8, env: TOXENV=flake8 }
+    - { python: 3.8, env: TOXENV=pydocstyle }
+    - { python: 3.8, env: TOXENV=cov }
+    - { python: 3.8, env: TOXENV=integration }
     # disabled temporarily due to upstream bug
     # https://github.com/celery/sphinx_celery/issues/9
     # - { python: 3.5, env: TOXENV=apicheck }
     # - { python: 3.5, env: TOXENV=linkcheck }
-  exclude:
-    - { python: 3.5, env: DJANGO=3.0 }
+
 
 install: travis_retry pip install -U tox-travis
 script: tox -v -- -v
