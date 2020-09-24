@@ -6,7 +6,6 @@ from django.http import JsonResponse
 from celery import states
 from celery.result import AsyncResult
 from celery.utils import get_full_cls_name
-from celery.utils.encoding import safe_repr
 
 
 def is_task_successful(request, task_id):
@@ -24,7 +23,7 @@ def task_status(request, task_id):
     response_data = {'id': task_id, 'status': state, 'result': retval}
     if state in states.EXCEPTION_STATES:
         traceback = result.traceback
-        response_data.update({'result': safe_repr(retval),
+        response_data.update({'result': retval,
                               'exc': get_full_cls_name(retval.__class__),
                               'traceback': traceback})
     return JsonResponse({'task': response_data})

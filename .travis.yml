@@ -20,7 +20,9 @@ env:
 matrix:
   include:
     - { python: 3.8, env: TOXENV=flake8 }
-    - { python: 3.8, env: TOXENV=pydocstyle }
+    # disabled temporarily due to bug
+    # https://github.com/celery/django-celery-results/pull/139
+    # - { python: 3.8, env: TOXENV=pydocstyle }
     - { python: 3.8, env: TOXENV=cov }
     - { python: 3.8, env: TOXENV=integration }
     # disabled temporarily due to upstream bug

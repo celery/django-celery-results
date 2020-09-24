@@ -8,7 +8,6 @@ from django.db import transaction
 from django.test import TransactionTestCase
 
 from celery import states, uuid
-from celery.five import text_t
 
 from django_celery_results.models import TaskResult
 from django_celery_results.utils import now
@@ -16,7 +15,7 @@ from django_celery_results.utils import now
 
 @pytest.mark.usefixtures('depends_on_current_app')
 class test_Models(TransactionTestCase):
-    multi_db = True
+    databases = '__all__'
 
     @pytest.fixture(autouse=True)
     def setup_app(self, app):
@@ -34,7 +33,7 @@ class test_Models(TransactionTestCase):
         m1 = self.create_task_result()
         m2 = self.create_task_result()
         m3 = self.create_task_result()
-        assert text_t(m1).startswith('<Task:')
+        assert str(m1).startswith('<Task:')
         assert m1.task_id
         assert isinstance(m1.date_done, datetime)
 
