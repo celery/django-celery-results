@@ -10,8 +10,6 @@ from django.db import connections, router, transaction
 from django.db import models
 from django.conf import settings
 
-from celery.five import items
-
 from .utils import now
 
 try:
@@ -137,7 +135,7 @@ class TaskResultManager(models.Manager):
         obj, created = self.using(using).get_or_create(task_id=task_id,
                                                        defaults=fields)
         if not created:
-            for k, v in items(fields):
+            for k, v in fields.items():
                 setattr(obj, k, v)
             obj.save(using=using)
         return obj
