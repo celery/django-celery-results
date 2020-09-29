@@ -144,14 +144,13 @@ class TaskResultManager(models.Manager):
             'content_encoding': content_encoding,
             'content_type': content_type,
         }
-        obj, created = self.using(self._db).get_or_create(task_id=group_id,
-                                                          defaults=fields)
+        obj, created = self.using(self.db).get_or_create(task_id=group_id,
+                                                         defaults=fields)
         if not created:
             for k, v in items(fields):
                 setattr(obj, k, v)
-            obj.save(using=self._db)
+            obj.save(using=self.db)
         return obj
-
 
     def warn_if_repeatable_read(self):
         if 'mysql' in self.current_engine().lower():
