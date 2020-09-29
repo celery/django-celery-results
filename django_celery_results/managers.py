@@ -138,20 +138,18 @@ class TaskResultManager(models.Manager):
         return obj
 
     @transaction_retry(max_retries=2)
-    def store_group_result(self, content_type, content_encoding,
-                           group_id, result, using=None):
-
+    def store_group_result(self, content_type, content_encoding, group_id, result):
         fields = {
             'result': result,
             'content_encoding': content_encoding,
             'content_type': content_type,
         }
-        obj, created = self.using(using).get_or_create(task_id=group_id,
-                                                       defaults=fields)
+        obj, created = self.using(self._db).get_or_create(task_id=group_id,
+                                                          defaults=fields)
         if not created:
             for k, v in items(fields):
                 setattr(obj, k, v)
-            obj.save(using=using)
+            obj.save(using=self._db)
         return obj
 
 

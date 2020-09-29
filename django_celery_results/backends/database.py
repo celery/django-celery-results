@@ -111,8 +111,7 @@ class DatabaseBackend(BaseDictBackend):
         }
         content_type, content_encoding, result = self.encode_content(result)
         self.TaskModel._default_manager.store_group_result(
-            content_type, content_encoding, group_id,
-            result, using=self.TaskModel
+            content_type, content_encoding, group_id, result
         )
         return result
 
