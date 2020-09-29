@@ -97,7 +97,7 @@ class DatabaseBackend(BaseDictBackend):
             'date_done': group.date_done,
             'result': [
                 self.app.AsyncResult(task)
-                for task in self.decode(group.result)x
+                for task in self.decode(group.result)
             ],
         }
 
