@@ -11,7 +11,7 @@ from celery.utils.log import get_logger
 from django.db import transaction
 
 from ..models import TaskResult, ChordCounter
-
+from ..utils import now
 
 logger = get_logger(__name__)
 
@@ -101,10 +101,16 @@ class DatabaseBackend(BaseDictBackend):
             ],
         }
 
-    def _save_group(self, group_id, result):
+    def _save_group(self, group_id, group_result):
         """Store return value of group"""
+
+        result = {
+            "id": group_result.id,
+            'result': self.encode_content([i.id for i in group_result]),
+            'date_done': now()
+        }
         content_type, content_encoding, result = self.encode_content(result)
-        self.TaskModel._default_manager.store_result(
+        self.TaskModel._default_manager.store_group_result(
             content_type, content_encoding, group_id, result
         )
         return result

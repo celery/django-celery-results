@@ -137,6 +137,24 @@ class TaskResultManager(models.Manager):
             obj.save(using=using)
         return obj
 
+    @transaction_retry(max_retries=2)
+    def store_group_result(self, content_type, content_encoding,
+                           group_id, result,):
+
+        fields = {
+            'result': result,
+            'content_encoding': content_encoding,
+            'content_type': content_type,
+        }
+        obj, created = self.using(None).get_or_create(task_id=group_id,
+                                                      defaults=fields)
+        if not created:
+            for k, v in items(fields):
+                setattr(obj, k, v)
+            obj.save(using=None)
+        return obj
+
+
     def warn_if_repeatable_read(self):
         if 'mysql' in self.current_engine().lower():
             cursor = self.connection_for_read().cursor()
