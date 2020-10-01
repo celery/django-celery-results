@@ -97,8 +97,7 @@ class DatabaseBackend(BaseDictBackend):
 
     def _save_group(self, group_id, group_result):
         """Store return value of group"""
-        result = self.encode_content([r.result for r in group_result])
-        content_type, content_encoding, result = self.encode_content(result)
+        content_type, content_encoding,result = self.encode_content([r.result for r in group_result])
         self.GroupModel._default_manager.store_group_result(
             content_type, content_encoding, group_id, result
         )
