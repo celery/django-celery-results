@@ -58,7 +58,42 @@ def transaction_retry(max_retries=1):
     return _outer
 
 
-class TaskResultManager(models.Manager):
+class ResultManager(models.Manager):
+    def warn_if_repeatable_read(self):
+        if 'mysql' in self.current_engine().lower():
+            cursor = self.connection_for_read().cursor()
+            # MariaDB and MySQL since 8.0 have different transaction isolation
+            # variables: the former has tx_isolation, while the latter has
+            # transaction_isolation
+            if cursor.execute("SHOW VARIABLES WHERE variable_name IN "
+                              "('tx_isolation', 'transaction_isolation');"):
+                isolation = cursor.fetchone()[1]
+                if isolation == 'REPEATABLE-READ':
+                    warnings.warn(TxIsolationWarning(W_ISOLATION_REP.strip()))
+
+    def connection_for_write(self):
+        return connections[router.db_for_write(self.model)]
+
+    def connection_for_read(self):
+        return connections[self.db]
+
+    def current_engine(self):
+        try:
+            return settings.DATABASES[self.db]['ENGINE']
+        except AttributeError:
+            return settings.DATABASE_ENGINE
+
+    def get_all_expired(self, expires):
+        """Get all expired results."""
+        return self.filter(date_done__lt=now() - maybe_timedelta(expires))
+
+    def delete_expired(self, expires):
+        """Delete all expired results."""
+        with transaction.atomic():
+            self.get_all_expired(expires).delete()
+
+
+class TaskResultManager(ResultManager):
     """Manager for :class:`celery.models.TaskResult` models."""
 
     _last_id = None
@@ -137,50 +172,44 @@ class TaskResultManager(models.Manager):
             obj.save(using=using)
         return obj
 
+
+class GroupResultManager(ResultManager):
+    """Manager for :class:`celery.models.GroupResult` models."""
+
+    _last_id = None
+
+    def get_group(self, group_id):
+        """Get result for group by ``group_id``.
+
+        Keyword Arguments:
+        -----------------
+            exception_retry_count (int): How many times to retry by
+                transaction rollback on exception.  This could
+                happen in a race condition if another worker is trying to
+                create the same task.  The default is to retry once.
+
+        """
+        try:
+            return self.get(group_id=group_id)
+        except self.model.DoesNotExist:
+            if self._last_id == group_id:
+                self.warn_if_repeatable_read()
+            self._last_id = group_id
+            return self.model(group_id=group_id)
+
     @transaction_retry(max_retries=2)
-    def store_group_result(self, content_type, content_encoding, group_id, result):
+    def store_group_result(self, content_type, content_encoding,
+                           group_id, result):
         fields = {
             'result': result,
             'content_encoding': content_encoding,
             'content_type': content_type,
         }
-        obj, created = self.using(self.db).get_or_create(task_id=group_id,
+
+        obj, created = self.using(self.db).get_or_create(group_id=group_id,
                                                          defaults=fields)
         if not created:
-            for k, v in items(fields):
+            for k, v in fields.items():
                 setattr(obj, k, v)
             obj.save(using=self.db)
         return obj
-
-    def warn_if_repeatable_read(self):
-        if 'mysql' in self.current_engine().lower():
-            cursor = self.connection_for_read().cursor()
-            # MariaDB and MySQL since 8.0 have different transaction isolation
-            # variables: the former has tx_isolation, while the latter has
-            # transaction_isolation
-            if cursor.execute("SHOW VARIABLES WHERE variable_name IN "
-                              "('tx_isolation', 'transaction_isolation');"):
-                isolation = cursor.fetchone()[1]
-                if isolation == 'REPEATABLE-READ':
-                    warnings.warn(TxIsolationWarning(W_ISOLATION_REP.strip()))
-
-    def connection_for_write(self):
-        return connections[router.db_for_write(self.model)]
-
-    def connection_for_read(self):
-        return connections[self.db]
-
-    def current_engine(self):
-        try:
-            return settings.DATABASES[self.db]['ENGINE']
-        except AttributeError:
-            return settings.DATABASE_ENGINE
-
-    def get_all_expired(self, expires):
-        """Get all expired task results."""
-        return self.filter(date_done__lt=now() - maybe_timedelta(expires))
-
-    def delete_expired(self, expires):
-        """Delete all expired results."""
-        with transaction.atomic():
-            self.get_all_expired(expires).delete()

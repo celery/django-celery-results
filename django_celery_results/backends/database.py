@@ -10,7 +10,7 @@ from celery.utils.serialization import b64encode, b64decode
 from celery.utils.log import get_logger
 from django.db import transaction
 
-from ..models import TaskResult, ChordCounter
+from ..models import TaskResult, ChordCounter, GroupResult
 from ..utils import now
 
 logger = get_logger(__name__)
@@ -20,7 +20,7 @@ class DatabaseBackend(BaseDictBackend):
     """The Django database backend, using models to store task state."""
 
     TaskModel = TaskResult
-
+    GroupModel = GroupResult
     subpolling_interval = 0.5
 
     def _store_result(self, task_id, result, status,
@@ -93,7 +93,7 @@ class DatabaseBackend(BaseDictBackend):
         """return result value for a group by id."""
         group = self.TaskModel._default_manager.get(task_id=group_id)
         return {
-            'task_id': group.task_id,
+            'task_id': group.group_id,
             'date_done': group.date_done,
             'result': [
                 self.app.AsyncResult(task)
@@ -116,7 +116,10 @@ class DatabaseBackend(BaseDictBackend):
         return result
 
     def _delete_group(self, group_id):
-        self._forget(group_id)
+        try:
+            self.GroupModel._default_manager.get(group_id=group_id).delete()
+        except self.TaskModel.DoesNotExist:
+            pass
 
     def apply_chord(self, header_result, body, **kwargs):
         """Add a ChordCounter with the expected number of results"""
