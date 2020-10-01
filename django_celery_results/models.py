@@ -199,12 +199,27 @@ class GroupResult(models.Model):
         help_text=_("The encoding used to save the task result data"),
     )
     result = models.TextField(
-        null=True,
-        default=None,
-        editable=False,
-        verbose_name=_("Result Data"),
-        help_text=_(
-            "The data returned by the task.  "
-            "Use content_encoding and content_type fields to read."
-        ),
-    )
+        null=True, default=None, editable=False,
+        verbose_name=_('Result Data'),
+        help_text=_('The data returned by the task.  '
+                    'Use content_encoding and content_type fields to read.'))
+
+    def as_dict(self):
+        return {
+            'group_id': self.group_id,
+            'result': self.result,
+            'date_done': self.date_done,
+        }
+
+    def __str__(self):
+        return '<Group: {0.group_id}>'.format(self)
+
+    objects = managers.GroupResultManager()
+
+    class Meta:
+        """Table information."""
+
+        ordering = ['-date_done']
+
+        verbose_name = _('group result')
+        verbose_name_plural = _('group results')

@@ -89,35 +89,24 @@ class DatabaseBackend(BaseDictBackend):
         """Delete expired metadata."""
         self.TaskModel._default_manager.delete_expired(self.expires)
 
-    def _restore_group(self, group_id, cache=True):
+    def _restore_group(self, group_id):
         """return result value for a group by id."""
-        group = self.TaskModel._default_manager.get(task_id=group_id)
-        return {
-            'task_id': group.group_id,
-            'date_done': group.date_done,
-            'result': [
-                self.app.AsyncResult(task)
-                for task in self.decode(group.result)
-            ],
-        }
+        meta = self.GroupModel._default_manager.get_group(group_id)
+        if meta:
+            return meta.to_dict()
 
     def _save_group(self, group_id, group_result):
         """Store return value of group"""
-
-        result = {
-            "id": group_result.id,
-            'result': self.encode_content([i.id for i in group_result]),
-            'date_done': now()
-        }
+        result = self.encode_content([r.result for r in group_result])
         content_type, content_encoding, result = self.encode_content(result)
-        self.TaskModel._default_manager.store_group_result(
+        self.GroupModel._default_manager.store_group_result(
             content_type, content_encoding, group_id, result
         )
-        return result
+        return group_result
 
     def _delete_group(self, group_id):
         try:
-            self.GroupModel._default_manager.get(group_id=group_id).delete()
+            self.GroupModel._default_manager.get_group(group_id).delete()
         except self.TaskModel.DoesNotExist:
             pass
 
