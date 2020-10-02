@@ -88,6 +88,7 @@ class DatabaseBackend(BaseDictBackend):
     def cleanup(self):
         """Delete expired metadata."""
         self.TaskModel._default_manager.delete_expired(self.expires)
+        self.GroupModel._default_manager.delete_expired(self.expires)
 
     def _restore_group(self, group_id):
         """return result value for a group by id."""
