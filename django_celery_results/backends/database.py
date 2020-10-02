@@ -82,14 +82,15 @@ class DatabaseBackend(BaseDictBackend):
 
     def _restore_group(self, group_id):
         """return result value for a group by id."""
-        meta = self.GroupModel._default_manager.get_group(group_id)
+        group_result = self.GroupModel._default_manager.get_group(group_id)
 
-        if meta:
-            group_result_dict = meta.as_dict()
-            group_result_dict.result = [
-                self.app.AsyncResult(task) for task in self.decode(meta["result"])
+        if group_result:
+            res = group_result.as_dict()
+            res["result"] = [
+                self.app.AsyncResult(tid)
+                for tid in self.decode_content(group_result, res["result"])
             ]
-            return group_result_dict
+            return res
 
     def _save_group(self, group_id, group_result):
         """Store return value of group"""
