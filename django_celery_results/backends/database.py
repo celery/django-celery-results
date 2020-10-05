@@ -11,7 +11,6 @@ from celery.utils.log import get_logger
 from django.db import transaction
 
 from ..models import TaskResult, ChordCounter, GroupResult
-from ..utils import now
 
 logger = get_logger(__name__)
 
