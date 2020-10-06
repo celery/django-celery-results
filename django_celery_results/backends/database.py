@@ -85,10 +85,10 @@ class DatabaseBackend(BaseDictBackend):
 
         if group_result:
             res = group_result.as_dict()
+            decoded_result = self.decode_content(group_result, res["result"])
             res["result"] = [
-                self.app.AsyncResult(tid)
-                for tid in self.decode_content(group_result, res["result"])
-            ]
+                self.app.AsyncResult(tid) for tid in decoded_result
+            ] if decoded_result else None
             return res
 
     def _save_group(self, group_id, group_result):

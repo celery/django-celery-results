@@ -24,4 +24,14 @@ urlpatterns = [
         views.task_status,
         name='celery-task_status'
     ),
+    url(
+        r'^%s/group/done/?$' % task_pattern,
+        views.is_group_successful,
+        name='celery-is_group_successful'
+    ),
+    url(
+        r'^%s/group/status/?$' % task_pattern,
+        views.group_status,
+        name='celery-group_status'
+    ),
 ]

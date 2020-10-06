@@ -199,15 +199,18 @@ class GroupResultManager(ResultManager):
 
     @transaction_retry(max_retries=2)
     def store_group_result(self, content_type, content_encoding,
-                           group_id, result):
+                           group_id, result, using=None):
         fields = {
             'result': result,
             'content_encoding': content_encoding,
             'content_type': content_type,
         }
 
-        obj, created = self.using(self.db).get_or_create(group_id=group_id,
-                                                         defaults=fields)
+        if not using:
+            using = self.db
+
+        obj, created = self.using(using).get_or_create(group_id=group_id,
+                                                       defaults=fields)
         if not created:
             for k, v in fields.items():
                 setattr(obj, k, v)
