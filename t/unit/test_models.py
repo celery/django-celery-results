@@ -9,7 +9,7 @@ from django.test import TransactionTestCase
 
 from celery import states, uuid
 
-from django_celery_results.models import TaskResult
+from django_celery_results.models import TaskResult, GroupResult
 from django_celery_results.utils import now
 
 
@@ -96,3 +96,29 @@ class test_Models(TransactionTestCase):
 
         assert TaskResult.objects.get_task(m1.task_id).status != states.SUCCESS
         assert TaskResult.objects.get_task(m2.task_id).status == states.SUCCESS
+
+    def create_group_result(self):
+        id = uuid()
+        taskmeta, created = GroupResult.objects.get_or_create(group_id=id)
+        return taskmeta
+
+    def test_store_group_result(self, ctype='application/json', cenc='utf-8'):
+        class TransactionError(Exception):
+            pass
+
+        m1 = self.create_group_result()
+        m2 = self.create_group_result()
+        assert set(GroupResult.objects.all()) == set(
+            GroupResult.objects.using("secondary").all()
+        )
+
+        try:
+            with transaction.atomic():
+                GroupResult.objects.store_group_result(
+                    ctype, cenc, m1.group_id, True)
+                GroupResult.objects.store_group_result(
+                    ctype, cenc, m2.group_id, True,
+                    using='secondary')
+                raise TransactionError()
+        except TransactionError:
+            pass
