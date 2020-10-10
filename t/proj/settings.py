@@ -32,8 +32,6 @@ try:
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
             'USER': 'postgres',
-            'HOST': 'localhost',
-            'PORT': '5432',
             'OPTIONS': {
                 'connect_timeout': 1000,
             }
@@ -42,8 +40,6 @@ try:
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
             'USER': 'postgres',
-            'HOST': 'localhost',
-            'PORT': '5432',
             'OPTIONS': {
                 'connect_timeout': 1000,
             },

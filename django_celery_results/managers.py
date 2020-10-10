@@ -109,13 +109,13 @@ class TaskResultManager(models.Manager):
                 possible status values.
             worker (str): Worker that executes the task.
             using (str): Django database connection to use.
-
-        Keyword Arguments:
-        -----------------
             traceback (str): The traceback string taken at the point of
                 exception (only passed if the task failed).
             meta (str): Serialized result meta data (this contains e.g.
                 children).
+
+        Keyword Arguments:
+        -----------------
             exception_retry_count (int): How many times to retry by
                 transaction rollback on exception.  This could
                 happen in a race condition if another worker is trying to
