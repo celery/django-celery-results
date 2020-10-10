@@ -7,15 +7,13 @@ services:
   - postgresql
 dist: focal
 python:
-  - 3.8
   - 3.6
   - 3.7
-# pypy3.5 not yet supported due to compilation errors with pyephem
-# https://github.com/celery/django-celery-beat/issues/245
-#  - pypy3.5
+  - 3.8
 env:
   - DJANGO=2.2
   - DJANGO=3.0
+  - DJANGO=3.1
 
 matrix:
   include:
@@ -25,8 +23,8 @@ matrix:
     - { python: 3.8, env: TOXENV=integration }
     # disabled temporarily due to upstream bug
     # https://github.com/celery/sphinx_celery/issues/9
-    # - { python: 3.5, env: TOXENV=apicheck }
-    # - { python: 3.5, env: TOXENV=linkcheck }
+    # - { python: 3.8, env: TOXENV=apicheck }
+    # - { python: 3.8, env: TOXENV=linkcheck }
 
 
 install: travis_retry pip install -U tox-travis
