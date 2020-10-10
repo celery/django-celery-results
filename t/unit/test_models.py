@@ -16,7 +16,7 @@ from django_celery_results.utils import now
 
 @pytest.mark.usefixtures('depends_on_current_app')
 class test_Models(TransactionTestCase):
-    multi_db = True
+    databases = '__all__'
 
     @pytest.fixture(autouse=True)
     def setup_app(self, app):

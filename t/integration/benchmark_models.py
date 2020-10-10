@@ -25,7 +25,6 @@ def use_benchmark(request, benchmark):
 @pytest.mark.usefixtures('use_benchmark')
 @pytest.mark.usefixtures('depends_on_current_app')
 class benchmark_Models(TransactionTestCase):
-    multi_db = True
 
     @pytest.fixture(autouse=True)
     def setup_app(self, app):
