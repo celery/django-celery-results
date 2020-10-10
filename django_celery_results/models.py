@@ -6,7 +6,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from celery import states
-from celery.five import python_2_unicode_compatible
 
 from . import managers
 
@@ -14,7 +13,6 @@ ALL_STATES = sorted(states.ALL_STATES)
 TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
 
 
-@python_2_unicode_compatible
 class TaskResult(models.Model):
     """Task result/status."""
 
