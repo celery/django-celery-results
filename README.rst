@@ -23,10 +23,7 @@ Installing
 ==========
 
 The installation instructions for this extension is available
-from the `Celery documentation`_:
-
-http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
-
+from the `Celery documentation`_
 
 .. _`Celery documentation`:
     http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
