@@ -6,18 +6,13 @@ import warnings
 from functools import wraps
 from itertools import count
 
+from celery.utils.time import maybe_timedelta
+
 from django.db import connections, router, transaction
 from django.db import models
 from django.conf import settings
 
-from celery.five import items
-
 from .utils import now
-
-try:
-    from celery.utils.time import maybe_timedelta
-except ImportError:  # pragma: no cover
-    from celery.utils.timeutils import maybe_timedelta  # noqa
 
 W_ISOLATION_REP = """
 Polling results with transaction isolation level 'repeatable-read'
@@ -109,13 +104,13 @@ class TaskResultManager(models.Manager):
                 possible status values.
             worker (str): Worker that executes the task.
             using (str): Django database connection to use.
-
-        Keyword Arguments:
-        -----------------
             traceback (str): The traceback string taken at the point of
                 exception (only passed if the task failed).
             meta (str): Serialized result meta data (this contains e.g.
                 children).
+
+        Keyword Arguments:
+        -----------------
             exception_retry_count (int): How many times to retry by
                 transaction rollback on exception.  This could
                 happen in a race condition if another worker is trying to
@@ -137,7 +132,7 @@ class TaskResultManager(models.Manager):
         obj, created = self.using(using).get_or_create(task_id=task_id,
                                                        defaults=fields)
         if not created:
-            for k, v in items(fields):
+            for k, v in fields.items():
                 setattr(obj, k, v)
             obj.save(using=using)
         return obj

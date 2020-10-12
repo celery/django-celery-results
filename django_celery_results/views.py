@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from celery import states
 from celery.result import AsyncResult
 from celery.utils import get_full_cls_name
-from celery.utils.encoding import safe_repr
+from kombu.utils.encoding import safe_repr
 
 
 def is_task_successful(request, task_id):
