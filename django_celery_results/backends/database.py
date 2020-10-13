@@ -89,6 +89,29 @@ class DatabaseBackend(BaseDictBackend):
         """Delete expired metadata."""
         self.TaskModel._default_manager.delete_expired(self.expires)
 
+    def _restore_group(self, group_id, cache=True):
+        """return result value for a group by id."""
+        group = self.TaskModel._default_manager.get(task_id=group_id)
+        return {
+            'task_id': group.task_id,
+            'date_done': group.date_done,
+            'result': [
+                self.app.AsyncResult(task)
+                for task in self.decode(group.result)x
+            ],
+        }
+
+    def _save_group(self, group_id, result):
+        """Store return value of group"""
+        content_type, content_encoding, result = self.encode_content(result)
+        self.TaskModel._default_manager.store_result(
+            content_type, content_encoding, group_id, result
+        )
+        return result
+
+    def _delete_group(self, group_id):
+        self._forget(group_id)
+
     def apply_chord(self, header_result, body, **kwargs):
         """Add a ChordCounter with the expected number of results"""
         results = [r.as_tuple() for r in header_result]
