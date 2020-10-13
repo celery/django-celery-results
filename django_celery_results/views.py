@@ -45,7 +45,6 @@ def is_group_successful(request, group_id):
 def group_status(request, group_id):
     """Return task status and result in JSON format."""
     result = GroupResult.restore(group_id)
-    result = GroupResult()
     retval = result.result
     response_data = {'id': group_id, 'result': retval}
     return JsonResponse({'task': response_data})

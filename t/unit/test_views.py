@@ -12,8 +12,7 @@ from django_celery_results.models import TaskResult, GroupResult
 from django_celery_results.views import (
     is_task_successful,
     task_status,
-    is_group_successful,
-    group_status
+    is_group_successful
 )
 
 
