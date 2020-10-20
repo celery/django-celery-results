@@ -23,26 +23,22 @@ class DatabaseBackend(BaseDictBackend):
     GroupModel = GroupResult
     subpolling_interval = 0.5
 
-    def _store_result(self, task_id, result, status,
-                      traceback=None, request=None, using=None):
+    def _store_result(self, task_id, result, status, traceback=None, request=None, using=None):
         """Store return value and status of an executed task."""
         content_type, content_encoding, result = self.encode_content(result)
-        _, _, meta = self.encode_content({
-            'children': self.current_task_children(request),
-        })
+        _, _, meta = self.encode_content({"children": self.current_task_children(request),})
 
-        task_name = getattr(request, 'task', None)
-        _, _, task_args = self.encode_content(
-            getattr(request, 'argsrepr', getattr(request, 'args', None))
-        )
-        _, _, task_kwargs = self.encode_content(
-            getattr(request, 'kwargsrepr', getattr(request, 'kwargs', None))
-        )
-        worker = getattr(request, 'hostname', None)
+        task_name = getattr(request, "task", None) if request else None
+        task_args = getattr(request, "argsrepr", getattr(request, "args", None))
+        task_kwargs = getattr(request, "kwargsrepr", getattr(request, "kwargs", None))
+        worker = getattr(request, "hostname", None)
 
         self.TaskModel._default_manager.store_result(
-            content_type, content_encoding,
-            task_id, result, status,
+            content_type,
+            content_encoding,
+            task_id,
+            result,
+            status,
             traceback=traceback,
             meta=meta,
             task_name=task_name,
@@ -57,25 +53,19 @@ class DatabaseBackend(BaseDictBackend):
         """Get task metadata for a task by id."""
         obj = self.TaskModel._default_manager.get_task(task_id)
         res = obj.as_dict()
-        meta = self.decode_content(obj, res.pop('meta', None)) or {}
-        result = self.decode_content(obj, res.get('result'))
-        task_args = self.decode_content(obj, res.get('task_args'))
-        task_kwargs = self.decode_content(obj, res.get('task_kwargs'))
-        res.update(
-            meta, result=result, task_args=task_args,
-            task_kwargs=task_kwargs,
-        )
+        meta = self.decode_content(obj, res.pop("meta", None)) or {}
+        res.update(meta, result=self.decode_content(obj, res.get("result")))
         return self.meta_from_decoded(res)
 
     def encode_content(self, data):
         content_type, content_encoding, content = self._encode(data)
-        if content_encoding == 'binary':
+        if content_encoding == "binary":
             content = b64encode(content)
         return content_type, content_encoding, content
 
     def decode_content(self, obj, content):
         if content:
-            if obj.content_encoding == 'binary':
+            if obj.content_encoding == "binary":
                 content = b64decode(content)
             return self.decode(content)
 
@@ -95,16 +85,15 @@ class DatabaseBackend(BaseDictBackend):
         meta = self.GroupModel._default_manager.get_group(group_id)
 
         if meta:
-            group_result_dict = meta.to_dict()
+            group_result_dict = meta.as_dict()
             group_result_dict.result = [
-                self.app.AsyncResult(task)
-                for task in self.decode(meta['result'])
+                self.app.AsyncResult(task) for task in self.decode(meta["result"])
             ]
             return group_result_dict
 
     def _save_group(self, group_id, group_result):
         """Store return value of group"""
-        content_type, content_encoding,result = self.encode_content([r.id for r in group_result])
+        content_type, content_encoding, result = self.encode_content([r.id for r in group_result])
         self.GroupModel._default_manager.store_group_result(
             content_type, content_encoding, group_id, result
         )
