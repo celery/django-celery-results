@@ -7,7 +7,7 @@
 """
 from __future__ import absolute_import, unicode_literals
 
-from django.conf.urls import url
+from django.conf.urls import url, path
 
 from . import views
 
@@ -24,13 +24,13 @@ urlpatterns = [
         views.task_status,
         name='celery-task_status'
     ),
-    url(
-        r'^%s/group/done/?$' % task_pattern,
+    path(
+        r'<str:group_id>/group/done/',
         views.is_group_successful,
         name='celery-is_group_successful'
     ),
-    url(
-        r'^%s/group/status/?$' % task_pattern,
+    path(
+        r'<str:group_id>/group/status/',
         views.group_status,
         name='celery-group_status'
     ),
