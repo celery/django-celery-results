@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('group_id', models.CharField(
                     db_index=True,
                     help_text='Celery ID for the Chord header group',
-                    max_length=191,
+                    max_length=255,
                     unique=True,
                     verbose_name='Group ID')),
                 ('sub_tasks', models.TextField(
