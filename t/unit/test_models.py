@@ -5,7 +5,7 @@ import pytest
 from datetime import datetime, timedelta
 
 from django.db import transaction
-from django.test import TransactionTestCase
+from django.test import TransactionTestCase, override_settings
 
 from celery import states, uuid
 
@@ -14,6 +14,7 @@ from django_celery_results.utils import now
 
 
 @pytest.mark.usefixtures('depends_on_current_app')
+@override_settings(DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH=191)
 class test_Models(TransactionTestCase):
     databases = '__all__'
 
