@@ -4,6 +4,8 @@ os:
     - linux
 services:
   - postgresql
+addons:
+  postgresql: "13"
 dist: focal
 python:
   - 3.6
