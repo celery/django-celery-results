@@ -4,6 +4,21 @@
  Change history
 ================
 
+.. _version-2.0.0:
+
+2.0.0
+=====
+:release-date: 
+:release-by: 
+
+- Add Spanish translations (#134)
+- Add support for Django 3.0 and 3.1 (#145, #163)
+- Add support for Celery 5 (#163)
+- Drop support for Django < 2.2 (#147, #152)
+- Drop support for Python < 3.6 (#146, #147, #152)
+- Add Chord syncronisation from the database (#144)
+- Encode `task_args` and `task_kwargs` of `TaskResult` using `json.dumps` instead of using `str` (#78)
+
 .. _version-1.1.2:
 
 1.1.2
