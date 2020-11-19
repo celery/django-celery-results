@@ -1,6 +1,6 @@
 case>=1.3.1
 pytest>=4.3
-pytest-django
+pytest-django>=2.2,<4.0
 pytest-benchmark
 pytz>dev
 psycopg2cffi
