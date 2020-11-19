@@ -41,6 +41,7 @@ class test_DatabaseBackend:
         request.args = ['a', 1, SomeClass(67)]
         request.kwargs = {'c': 6, 'd': 'e', 'f': SomeClass(89)}
         request.hostname = 'celery@ip-0-0-0-0'
+        request.chord = None
         del request.argsrepr, request.kwargsrepr
 
         self.b.mark_as_done(tid2, result, request=request)
@@ -81,6 +82,7 @@ class test_DatabaseBackend:
         request.args = ['a', 1, SomeClass(67)]
         request.kwargs = {'c': 6, 'd': 'e', 'f': SomeClass(89)}
         request.hostname = 'celery@ip-0-0-0-0'
+        request.chord = None
         del request.argsrepr, request.kwargsrepr
 
         self.b.mark_as_done(tid2, result, request=request)
@@ -111,6 +113,7 @@ class test_DatabaseBackend:
         request.args = ['a', 1, SomeClass(67)]
         request.kwargs = {'c': 6, 'd': 'e', 'f': SomeClass(89)}
         request.hostname = 'celery@ip-0-0-0-0'
+        request.chord = None
         del request.argsrepr, request.kwargsrepr
 
         self.b.mark_as_done(tid2, result, request=request)
