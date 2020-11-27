@@ -2,12 +2,16 @@ from __future__ import absolute_import, unicode_literals
 
 import mock
 import celery
+import json
 import pytest
+import re
+import pickle
 
 from celery import uuid
 from celery import states
 from celery.app.task import Context
 from celery.result import GroupResult, AsyncResult
+from celery.utils.serialization import b64decode
 from celery.worker.request import Request
 
 from django_celery_results.backends.database import DatabaseBackend
@@ -72,16 +76,20 @@ class test_DatabaseBackend:
         assert mindb.get('result').get('bar').data == 12345
         assert len(mindb.get('worker')) > 1
         assert mindb.get('task_name') == 'my_task'
+        assert bool(re.match(
+            r"\['a', 1, <.*SomeClass object at .*>\]",
+            mindb.get('task_args')
+        ))
+        assert bool(re.match(
+            r"{'c': 6, 'd': 'e', 'f': <.*SomeClass object at .*>}",
+            mindb.get('task_kwargs')
+        ))
 
-        assert len(mindb.get('task_args')) == 3
-        assert mindb.get('task_args')[0] == 'a'
-        assert mindb.get('task_args')[1] == 1
-        assert mindb.get('task_args')[2].data == 67
-
-        assert len(mindb.get('task_kwargs')) == 3
-        assert mindb.get('task_kwargs')['c'] == 6
-        assert mindb.get('task_kwargs')['d'] == 'e'
-        assert mindb.get('task_kwargs')['f'].data == 89
+        tr = TaskResult.objects.get(task_id=tid2)
+        task_args = pickle.loads(b64decode(tr.task_args))
+        task_kwargs = pickle.loads(b64decode(tr.task_kwargs))
+        assert task_args == mindb.get('task_args')
+        assert task_kwargs == mindb.get('task_kwargs')
 
         tid3 = uuid()
         try:
@@ -112,16 +120,20 @@ class test_DatabaseBackend:
         assert mindb.get('result') == 'foo'
         assert mindb.get('task_name') == 'my_task'
         assert len(mindb.get('worker')) > 1
+        assert bool(re.match(
+            r"\['a', 1, <.*SomeClass object at .*>\]",
+            mindb.get('task_args')
+        ))
+        assert bool(re.match(
+            r"{'c': 6, 'd': 'e', 'f': <.*SomeClass object at .*>}",
+            mindb.get('task_kwargs')
+        ))
 
-        assert len(mindb.get('task_args')) == 3
-        assert mindb.get('task_args')[0] == 'a'
-        assert mindb.get('task_args')[1] == 1
-        assert mindb.get('task_args')[2].data == 67
-
-        assert len(mindb.get('task_kwargs')) == 3
-        assert mindb.get('task_kwargs')['c'] == 6
-        assert mindb.get('task_kwargs')['d'] == 'e'
-        assert mindb.get('task_kwargs')['f'].data == 89
+        tr = TaskResult.objects.get(task_id=tid2)
+        task_args = pickle.loads(b64decode(tr.task_args))
+        task_kwargs = pickle.loads(b64decode(tr.task_kwargs))
+        assert task_args == mindb.get('task_args')
+        assert task_kwargs == mindb.get('task_kwargs')
 
     def test_backend__pickle_serialization__bytes_result(self):
         self.app.conf.result_serializer = 'pickle'
@@ -143,16 +155,82 @@ class test_DatabaseBackend:
         assert mindb.get('result') == b'foo'
         assert mindb.get('task_name') == 'my_task'
         assert len(mindb.get('worker')) > 1
+        assert bool(re.match(
+            r"\['a', 1, <.*SomeClass object at .*>\]",
+            mindb.get('task_args')
+        ))
+        assert bool(re.match(
+            r"{'c': 6, 'd': 'e', 'f': <.*SomeClass object at .*>}",
+            mindb.get('task_kwargs')
+        ))
 
-        assert len(mindb.get('task_args')) == 3
-        assert mindb.get('task_args')[0] == 'a'
-        assert mindb.get('task_args')[1] == 1
-        assert mindb.get('task_args')[2].data == 67
+        tr = TaskResult.objects.get(task_id=tid2)
+        task_args = pickle.loads(b64decode(tr.task_args))
+        task_kwargs = pickle.loads(b64decode(tr.task_kwargs))
+        assert task_args == mindb.get('task_args')
+        assert task_kwargs == mindb.get('task_kwargs')
 
-        assert len(mindb.get('task_kwargs')) == 3
-        assert mindb.get('task_kwargs')['c'] == 6
-        assert mindb.get('task_kwargs')['d'] == 'e'
-        assert mindb.get('task_kwargs')['f'].data == 89
+    def test_backend__json_serialization__dict_result(self):
+        self.app.conf.result_serializer = 'json'
+        self.app.conf.accept_content = {'pickle', 'json'}
+        self.b = DatabaseBackend(app=self.app)
+
+        tid2 = uuid()
+        request = self._create_request(
+            task_id=tid2,
+            name='my_task',
+            args=['a', 1, True],
+            kwargs={'c': 6, 'd': 'e', 'f': False},
+        )
+        result = {'foo': 'baz', 'bar': True}
+
+        self.b.mark_as_done(tid2, result, request=request)
+        mindb = self.b.get_task_meta(tid2)
+
+        assert mindb.get('result').get('foo') == 'baz'
+        assert mindb.get('result').get('bar') is True
+        assert mindb.get('task_name') == 'my_task'
+        assert mindb.get('task_args') == "['a', 1, True]"
+        assert mindb.get('task_kwargs') == "{'c': 6, 'd': 'e', 'f': False}"
+
+        tr = TaskResult.objects.get(task_id=tid2)
+        assert json.loads(tr.task_args) == "['a', 1, True]"
+        assert json.loads(tr.task_kwargs) == "{'c': 6, 'd': 'e', 'f': False}"
+
+        tid3 = uuid()
+        try:
+            raise KeyError('foo')
+        except KeyError as exception:
+            self.b.mark_as_failure(tid3, exception)
+
+        assert self.b.get_status(tid3) == states.FAILURE
+        assert isinstance(self.b.get_result(tid3), KeyError)
+
+    def test_backend__json_serialization__str_result(self):
+        self.app.conf.result_serializer = 'json'
+        self.app.conf.accept_content = {'pickle', 'json'}
+        self.b = DatabaseBackend(app=self.app)
+
+        tid2 = uuid()
+        request = self._create_request(
+            task_id=tid2,
+            name='my_task',
+            args=['a', 1, True],
+            kwargs={'c': 6, 'd': 'e', 'f': False},
+        )
+        result = 'foo'
+
+        self.b.mark_as_done(tid2, result, request=request)
+        mindb = self.b.get_task_meta(tid2)
+
+        assert mindb.get('result') == 'foo'
+        assert mindb.get('task_name') == 'my_task'
+        assert mindb.get('task_args') == "['a', 1, True]"
+        assert mindb.get('task_kwargs') == "{'c': 6, 'd': 'e', 'f': False}"
+
+        tr = TaskResult.objects.get(task_id=tid2)
+        assert json.loads(tr.task_args) == "['a', 1, True]"
+        assert json.loads(tr.task_kwargs) == "{'c': 6, 'd': 'e', 'f': False}"
 
     def xxx_backend(self):
         tid = uuid()
@@ -184,7 +262,11 @@ class test_DatabaseBackend:
             x._cache = None
         assert x.result is None
 
-    def test_backend_secrets(self):
+    def test_secrets__pickle_serialization(self):
+        self.app.conf.result_serializer = 'pickle'
+        self.app.conf.accept_content = {'pickle', 'json'}
+        self.b = DatabaseBackend(app=self.app)
+
         tid = uuid()
         request = self._create_request(
             task_id=tid,
@@ -199,9 +281,43 @@ class test_DatabaseBackend:
         self.b.mark_as_done(tid, result, request=request)
 
         mindb = self.b.get_task_meta(tid)
+        assert mindb.get('result') == {'foo': 'baz'}
         assert mindb.get('task_args') == 'argsrepr'
         assert mindb.get('task_kwargs') == 'kwargsrepr'
         assert len(mindb.get('worker')) > 1
+
+        tr = TaskResult.objects.get(task_id=tid)
+        task_args = pickle.loads(b64decode(tr.task_args))
+        task_kwargs = pickle.loads(b64decode(tr.task_kwargs))
+        assert task_args == 'argsrepr'
+        assert task_kwargs == 'kwargsrepr'
+
+    def test_secrets__json_serialization(self):
+        self.app.conf.result_serializer = 'json'
+        self.app.conf.accept_content = {'pickle', 'json'}
+        self.b = DatabaseBackend(app=self.app)
+
+        tid = uuid()
+        request = self._create_request(
+            task_id=tid,
+            name='my_task',
+            args=['a', 1, True],
+            kwargs={'c': 6, 'd': 'e', 'f': False},
+            argsrepr='argsrepr',
+            kwargsrepr='kwargsrepr',
+        )
+        result = {'foo': 'baz'}
+
+        self.b.mark_as_done(tid, result, request=request)
+
+        mindb = self.b.get_task_meta(tid)
+        assert mindb.get('result') == {'foo': 'baz'}
+        assert mindb.get('task_args') == 'argsrepr'
+        assert mindb.get('task_kwargs') == 'kwargsrepr'
+
+        tr = TaskResult.objects.get(task_id=tid)
+        assert json.loads(tr.task_args) == 'argsrepr'
+        assert json.loads(tr.task_kwargs) == 'kwargsrepr'
 
     def test_on_chord_part_return(self):
         """Test if the ChordCounter is properly decremented and the callback is
