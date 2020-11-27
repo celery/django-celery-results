@@ -78,9 +78,13 @@ class DatabaseBackend(BaseDictBackend):
         task_args = self.decode_content(obj, res.get('task_args'))
         task_kwargs = self.decode_content(obj, res.get('task_kwargs'))
 
+        # the right names are args/kwargs, not task_args/task_kwargs,
+        # keep both for backward compatibility
         res.update(
             meta, result=result, task_args=task_args,
             task_kwargs=task_kwargs,
+            args=task_args,
+            kwargs=task_kwargs,
         )
         return self.meta_from_decoded(res)
 
