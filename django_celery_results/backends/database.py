@@ -32,13 +32,29 @@ class DatabaseBackend(BaseDictBackend):
         })
 
         task_name = getattr(request, 'task', None)
-        _, _, task_args = self.encode_content(
-            getattr(request, 'argsrepr', getattr(request, 'args', None))
-        )
-        _, _, task_kwargs = self.encode_content(
-            getattr(request, 'kwargsrepr', getattr(request, 'kwargs', None))
-        )
         worker = getattr(request, 'hostname', None)
+
+        # Get input arguments
+        if getattr(request, 'argsrepr', None) is not None:
+            # task protocol 2
+            task_args = request.argsrepr
+        else:
+            # task protocol 1
+            task_args = getattr(request, 'args', None)
+
+        if getattr(request, 'kwargsrepr', None) is not None:
+            # task protocol 2
+            task_kwargs = request.kwargsrepr
+        else:
+            # task protocol 1
+            task_kwargs = getattr(request, 'kwargs', None)
+
+        # Encode input arguments
+        if task_args is not None:
+            _, _, task_args = self.encode_content(task_args)
+
+        if task_kwargs is not None:
+            _, _, task_kwargs = self.encode_content(task_kwargs)
 
         self.TaskModel._default_manager.store_result(
             content_type, content_encoding,
@@ -61,6 +77,7 @@ class DatabaseBackend(BaseDictBackend):
         result = self.decode_content(obj, res.get('result'))
         task_args = self.decode_content(obj, res.get('task_args'))
         task_kwargs = self.decode_content(obj, res.get('task_kwargs'))
+
         res.update(
             meta, result=result, task_args=task_args,
             task_kwargs=task_kwargs,
