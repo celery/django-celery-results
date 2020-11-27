@@ -6,7 +6,9 @@ import pytest
 
 from celery import uuid
 from celery import states
+from celery.app.task import Context
 from celery.result import GroupResult, AsyncResult
+from celery.worker.request import Request
 
 from django_celery_results.backends.database import DatabaseBackend
 from django_celery_results.models import ChordCounter, TaskResult
@@ -29,26 +31,46 @@ class test_DatabaseBackend:
             'django_celery_results.backends:DatabaseBackend')
         self.b = DatabaseBackend(app=self.app)
 
+    def _create_request(self, task_id, name, args, kwargs,
+                        argsrepr=None, kwargsrepr=None):
+        msg = self.app.amqp.create_task_message(
+            task_id=task_id,
+            name=name,
+            args=args,
+            kwargs=kwargs,
+            argsrepr=argsrepr,
+            kwargsrepr=kwargsrepr,
+        )
+        headers, properties, body, sent_event = msg
+        context = Context(
+            headers=headers,
+            properties=properties,
+            body=body,
+            sent_event=sent_event,
+        )
+        request = Request(context, decoded=True, task=name)
+        return request
+
     def test_backend__pickle_serialization__dict_result(self):
         self.app.conf.result_serializer = 'pickle'
         self.app.conf.accept_content = {'pickle', 'json'}
         self.b = DatabaseBackend(app=self.app)
 
         tid2 = uuid()
+        request = self._create_request(
+            task_id=tid2,
+            name='my_task',
+            args=['a', 1, SomeClass(67)],
+            kwargs={'c': 6, 'd': 'e', 'f': SomeClass(89)},
+        )
         result = {'foo': 'baz', 'bar': SomeClass(12345)}
-        request = mock.MagicMock()
-        request.task = 'my_task'
-        request.args = ['a', 1, SomeClass(67)]
-        request.kwargs = {'c': 6, 'd': 'e', 'f': SomeClass(89)}
-        request.hostname = 'celery@ip-0-0-0-0'
-        request.chord = None
-        del request.argsrepr, request.kwargsrepr
 
         self.b.mark_as_done(tid2, result, request=request)
         mindb = self.b.get_task_meta(tid2)
 
         assert mindb.get('result').get('foo') == 'baz'
         assert mindb.get('result').get('bar').data == 12345
+        assert len(mindb.get('worker')) > 1
         assert mindb.get('task_name') == 'my_task'
 
         assert len(mindb.get('task_args')) == 3
@@ -76,20 +98,20 @@ class test_DatabaseBackend:
         self.b = DatabaseBackend(app=self.app)
 
         tid2 = uuid()
+        request = self._create_request(
+            task_id=tid2,
+            name='my_task',
+            args=['a', 1, SomeClass(67)],
+            kwargs={'c': 6, 'd': 'e', 'f': SomeClass(89)},
+        )
         result = 'foo'
-        request = mock.MagicMock()
-        request.task = 'my_task'
-        request.args = ['a', 1, SomeClass(67)]
-        request.kwargs = {'c': 6, 'd': 'e', 'f': SomeClass(89)}
-        request.hostname = 'celery@ip-0-0-0-0'
-        request.chord = None
-        del request.argsrepr, request.kwargsrepr
 
         self.b.mark_as_done(tid2, result, request=request)
         mindb = self.b.get_task_meta(tid2)
 
         assert mindb.get('result') == 'foo'
         assert mindb.get('task_name') == 'my_task'
+        assert len(mindb.get('worker')) > 1
 
         assert len(mindb.get('task_args')) == 3
         assert mindb.get('task_args')[0] == 'a'
@@ -107,20 +129,20 @@ class test_DatabaseBackend:
         self.b = DatabaseBackend(app=self.app)
 
         tid2 = uuid()
+        request = self._create_request(
+            task_id=tid2,
+            name='my_task',
+            args=['a', 1, SomeClass(67)],
+            kwargs={'c': 6, 'd': 'e', 'f': SomeClass(89)},
+        )
         result = b'foo'
-        request = mock.MagicMock()
-        request.task = 'my_task'
-        request.args = ['a', 1, SomeClass(67)]
-        request.kwargs = {'c': 6, 'd': 'e', 'f': SomeClass(89)}
-        request.hostname = 'celery@ip-0-0-0-0'
-        request.chord = None
-        del request.argsrepr, request.kwargsrepr
 
         self.b.mark_as_done(tid2, result, request=request)
         mindb = self.b.get_task_meta(tid2)
 
         assert mindb.get('result') == b'foo'
         assert mindb.get('task_name') == 'my_task'
+        assert len(mindb.get('worker')) > 1
 
         assert len(mindb.get('task_args')) == 3
         assert mindb.get('task_args')[0] == 'a'
@@ -164,14 +186,14 @@ class test_DatabaseBackend:
 
     def test_backend_secrets(self):
         tid = uuid()
-        request = mock.MagicMock()
-        request.task = 'my_task'
-        request.args = ['a', 1, 'password']
-        request.kwargs = {'c': 3, 'd': 'e', 'password': 'password'}
-        request.argsrepr = 'argsrepr'
-        request.kwargsrepr = 'kwargsrepr'
-        request.hostname = 'celery@ip-0-0-0-0'
-        request.chord = None
+        request = self._create_request(
+            task_id=tid,
+            name='my_task',
+            args=['a', 1, 'password'],
+            kwargs={'c': 3, 'd': 'e', 'password': 'password'},
+            argsrepr='argsrepr',
+            kwargsrepr='kwargsrepr',
+        )
         result = {'foo': 'baz'}
 
         self.b.mark_as_done(tid, result, request=request)
@@ -179,7 +201,7 @@ class test_DatabaseBackend:
         mindb = self.b.get_task_meta(tid)
         assert mindb.get('task_args') == 'argsrepr'
         assert mindb.get('task_kwargs') == 'kwargsrepr'
-        assert mindb.get('worker') == 'celery@ip-0-0-0-0'
+        assert len(mindb.get('worker')) > 1
 
     def test_on_chord_part_return(self):
         """Test if the ChordCounter is properly decremented and the callback is
