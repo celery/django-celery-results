@@ -110,6 +110,27 @@ class test_DatabaseBackend:
         assert ar.args == mindb.get('task_args')
         assert ar.kwargs == mindb.get('task_kwargs')
 
+        # check backward compatibility
+        task_kwargs2 = str(request.kwargs)
+        task_args2 = str(request.args)
+        assert tr.task_args != task_args2
+        assert tr.task_kwargs != task_kwargs2
+        tr.task_args = task_args2
+        tr.task_kwargs = task_kwargs2
+        tr.save()
+        mindb = self.b.get_task_meta(tid2)
+        assert bool(re.match(
+            r"\['a', 1, <.*SomeClass object at .*>\]",
+            mindb.get('task_args')
+        ))
+        assert bool(re.match(
+            r"{'c': 6, 'd': 'e', 'f': <.*SomeClass object at .*>}",
+            mindb.get('task_kwargs')
+        ))
+        ar = AsyncResult(tid2)
+        assert ar.args == mindb.get('task_args')
+        assert ar.kwargs == mindb.get('task_kwargs')
+
         tid3 = uuid()
         try:
             raise KeyError('foo')
@@ -233,6 +254,21 @@ class test_DatabaseBackend:
         assert json.loads(tr.task_kwargs) == "{'c': 6, 'd': 'e', 'f': False}"
 
         # check async_result
+        ar = AsyncResult(tid2)
+        assert ar.args == mindb.get('task_args')
+        assert ar.kwargs == mindb.get('task_kwargs')
+
+        # check backward compatibility
+        task_kwargs2 = str(request.kwargs)
+        task_args2 = str(request.args)
+        assert tr.task_args != task_args2
+        assert tr.task_kwargs != task_kwargs2
+        tr.task_args = task_args2
+        tr.task_kwargs = task_kwargs2
+        tr.save()
+        mindb = self.b.get_task_meta(tid2)
+        assert mindb.get('task_args') == "['a', 1, True]"
+        assert mindb.get('task_kwargs') == "{'c': 6, 'd': 'e', 'f': False}"
         ar = AsyncResult(tid2)
         assert ar.args == mindb.get('task_args')
         assert ar.kwargs == mindb.get('task_kwargs')

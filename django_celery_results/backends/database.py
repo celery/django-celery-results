@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
+import binascii
 import json
 
 from celery import maybe_signature
@@ -8,6 +9,7 @@ from celery.exceptions import ChordError
 from celery.result import allow_join_result
 from celery.utils.serialization import b64encode, b64decode
 from celery.utils.log import get_logger
+from kombu.exceptions import DecodeError
 from django.db import transaction
 
 from ..models import TaskResult, ChordCounter
@@ -75,8 +77,14 @@ class DatabaseBackend(BaseDictBackend):
         res = obj.as_dict()
         meta = self.decode_content(obj, res.pop('meta', None)) or {}
         result = self.decode_content(obj, res.get('result'))
-        task_args = self.decode_content(obj, res.get('task_args'))
-        task_kwargs = self.decode_content(obj, res.get('task_kwargs'))
+
+        task_args = res.get('task_args')
+        task_kwargs = res.get('task_kwargs')
+        try:
+            task_args = self.decode_content(obj, task_args)
+            task_kwargs = self.decode_content(obj, task_kwargs)
+        except (DecodeError, binascii.Error):
+            pass
 
         # the right names are args/kwargs, not task_args/task_kwargs,
         # keep both for backward compatibility
