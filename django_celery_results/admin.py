@@ -23,7 +23,8 @@ class TaskResultAdmin(admin.ModelAdmin):
     list_display = ('task_id', 'task_name', 'date_done', 'status', 'worker')
     list_filter = ('status', 'date_done', 'task_name', 'worker')
     readonly_fields = ('date_created', 'date_done', 'result', 'meta')
-    search_fields = ('task_name', 'task_id', 'status')
+    search_fields = ('task_name', 'task_id', 'status', 'task_args',
+                     'task_kwargs')
     fieldsets = (
         (None, {
             'fields': (
