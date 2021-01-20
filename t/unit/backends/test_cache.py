@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 import pytest
 import sys
 
@@ -14,7 +12,7 @@ from celery import uuid
 from django_celery_results.backends.cache import CacheBackend
 
 
-class SomeClass(object):
+class SomeClass:
 
     def __init__(self, data):
         self.data = data

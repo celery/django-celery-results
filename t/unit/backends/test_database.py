@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 import mock
 import celery
 import json
@@ -19,7 +17,7 @@ from django_celery_results.backends.database import DatabaseBackend
 from django_celery_results.models import ChordCounter, TaskResult
 
 
-class SomeClass(object):
+class SomeClass:
 
     def __init__(self, data):
         self.data = data
