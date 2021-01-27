@@ -137,8 +137,11 @@ class DatabaseBackend(BaseDictBackend):
             # SELECT FOR UPDATE is not supported on all databases
             chord_counter = (
                 ChordCounter.objects.select_for_update()
-                .get(group_id=gid)
+                .filter(group_id=gid).first()
             )
+            if chord_counter is None:
+                logger.warning("Can't find ChordCounter for Group %s", gid)
+                return
             chord_counter.count -= 1
             if chord_counter.count != 0:
                 chord_counter.save()

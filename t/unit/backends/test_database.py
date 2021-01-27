@@ -725,6 +725,17 @@ class test_DatabaseBackend:
 
         request.chord.delay.assert_called_once()
 
+    def test_on_chord_part_return_counter_not_found(self):
+        """Test if the chord does not raise an error if the ChordCounter is not found
+
+        Basically this covers the case where a chord was created with a version
+        <2.0.0 and the update was done before the chord was finished
+        """
+        request = mock.MagicMock()
+        request.id = uuid()
+        request.group = uuid()
+        self.b.on_chord_part_return(request=request, state=None, result=None)
+
     def test_callback_failure(self):
         """Test if a failure in the chord callback is properly handled"""
         gid = uuid()
