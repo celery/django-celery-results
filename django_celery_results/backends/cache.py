@@ -1,5 +1,4 @@
 """Celery cache backend using the Django Cache Framework."""
-from __future__ import absolute_import, unicode_literals
 
 from django.core.cache import cache as default_cache, caches
 
@@ -10,7 +9,7 @@ class CacheBackend(KeyValueStoreBackend):
     """Backend using the Django cache framework to store task metadata."""
 
     def __init__(self, *args, **kwargs):
-        super(CacheBackend, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Must make sure backend doesn't convert exceptions to dict.
         self.serializer = 'pickle'

@@ -1,5 +1,4 @@
-from __future__ import absolute_import, unicode_literals
-
+import binascii
 import json
 
 from celery import maybe_signature
@@ -8,6 +7,7 @@ from celery.exceptions import ChordError
 from celery.result import allow_join_result
 from celery.utils.serialization import b64encode, b64decode
 from celery.utils.log import get_logger
+from kombu.exceptions import DecodeError
 from django.db import transaction
 
 from ..models import TaskResult, ChordCounter, GroupResult
@@ -23,24 +23,42 @@ class DatabaseBackend(BaseDictBackend):
     GroupModel = GroupResult
     subpolling_interval = 0.5
 
-    def _store_result(self, task_id, result, status,
-                      traceback=None, request=None, using=None):
+    def _store_result(self, task_id, result, status, traceback=None, request=None, using=None):
         """Store return value and status of an executed task."""
         content_type, content_encoding, result = self.encode_content(result)
-        _, _, meta = self.encode_content({
-            'children': self.current_task_children(request),
-        })
+        _, _, meta = self.encode_content({'children': self.current_task_children(request),})
 
-        task_name = getattr(request, 'task', None) if request else None
-        task_args = getattr(request,
-                            'argsrepr', getattr(request, 'args', None))
-        task_kwargs = getattr(request,
-                              'kwargsrepr', getattr(request, 'kwargs', None))
+        task_name = getattr(request, 'task', None)
         worker = getattr(request, 'hostname', None)
 
+        # Get input arguments
+        if getattr(request, 'argsrepr', None) is not None:
+            # task protocol 2
+            task_args = request.argsrepr
+        else:
+            # task protocol 1
+            task_args = getattr(request, 'args', None)
+
+        if getattr(request, 'kwargsrepr', None) is not None:
+            # task protocol 2
+            task_kwargs = request.kwargsrepr
+        else:
+            # task protocol 1
+            task_kwargs = getattr(request, 'kwargs', None)
+
+        # Encode input arguments
+        if task_args is not None:
+            _, _, task_args = self.encode_content(task_args)
+
+        if task_kwargs is not None:
+            _, _, task_kwargs = self.encode_content(task_kwargs)
+
         self.TaskModel._default_manager.store_result(
-            content_type, content_encoding,
-            task_id, result, status,
+            content_type,
+            content_encoding,
+            task_id,
+            result,
+            status,
             traceback=traceback,
             meta=meta,
             task_name=task_name,
@@ -56,8 +74,26 @@ class DatabaseBackend(BaseDictBackend):
         obj = self.TaskModel._default_manager.get_task(task_id)
         res = obj.as_dict()
         meta = self.decode_content(obj, res.pop('meta', None)) or {}
-        res.update(meta,
-                   result=self.decode_content(obj, res.get('result')))
+        result = self.decode_content(obj, res.get('result'))
+
+        task_args = res.get('task_args')
+        task_kwargs = res.get('task_kwargs')
+        try:
+            task_args = self.decode_content(obj, task_args)
+            task_kwargs = self.decode_content(obj, task_kwargs)
+        except (DecodeError, binascii.Error):
+            pass
+
+        # the right names are args/kwargs, not task_args/task_kwargs,
+        # keep both for backward compatibility
+        res.update(
+            meta,
+            result=result,
+            task_args=task_args,
+            task_kwargs=task_kwargs,
+            args=task_args,
+            kwargs=task_kwargs,
+        )
         return self.meta_from_decoded(res)
 
     def encode_content(self, data):
@@ -113,9 +149,7 @@ class DatabaseBackend(BaseDictBackend):
         """Add a ChordCounter with the expected number of results"""
         results = [r.as_tuple() for r in header_result]
         data = json.dumps(results)
-        ChordCounter.objects.create(
-            group_id=header_result.id, sub_tasks=data, count=len(results)
-        )
+        ChordCounter.objects.create(group_id=header_result.id, sub_tasks=data, count=len(results))
 
     def on_chord_part_return(self, request, state, result, **kwargs):
         """Called on finishing each part of a Chord header"""
@@ -128,10 +162,7 @@ class DatabaseBackend(BaseDictBackend):
             # wrap the update in a transaction
             # with a `select_for_update` lock to prevent race conditions.
             # SELECT FOR UPDATE is not supported on all databases
-            chord_counter = (
-                ChordCounter.objects.select_for_update()
-                .get(group_id=gid)
-            )
+            chord_counter = ChordCounter.objects.select_for_update().get(group_id=gid)
             chord_counter.count -= 1
             if chord_counter.count != 0:
                 chord_counter.save()
@@ -144,22 +175,14 @@ class DatabaseBackend(BaseDictBackend):
             deps = chord_counter.group_result(app=self.app)
             if deps.ready():
                 callback = maybe_signature(request.chord, app=self.app)
-                trigger_callback(
-                    app=self.app,
-                    callback=callback,
-                    group_result=deps
-                )
+                trigger_callback(app=self.app, callback=callback, group_result=deps)
 
 
 def trigger_callback(app, callback, group_result):
     """Add the callback to the queue or mark the callback as failed
     Implementation borrowed from `celery.app.builtins.unlock_chord`
     """
-    j = (
-        group_result.join_native
-        if group_result.supports_native_join
-        else group_result.join
-    )
+    j = group_result.join_native if group_result.supports_native_join else group_result.join
 
     try:
         with allow_join_result():

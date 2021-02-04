@@ -1,16 +1,13 @@
-# -*- coding: utf-8 -*-
 """Celery result backends for Django."""
 # :copyright: (c) 2016, Ask Solem.
 #             All rights reserved.
 # :license:   BSD (3 Clause), see LICENSE for more details.
 
-from __future__ import absolute_import, unicode_literals
-
 import re
 
 from collections import namedtuple
 
-__version__ = '1.2.1'
+__version__ = '2.0.1'
 __author__ = 'Asif Saif Uddin, Ask Solem'
 __contact__ = 'auvipy@gmai.com, ask@celeryproject.org'
 __homepage__ = 'https://github.com/celery/django-celery-results'
