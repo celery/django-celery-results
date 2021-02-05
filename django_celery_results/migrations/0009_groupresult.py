@@ -17,7 +17,10 @@ class Migration(migrations.Migration):
                 (
                     'id',
                     models.AutoField(
-                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID'
                     ),
                 ),
                 (
@@ -26,7 +29,9 @@ class Migration(migrations.Migration):
                         db_index=True,
                         help_text='Celery ID for the Group that was run',
                         max_length=getattr(
-                            settings, 'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH', 255
+                            settings,
+                            'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
+                            255
                         ),
                         unique=True,
                         verbose_name='Group ID',
@@ -37,7 +42,8 @@ class Migration(migrations.Migration):
                     models.DateTimeField(
                         auto_now_add=True,
                         db_index=True,
-                        help_text='Datetime field when the group result was created in UTC',
+                        help_text='Datetime field when the group result'
+                                  ' was created in UTC',
                         verbose_name='Created DateTime',
                     ),
                 ),
@@ -46,7 +52,10 @@ class Migration(migrations.Migration):
                     models.DateTimeField(
                         auto_now=True,
                         db_index=True,
-                        help_text='Datetime field when the group was completed in UTC',
+                        help_text=(
+                            'Datetime field when the group'
+                            'was completed in UTC'
+                        ),
                         verbose_name='Completed DateTime',
                     ),
                 ),
@@ -61,7 +70,8 @@ class Migration(migrations.Migration):
                 (
                     'content_encoding',
                     models.CharField(
-                        help_text='The encoding used to save the task result data',
+                        help_text='The encoding used to save the '
+                                  'task result data',
                         max_length=64,
                         verbose_name='Result Encoding',
                     ),
@@ -71,7 +81,8 @@ class Migration(migrations.Migration):
                     models.TextField(
                         default=None,
                         editable=False,
-                        help_text='The data returned by the task.  Use content_encoding and content_type fields to read.',
+                        help_text='The data returned by the task. Use '
+                        'content_encoding and content_type fields to read.',
                         null=True,
                         verbose_name='Result Data',
                     ),

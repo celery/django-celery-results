@@ -23,10 +23,20 @@ class DatabaseBackend(BaseDictBackend):
     GroupModel = GroupResult
     subpolling_interval = 0.5
 
-    def _store_result(self, task_id, result, status, traceback=None, request=None, using=None):
+    def _store_result(
+            self,
+            task_id,
+            result,
+            status,
+            traceback=None,
+            request=None,
+            using=None
+    ):
         """Store return value and status of an executed task."""
         content_type, content_encoding, result = self.encode_content(result)
-        _, _, meta = self.encode_content({'children': self.current_task_children(request),})
+        _, _, meta = self.encode_content(
+            {'children': self.current_task_children(request)}
+        )
 
         task_name = getattr(request, 'task', None)
         worker = getattr(request, 'hostname', None)
@@ -127,13 +137,16 @@ class DatabaseBackend(BaseDictBackend):
             res = group_result.as_dict()
             decoded_result = self.decode_content(group_result, res["result"])
             res["result"] = (
-                [self.app.AsyncResult(tid) for tid in decoded_result] if decoded_result else None
+                [self.app.AsyncResult(tid) for tid in decoded_result]
+                if decoded_result else None
             )
             return res
 
     def _save_group(self, group_id, group_result):
         """Store return value of group"""
-        content_type, content_encoding, result = self.encode_content([r.id for r in group_result])
+        content_type, content_encoding, result = self.encode_content(
+            [r.id for r in group_result]
+        )
         self.GroupModel._default_manager.store_group_result(
             content_type, content_encoding, group_id, result
         )
@@ -149,7 +162,9 @@ class DatabaseBackend(BaseDictBackend):
         """Add a ChordCounter with the expected number of results"""
         results = [r.as_tuple() for r in header_result]
         data = json.dumps(results)
-        ChordCounter.objects.create(group_id=header_result.id, sub_tasks=data, count=len(results))
+        ChordCounter.objects.create(
+            group_id=header_result.id, sub_tasks=data, count=len(results)
+        )
 
     def on_chord_part_return(self, request, state, result, **kwargs):
         """Called on finishing each part of a Chord header"""
@@ -162,7 +177,12 @@ class DatabaseBackend(BaseDictBackend):
             # wrap the update in a transaction
             # with a `select_for_update` lock to prevent race conditions.
             # SELECT FOR UPDATE is not supported on all databases
-            chord_counter = ChordCounter.objects.select_for_update().get(group_id=gid)
+            chord_counter = (
+                ChordCounter
+                .objects
+                .select_for_update()
+                .get(group_id=gid)
+            )
             chord_counter.count -= 1
             if chord_counter.count != 0:
                 chord_counter.save()
@@ -175,14 +195,19 @@ class DatabaseBackend(BaseDictBackend):
             deps = chord_counter.group_result(app=self.app)
             if deps.ready():
                 callback = maybe_signature(request.chord, app=self.app)
-                trigger_callback(app=self.app, callback=callback, group_result=deps)
+                trigger_callback(
+                    app=self.app, callback=callback, group_result=deps
+                )
 
 
 def trigger_callback(app, callback, group_result):
     """Add the callback to the queue or mark the callback as failed
     Implementation borrowed from `celery.app.builtins.unlock_chord`
     """
-    j = group_result.join_native if group_result.supports_native_join else group_result.join
+    if group_result.supports_native_join:
+        j = group_result.join_native
+    else:
+        j = group_result.join
 
     try:
         with allow_join_result():

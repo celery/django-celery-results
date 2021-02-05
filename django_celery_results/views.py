@@ -27,6 +27,7 @@ def task_status(request, task_id):
                               'traceback': traceback})
     return JsonResponse({'task': response_data})
 
+
 def is_group_successful(request, group_id):
     results = GroupResult.restore(group_id)
 
@@ -34,11 +35,12 @@ def is_group_successful(request, group_id):
         'group': {
             'id': group_id,
             'results': [
-                {'id': task.id, 'executed': task.successful() }
+                {'id': task.id, 'executed': task.successful()}
                 for task in results
             ] if results else []
         }
     })
+
 
 def group_status(request, group_id):
     """Return task status and result in JSON format."""

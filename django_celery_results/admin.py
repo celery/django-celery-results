@@ -66,6 +66,7 @@ class TaskResultAdmin(admin.ModelAdmin):
 
 admin.site.register(TaskResult, TaskResultAdmin)
 
+
 class GroupResultAdmin(admin.ModelAdmin):
     model = GroupResult
     date_hierarchy = 'date_done'
@@ -73,5 +74,6 @@ class GroupResultAdmin(admin.ModelAdmin):
     list_filter = ('date_done',)
     readonly_fields = ('date_created', 'date_done', 'result')
     search_fields = ('group_id',)
+
 
 admin.site.register(GroupResult, GroupResultAdmin)

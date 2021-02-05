@@ -152,7 +152,11 @@ class GroupResult(models.Model):
     """Task Group result/status."""
 
     group_id = models.CharField(
-        max_length=getattr(settings, "DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH", 255),
+        max_length=getattr(
+            settings,
+            "DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH",
+            255
+        ),
         unique=True,
         db_index=True,
         verbose_name=_("Group ID"),
