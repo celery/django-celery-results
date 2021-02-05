@@ -29,6 +29,7 @@ def task_status(request, task_id):
 
 
 def is_group_successful(request, group_id):
+    """Return if group was successfull as boolean."""
     results = GroupResult.restore(group_id)
 
     return JsonResponse({

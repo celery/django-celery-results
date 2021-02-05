@@ -68,6 +68,8 @@ admin.site.register(TaskResult, TaskResultAdmin)
 
 
 class GroupResultAdmin(admin.ModelAdmin):
+    """Admin-interface for results  of grouped tasks."""
+
     model = GroupResult
     date_hierarchy = 'date_done'
     list_display = ('group_id', 'date_done')

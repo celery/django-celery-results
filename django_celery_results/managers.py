@@ -58,6 +58,8 @@ def transaction_retry(max_retries=1):
 
 
 class ResultManager(models.Manager):
+    """Generic manager for celery results."""
+
     def warn_if_repeatable_read(self):
         if 'mysql' in self.current_engine().lower():
             cursor = self.connection_for_read().cursor()
