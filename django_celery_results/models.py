@@ -1,18 +1,15 @@
 """Database models."""
 
 import json
+import celery
 
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from celery import states
-from celery.result import GroupResult, result_from_tuple
-
-
 from . import managers
 
-ALL_STATES = sorted(states.ALL_STATES)
+ALL_STATES = sorted(celery.states.ALL_STATES)
 TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
 
 
@@ -43,7 +40,7 @@ class TaskResult(models.Model):
         help_text=_('JSON representation of the named arguments '
                     'used with the task'))
     status = models.CharField(
-        max_length=50, default=states.PENDING, db_index=True,
+        max_length=50, default=celery.states.PENDING, db_index=True,
         choices=TASK_STATE_CHOICES,
         verbose_name=_('Task State'),
         help_text=_('Current state of the task being run'))
@@ -142,9 +139,9 @@ class ChordCounter(models.Model):
         ---------
             app (Celery): app instance to create the GroupResult with.
         """
-        return GroupResult(
+        return celery.result.GroupResult(
             self.group_id,
-            [result_from_tuple(r, app=app)
+            [celery.result.result_from_tuple(r, app=app)
              for r in json.loads(self.sub_tasks)],
         )
 
