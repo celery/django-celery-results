@@ -52,10 +52,8 @@ class Migration(migrations.Migration):
                     models.DateTimeField(
                         auto_now=True,
                         db_index=True,
-                        help_text=(
-                            'Datetime field when the group'
-                            'was completed in UTC'
-                        ),
+                        help_text='Datetime field when the '
+                        'group was completed in UTC',
                         verbose_name='Completed DateTime',
                     ),
                 ),
@@ -81,8 +79,8 @@ class Migration(migrations.Migration):
                     models.TextField(
                         default=None,
                         editable=False,
-                        help_text='The data returned by the task. Use '
-                        'content_encoding and content_type fields to read.',
+                        help_text='The data returned by the task.  '
+                        'Use content_encoding and content_type fields to read.',
                         null=True,
                         verbose_name='Result Data',
                     ),
