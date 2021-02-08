@@ -12,21 +12,16 @@ from . import views
 
 
 class TaskPatternConverter:
-    """
-    custom path converter for task & group id's,
-    then are slightly different from the built 'uuid'
-    """
+    """custom path converter for task & group id's, then are slightly different from the built 'uuid'."""
 
     regex = r'[\w\d\-\.]+'
 
     def to_python(self, value):
-        """convert url to python value"""
-
+        """Convert url to python value."""
         return str(value)
 
     def to_url(self, value):
-        """convert python value into url, just a string"""
-
+        """Convert python value into url, just a string."""
         return value
 
 

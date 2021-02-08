@@ -79,8 +79,8 @@ class Migration(migrations.Migration):
                     models.TextField(
                         default=None,
                         editable=False,
-                        help_text='The data returned by the task.  '
-                        'Use content_encoding and content_type fields to read.',
+                        help_text='The data returned by the task.  Use '
+                        'content_encoding and content_type fields to read.',
                         null=True,
                         verbose_name='Result Data',
                     ),
