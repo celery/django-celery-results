@@ -12,7 +12,10 @@ from . import views
 
 
 class TaskPatternConverter:
-    """custom path converter for task & group id's, then are slightly different from the built 'uuid'."""
+    """Custom path converter for task & group id's.
+
+    They are slightly different from the built `uuid`
+    """
 
     regex = r'[\w\d\-\.]+'
 
