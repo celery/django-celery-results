@@ -90,7 +90,6 @@ class test_Views(TestCase):
         result = json.loads(response.content.decode('utf-8'))
         assert len(result['group']['results']) == 0
 
-
         taskmeta = self.create_task_result()
         TaskResult.objects.store_result(
             'application/json',
