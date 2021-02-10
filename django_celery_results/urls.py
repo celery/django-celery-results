@@ -6,7 +6,7 @@
     URL  to :func:`~celery.views.task_status`.
 """
 
-from django.conf.urls import path, register_converter
+from django.urls import path, register_converter
 
 from . import views
 
