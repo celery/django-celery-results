@@ -12,3 +12,4 @@ class CeleryResultConfig(AppConfig):
     name = 'django_celery_results'
     label = 'django_celery_results'
     verbose_name = _('Celery Results')
+    default_auto_field = 'django.db.models.AutoField'
