@@ -148,6 +148,7 @@ class ChordCounter(models.Model):
             self.group_id,
             [result_from_tuple(r, app=app)
              for r in json.loads(self.sub_tasks)],
+            app=app
         )
 
 
