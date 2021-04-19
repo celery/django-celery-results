@@ -32,22 +32,22 @@ register_converter(TaskPatternConverter, 'task_pattern')
 
 urlpatterns = [
     path(
-        r'<task_pattern:task_id>/done/',
+        '<task_pattern:task_id>/done/',
         views.is_task_successful,
         name='celery-is_task_successful'
     ),
     path(
-        r'<task_pattern:task_id>/status/',
+        '<task_pattern:task_id>/status/',
         views.task_status,
         name='celery-task_status'
     ),
     path(
-        r'<task_pattern:group_id>/group/done/',
+        '<task_pattern:group_id>/group/done/',
         views.is_group_successful,
         name='celery-is_group_successful'
     ),
     path(
-        r'<task_patern:group_id>/group/status/',
+        '<task_patern:group_id>/group/status/',
         views.group_status,
         name='celery-group_status'
     ),
