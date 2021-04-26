@@ -197,7 +197,9 @@ class DatabaseBackend(BaseDictBackend):
             if deps.ready():
                 callback = maybe_signature(request.chord, app=self.app)
                 trigger_callback(
-                    app=self.app, callback=callback, group_result=deps
+                    app=self.app,
+                    callback=callback,
+                    group_result=deps
                 )
 
 
