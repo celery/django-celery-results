@@ -161,9 +161,10 @@ class DatabaseBackend(BaseDictBackend):
     def apply_chord(self, header_result, body, **kwargs):
         """Add a ChordCounter with the expected number of results"""
         results = [r.as_tuple() for r in header_result]
+        chord_size = body.get("chord_size", None) or len(results)
         data = json.dumps(results)
         ChordCounter.objects.create(
-            group_id=header_result.id, sub_tasks=data, count=len(results)
+            group_id=header_result.id, sub_tasks=data, count=chord_size
         )
 
     def on_chord_part_return(self, request, state, result, **kwargs):
