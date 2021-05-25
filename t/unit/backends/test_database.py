@@ -723,6 +723,7 @@ class test_DatabaseBackend:
         request.argsrepr = "argsrepr"
         request.kwargsrepr = "kwargsrepr"
         request.hostname = "celery@ip-0-0-0-0"
+        request.ignore_result = False
         result = {"foo": "baz"}
 
         self.b.mark_as_done(tid1, result, request=request)
@@ -770,6 +771,7 @@ class test_DatabaseBackend:
         request.argsrepr = "argsrepr"
         request.kwargsrepr = "kwargsrepr"
         request.hostname = "celery@ip-0-0-0-0"
+        request.ignore_result = False
         request.chord.id = cid
         result = {"foo": "baz"}
 
