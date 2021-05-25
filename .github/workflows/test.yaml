@@ -1,0 +1,71 @@
+name: Test
+
+on:
+    pull_request:
+        branches: [ "master" ]
+
+    push:
+        branches: ["master"]
+
+jobs:
+    matrix:
+        name: Unittest Matrix
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                python-version: [ 3.6, 3.7, 3.8 ]
+                django: [ 22, 30, 31, 32 ]
+        services:
+            postgres:
+                image: postgres
+                # Set health checks to wait until postgres has started
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                ports:
+                    # Maps tcp port 5432 on service container to the host
+                    - 5432:5432
+                env:
+                    # Docker image requires a password to be set
+                    POSTGRES_PASSWORD: "postgres"
+
+        steps:
+            -   uses: actions/checkout@v2
+            -   uses: actions/setup-python@v2.2.2
+                with:
+                    python-version: ${{ matrix.python-version }}
+            -   run: pip install tox
+            -   run: tox -v -- -v
+                env:
+                    TOXENV: py-django${{ matrix.django }}
+
+    rest:
+        name: Integration/Coverage/Docs/Codestyle
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                toxenv: [ flake8, pydocstyle, cov, integration ]
+        services:
+            postgres:
+                image: postgres
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                ports:
+                    - 5432:5432
+                env:
+                    POSTGRES_PASSWORD: "postgres"
+
+        steps:
+            -   uses: actions/checkout@v2
+            -   uses: actions/setup-python@v2.2.2
+                with:
+                    python-version: 3.8
+            -   run: pip install tox
+            -   run: tox -v -- -v
+                env:
+                    TOXENV: ${{ matrix.toxenv }}
