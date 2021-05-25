@@ -29,16 +29,20 @@ try:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
+            'HOST': 'localhost',
             'NAME': 'postgres',
             'USER': 'postgres',
+            'PASSWORD': 'postgres',
             'OPTIONS': {
                 'connect_timeout': 1000,
             }
         },
         'secondary': {
             'ENGINE': 'django.db.backends.postgresql',
+            'HOST': 'localhost',
             'NAME': 'postgres',
             'USER': 'postgres',
+            'PASSWORD': 'postgres',
             'OPTIONS': {
                 'connect_timeout': 1000,
             },
