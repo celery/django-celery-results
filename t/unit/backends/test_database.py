@@ -689,6 +689,18 @@ class test_DatabaseBackend:
         assert json.loads(tr.task_args) == ['a', 1, True]
         assert json.loads(tr.task_kwargs) == {'c': 6, 'd': 'e', 'f': False}
 
+    def test_apply_chord_header_result_arg(self):
+        """Test if apply_chord can handle Celery <= 5.1 call signature"""
+        gid = uuid()
+        tid1 = uuid()
+        tid2 = uuid()
+        subtasks = [AsyncResult(tid1), AsyncResult(tid2)]
+        group = GroupResult(id=gid, results=subtasks)
+        # Celery < 5.1
+        self.b.apply_chord(group, self.add.s())
+        # Celery 5.1
+        self.b.apply_chord((uuid(), subtasks), self.add.s())
+
     def test_on_chord_part_return(self):
         """Test if the ChordCounter is properly decremented and the callback is
         triggered after all chord parts have returned"""

@@ -4,7 +4,7 @@ import json
 from celery import maybe_signature
 from celery.backends.base import BaseDictBackend
 from celery.exceptions import ChordError
-from celery.result import allow_join_result
+from celery.result import allow_join_result, GroupResult
 from celery.utils.serialization import b64encode, b64decode
 from celery.utils.log import get_logger
 from kombu.exceptions import DecodeError
@@ -116,8 +116,14 @@ class DatabaseBackend(BaseDictBackend):
         """Delete expired metadata."""
         self.TaskModel._default_manager.delete_expired(self.expires)
 
-    def apply_chord(self, header_result, body, **kwargs):
+    def apply_chord(self, header_result_args, body, **kwargs):
         """Add a ChordCounter with the expected number of results"""
+        if not isinstance(header_result_args, GroupResult):
+            # Celery 5.1 provides the GroupResult args
+            header_result = self.app.GroupResult(*header_result_args)
+        else:
+            # celery <5.1 will pass a GroupResult object
+            header_result = header_result_args
         results = [r.as_tuple() for r in header_result]
         chord_size = body.get("chord_size", None) or len(results)
         data = json.dumps(results)
