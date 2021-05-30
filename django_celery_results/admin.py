@@ -11,7 +11,7 @@ except (AttributeError, KeyError):
     ALLOW_EDITS = False
     pass
 
-from .models import TaskResult
+from .models import TaskResult, GroupResult
 
 
 class TaskResultAdmin(admin.ModelAdmin):
@@ -65,3 +65,17 @@ class TaskResultAdmin(admin.ModelAdmin):
 
 
 admin.site.register(TaskResult, TaskResultAdmin)
+
+
+class GroupResultAdmin(admin.ModelAdmin):
+    """Admin-interface for results  of grouped tasks."""
+
+    model = GroupResult
+    date_hierarchy = 'date_done'
+    list_display = ('group_id', 'date_done')
+    list_filter = ('date_done',)
+    readonly_fields = ('date_created', 'date_done', 'result')
+    search_fields = ('group_id',)
+
+
+admin.site.register(GroupResult, GroupResultAdmin)

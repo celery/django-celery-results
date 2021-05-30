@@ -7,7 +7,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from celery import states
-from celery.result import GroupResult, result_from_tuple
+from celery.result import result_from_tuple
+from celery.result import GroupResult as CeleryGroupResult
 
 from . import managers
 
@@ -24,11 +25,11 @@ class TaskResult(models.Model):
             'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
             255
         ),
-        unique=True, db_index=True,
+        unique=True,
         verbose_name=_('Task ID'),
         help_text=_('Celery ID for the Task that was run'))
     task_name = models.CharField(
-        null=True, max_length=255, db_index=True,
+        null=True, max_length=255,
         verbose_name=_('Task Name'),
         help_text=_('Name of the Task which was run'))
     task_args = models.TextField(
@@ -42,12 +43,12 @@ class TaskResult(models.Model):
         help_text=_('JSON representation of the named arguments '
                     'used with the task'))
     status = models.CharField(
-        max_length=50, default=states.PENDING, db_index=True,
+        max_length=50, default=states.PENDING,
         choices=TASK_STATE_CHOICES,
         verbose_name=_('Task State'),
         help_text=_('Current state of the task being run'))
     worker = models.CharField(
-        max_length=100, db_index=True, default=None, null=True,
+        max_length=100, default=None, null=True,
         verbose_name=_('Worker'), help_text=_('Worker that executes the task')
     )
     content_type = models.CharField(
@@ -64,11 +65,11 @@ class TaskResult(models.Model):
         help_text=_('The data returned by the task.  '
                     'Use content_encoding and content_type fields to read.'))
     date_created = models.DateTimeField(
-        auto_now_add=True, db_index=True,
+        auto_now_add=True,
         verbose_name=_('Created DateTime'),
         help_text=_('Datetime field when the task result was created in UTC'))
     date_done = models.DateTimeField(
-        auto_now=True, db_index=True,
+        auto_now=True,
         verbose_name=_('Completed DateTime'),
         help_text=_('Datetime field when the task was completed in UTC'))
     traceback = models.TextField(
@@ -90,6 +91,15 @@ class TaskResult(models.Model):
 
         verbose_name = _('task result')
         verbose_name_plural = _('task results')
+
+        indexes = [
+            models.Index(fields=['task_id']),
+            models.Index(fields=['task_name']),
+            models.Index(fields=['status']),
+            models.Index(fields=['worker']),
+            models.Index(fields=['date_created']),
+            models.Index(fields=['date_done']),
+        ]
 
     def as_dict(self):
         return {
@@ -118,7 +128,6 @@ class ChordCounter(models.Model):
             "DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH",
             255),
         unique=True,
-        db_index=True,
         verbose_name=_("Group ID"),
         help_text=_("Celery ID for the Chord header group"),
     )
@@ -135,6 +144,13 @@ class ChordCounter(models.Model):
         )
     )
 
+    class Meta:
+        """Table information."""
+
+        indexes = [
+            models.Index(fields=['group_id']),
+        ]
+
     def group_result(self, app=None):
         """Return the GroupResult of self.
 
@@ -143,9 +159,75 @@ class ChordCounter(models.Model):
             app (Celery): app instance to create the GroupResult with.
 
         """
-        return GroupResult(
+        return CeleryGroupResult(
             self.group_id,
             [result_from_tuple(r, app=app)
              for r in json.loads(self.sub_tasks)],
-            app=app,
+            app=app
         )
+
+
+class GroupResult(models.Model):
+    """Task Group result/status."""
+
+    group_id = models.CharField(
+        max_length=getattr(
+            settings,
+            "DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH",
+            255
+        ),
+        unique=True,
+        verbose_name=_("Group ID"),
+        help_text=_("Celery ID for the Group that was run"),
+    )
+    date_created = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created DateTime"),
+        help_text=_("Datetime field when the group result was created in UTC"),
+    )
+    date_done = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_("Completed DateTime"),
+        help_text=_("Datetime field when the group was completed in UTC"),
+    )
+    content_type = models.CharField(
+        max_length=128,
+        verbose_name=_("Result Content Type"),
+        help_text=_("Content type of the result data"),
+    )
+    content_encoding = models.CharField(
+        max_length=64,
+        verbose_name=_("Result Encoding"),
+        help_text=_("The encoding used to save the task result data"),
+    )
+    result = models.TextField(
+        null=True, default=None, editable=False,
+        verbose_name=_('Result Data'),
+        help_text=_('The data returned by the task.  '
+                    'Use content_encoding and content_type fields to read.'))
+
+    def as_dict(self):
+        return {
+            'group_id': self.group_id,
+            'result': self.result,
+            'date_done': self.date_done,
+        }
+
+    def __str__(self):
+        return '<Group: {0.group_id}>'.format(self)
+
+    objects = managers.GroupResultManager()
+
+    class Meta:
+        """Table information."""
+
+        ordering = ['-date_done']
+
+        verbose_name = _('group result')
+        verbose_name_plural = _('group results')
+
+        indexes = [
+            models.Index(fields=['group_id']),
+            models.Index(fields=['date_created']),
+            models.Index(fields=['date_done']),
+        ]

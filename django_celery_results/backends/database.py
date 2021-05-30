@@ -10,7 +10,7 @@ from celery.utils.log import get_logger
 from kombu.exceptions import DecodeError
 from django.db import transaction
 
-from ..models import TaskResult, ChordCounter
+from ..models import TaskResult, ChordCounter, GroupResult
 
 
 logger = get_logger(__name__)
@@ -20,16 +20,23 @@ class DatabaseBackend(BaseDictBackend):
     """The Django database backend, using models to store task state."""
 
     TaskModel = TaskResult
-
+    GroupModel = GroupResult
     subpolling_interval = 0.5
 
-    def _store_result(self, task_id, result, status,
-                      traceback=None, request=None, using=None):
+    def _store_result(
+            self,
+            task_id,
+            result,
+            status,
+            traceback=None,
+            request=None,
+            using=None
+    ):
         """Store return value and status of an executed task."""
         content_type, content_encoding, result = self.encode_content(result)
-        _, _, meta = self.encode_content({
-            'children': self.current_task_children(request),
-        })
+        _, _, meta = self.encode_content(
+            {'children': self.current_task_children(request)}
+        )
 
         task_name = getattr(request, 'task', None)
         worker = getattr(request, 'hostname', None)
@@ -57,8 +64,11 @@ class DatabaseBackend(BaseDictBackend):
             _, _, task_kwargs = self.encode_content(task_kwargs)
 
         self.TaskModel._default_manager.store_result(
-            content_type, content_encoding,
-            task_id, result, status,
+            content_type,
+            content_encoding,
+            task_id,
+            result,
+            status,
             traceback=traceback,
             meta=meta,
             task_name=task_name,
@@ -87,7 +97,9 @@ class DatabaseBackend(BaseDictBackend):
         # the right names are args/kwargs, not task_args/task_kwargs,
         # keep both for backward compatibility
         res.update(
-            meta, result=result, task_args=task_args,
+            meta,
+            result=result,
+            task_args=task_args,
             task_kwargs=task_kwargs,
             args=task_args,
             kwargs=task_kwargs,
@@ -115,6 +127,36 @@ class DatabaseBackend(BaseDictBackend):
     def cleanup(self):
         """Delete expired metadata."""
         self.TaskModel._default_manager.delete_expired(self.expires)
+        self.GroupModel._default_manager.delete_expired(self.expires)
+
+    def _restore_group(self, group_id):
+        """return result value for a group by id."""
+        group_result = self.GroupModel._default_manager.get_group(group_id)
+
+        if group_result:
+            res = group_result.as_dict()
+            decoded_result = self.decode_content(group_result, res["result"])
+            res["result"] = (
+                [self.app.AsyncResult(tid) for tid in decoded_result]
+                if decoded_result else None
+            )
+            return res
+
+    def _save_group(self, group_id, group_result):
+        """Store return value of group"""
+        content_type, content_encoding, result = self.encode_content(
+            [r.id for r in group_result]
+        )
+        self.GroupModel._default_manager.store_group_result(
+            content_type, content_encoding, group_id, result
+        )
+        return group_result
+
+    def _delete_group(self, group_id):
+        try:
+            self.GroupModel._default_manager.get_group(group_id).delete()
+        except self.TaskModel.DoesNotExist:
+            pass
 
     def apply_chord(self, header_result_args, body, **kwargs):
         """Add a ChordCounter with the expected number of results"""
@@ -170,14 +212,12 @@ class DatabaseBackend(BaseDictBackend):
 
 def trigger_callback(app, callback, group_result):
     """Add the callback to the queue or mark the callback as failed
-
     Implementation borrowed from `celery.app.builtins.unlock_chord`
     """
-    j = (
-        group_result.join_native
-        if group_result.supports_native_join
-        else group_result.join
-    )
+    if group_result.supports_native_join:
+        j = group_result.join_native
+    else:
+        j = group_result.join
 
     try:
         with allow_join_result():

@@ -6,8 +6,12 @@ from django.test.client import RequestFactory
 
 from celery import states, uuid
 
-from django_celery_results.models import TaskResult
-from django_celery_results.views import is_task_successful, task_status
+from django_celery_results.models import TaskResult, GroupResult
+from django_celery_results.views import (
+    is_task_successful,
+    task_status,
+    is_group_successful
+)
 
 
 @pytest.mark.usefixtures('depends_on_current_app')
@@ -71,3 +75,39 @@ class test_Views(TestCase):
         assert response
         result = json.loads(response.content.decode('utf-8'))
         assert result['task']['status'] == states.SUCCESS
+
+    def create_group_result(self):
+        id = uuid()
+        meta, created = GroupResult.objects.get_or_create(group_id=id)
+        return meta
+
+    def test_is_group_successful(self):
+        meta = self.create_group_result()
+        request = self.factory.get('/group/done/{}'.format(meta.group_id))
+        response = is_group_successful(request, meta.group_id)
+        assert response
+
+        result = json.loads(response.content.decode('utf-8'))
+        assert len(result['group']['results']) == 0
+
+        taskmeta = self.create_task_result()
+        TaskResult.objects.store_result(
+            'application/json',
+            'utf-8',
+            taskmeta.task_id,
+            json.dumps({'result': True}),
+            status=states.SUCCESS
+        )
+        GroupResult.objects.store_group_result(
+            'application/json',
+            'utf-8',
+            meta.group_id,
+            json.dumps([taskmeta.task_id]),
+        )
+
+        request = self.factory.get('/group/done/{}'.format(meta.group_id))
+        response = is_group_successful(request, meta.group_id)
+        assert response
+        result = json.loads(response.content.decode('utf-8'))
+
+        assert result['group']['results'][0]['executed'] is True

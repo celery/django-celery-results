@@ -2,7 +2,7 @@
 from django.http import JsonResponse
 
 from celery import states
-from celery.result import AsyncResult
+from celery.result import AsyncResult, GroupResult
 from celery.utils import get_full_cls_name
 from kombu.utils.encoding import safe_repr
 
@@ -25,4 +25,27 @@ def task_status(request, task_id):
         response_data.update({'result': safe_repr(retval),
                               'exc': get_full_cls_name(retval.__class__),
                               'traceback': traceback})
+    return JsonResponse({'task': response_data})
+
+
+def is_group_successful(request, group_id):
+    """Return if group was successfull as boolean."""
+    results = GroupResult.restore(group_id)
+
+    return JsonResponse({
+        'group': {
+            'id': group_id,
+            'results': [
+                {'id': task.id, 'executed': task.successful()}
+                for task in results
+            ] if results else []
+        }
+    })
+
+
+def group_status(request, group_id):
+    """Return task status and result in JSON format."""
+    result = GroupResult.restore(group_id)
+    retval = result.result
+    response_data = {'id': group_id, 'result': retval}
     return JsonResponse({'task': response_data})
