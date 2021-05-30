@@ -4,6 +4,20 @@
  Change history
 ================
 
+.. _version-2.1.0:
+
+2.1.0
+=====
+:release-date: 2021-05-30 08:45 p.m. UTC+6:00
+:release-by: Asif Saif Uddin
+
+- Don't raise an error when ChordCounter is not found 
+- add default_auto_field to apps.py
+- Use the provided chord_size when available
+- Match apply_chord call signature to Celery 5.1
+- Add support for GroupResult (#161)
+- Minor code clean up
+
 .. _version-2.0.1:
 
 2.0.1
@@ -17,7 +31,7 @@
 - Test refactors
 - Add task_args and task_kwargs to admins searchable fields (#182) 
 
-.. _version-2.0.1:
+.. _version-2.0.0:
 
 2.0.0
 =====
