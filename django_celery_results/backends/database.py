@@ -10,7 +10,7 @@ from celery.utils.log import get_logger
 from kombu.exceptions import DecodeError
 from django.db import transaction
 
-from ..models import TaskResult, ChordCounter, GroupResult
+from ..models import TaskResult, ChordCounter, GroupResult as GroupResultModel
 
 
 logger = get_logger(__name__)
@@ -20,7 +20,7 @@ class DatabaseBackend(BaseDictBackend):
     """The Django database backend, using models to store task state."""
 
     TaskModel = TaskResult
-    GroupModel = GroupResult
+    GroupModel = GroupResultModel
     subpolling_interval = 0.5
 
     def _store_result(
