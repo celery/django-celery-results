@@ -4,7 +4,7 @@ import json
 from celery import maybe_signature
 from celery.backends.base import BaseDictBackend
 from celery.exceptions import ChordError
-from celery.result import allow_join_result, GroupResult
+from celery.result import allow_join_result, result_from_tuple, GroupResult
 from celery.utils.serialization import b64encode, b64decode
 from celery.utils.log import get_logger
 from kombu.exceptions import DecodeError
@@ -136,16 +136,15 @@ class DatabaseBackend(BaseDictBackend):
         if group_result:
             res = group_result.as_dict()
             decoded_result = self.decode_content(group_result, res["result"])
-            res["result"] = (
-                [self.app.AsyncResult(tid) for tid in decoded_result]
-                if decoded_result else None
-            )
+            res["result"] = None
+            if decoded_result:
+                res["result"] = result_from_tuple(decoded_result, app=self.app)
             return res
 
     def _save_group(self, group_id, group_result):
         """Store return value of group"""
         content_type, content_encoding, result = self.encode_content(
-            [r.id for r in group_result]
+            group_result.as_tuple()
         )
         self.GroupModel._default_manager.store_group_result(
             content_type, content_encoding, group_id, result
