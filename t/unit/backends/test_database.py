@@ -831,3 +831,29 @@ class test_DatabaseBackend:
             ChordCounter.objects.get(group_id=gid)
 
         request.chord.delay.assert_not_called()
+
+    def test_groupresult_save_restore(self):
+        """Test if we can save and restore a GroupResult"""
+        group_id = uuid()
+        results = [AsyncResult(id=uuid())]
+        group = GroupResult(id=group_id, results=results)
+
+        group.save(backend=self.b)
+
+        restored_group = self.b.restore_group(group_id=group_id)
+
+        assert restored_group == group
+
+    def test_groupresult_save_restore_nested(self):
+        """Test if we can save and restore a nested GroupResult"""
+        group_id = uuid()
+        async_result = AsyncResult(id=uuid())
+        nested_results = [AsyncResult(id=uuid()), AsyncResult(id=uuid())]
+        nested_group = GroupResult(id=uuid(), results=nested_results)
+        group = GroupResult(id=group_id, results=[nested_group, async_result])
+
+        group.save(backend=self.b)
+
+        restored_group = self.b.restore_group(group_id=group_id)
+
+        assert restored_group == group
