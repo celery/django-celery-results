@@ -8,7 +8,7 @@
 
 2.1.0
 =====
-:release-date: 2021-05-30 08:45 p.m. UTC+6:00
+:release-date: 2021-06-14 09:00 p.m. UTC+6:00
 :release-by: Asif Saif Uddin
 
 - Don't raise an error when ChordCounter is not found 
