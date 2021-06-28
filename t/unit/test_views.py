@@ -12,7 +12,7 @@ from django_celery_results.views import (
     is_task_successful,
     task_status,
     is_group_successful,
-    group_status,
+    group_status
 )
 
 
@@ -47,7 +47,7 @@ class test_Views(TestCase):
             'utf-8',
             taskmeta.task_id,
             json.dumps({'result': True}),
-            status=states.SUCCESS,
+            status=states.SUCCESS
         )
 
         request = self.factory.get('/done/{}'.format(taskmeta.task_id))
@@ -69,7 +69,7 @@ class test_Views(TestCase):
             'utf-8',
             taskmeta.task_id,
             json.dumps({'result': True}),
-            status=states.SUCCESS,
+            status=states.SUCCESS
         )
 
         request = self.factory.get('/status/{}'.format(taskmeta.task_id))
