@@ -44,7 +44,7 @@ def is_group_successful(request, group_id):
 
 
 def group_status(request, group_id):
-    """Return group id and its list of async results status and result in JSON format."""
+    """Return group id and its async results status & result in JSON format."""
     result = GroupResult.restore(group_id)
     retval = [
         {"result": async_result.result, "status": async_result.status}
