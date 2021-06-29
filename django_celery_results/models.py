@@ -93,7 +93,6 @@ class TaskResult(models.Model):
         verbose_name_plural = _('task results')
 
         indexes = [
-            models.Index(fields=['task_id']),
             models.Index(fields=['task_name']),
             models.Index(fields=['status']),
             models.Index(fields=['worker']),
@@ -143,13 +142,6 @@ class ChordCounter(models.Model):
             "finished"
         )
     )
-
-    class Meta:
-        """Table information."""
-
-        indexes = [
-            models.Index(fields=['group_id']),
-        ]
 
     def group_result(self, app=None):
         """Return the GroupResult of self.
@@ -227,7 +219,6 @@ class GroupResult(models.Model):
         verbose_name_plural = _('group results')
 
         indexes = [
-            models.Index(fields=['group_id']),
             models.Index(fields=['date_created']),
             models.Index(fields=['date_done']),
         ]

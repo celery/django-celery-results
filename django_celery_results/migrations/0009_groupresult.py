@@ -3,6 +3,21 @@ from django.conf import settings
 from django.db import migrations, models
 
 
+class FakeAddIndex(migrations.AddIndex):
+    """Fake AddIndex to correct for duplicate index
+    added in the original 0009 migration
+    """
+    def database_forwards(self, *args, **kwargs):
+        """Don't do anything"""
+
+    def database_backwards(self, *args, **kwargs):
+        """Also don't do anything on reverting this migration
+
+        The duplicate index will be cleaned up when migrating from the
+        original 0009 to the cleanup 0010
+        """
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -140,13 +155,13 @@ class Migration(migrations.Migration):
                 null=True,
                 verbose_name='Worker'),
         ),
-        migrations.AddIndex(
+        FakeAddIndex(
             model_name='chordcounter',
             index=models.Index(
                 fields=['group_id'],
                 name='django_cele_group_i_299b0d_idx'),
         ),
-        migrations.AddIndex(
+        FakeAddIndex(
             model_name='taskresult',
             index=models.Index(
                 fields=['task_id'],
@@ -182,7 +197,7 @@ class Migration(migrations.Migration):
                 fields=['date_done'],
                 name='django_cele_date_do_f59aad_idx'),
         ),
-        migrations.AddIndex(
+        FakeAddIndex(
             model_name='groupresult',
             index=models.Index(
                 fields=['group_id'],
