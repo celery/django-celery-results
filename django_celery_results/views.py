@@ -51,5 +51,4 @@ def group_status(request, group_id):
         for async_result in result.results
     ]
     response_data = {'id': group_id, 'results': retval}
-    print(response_data)
     return JsonResponse({'group': response_data})
