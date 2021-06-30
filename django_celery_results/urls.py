@@ -47,7 +47,7 @@ urlpatterns = [
         name='celery-is_group_successful'
     ),
     path(
-        '<task_patern:group_id>/group/status/',
+        '<task_pattern:group_id>/group/status/',
         views.group_status,
         name='celery-group_status'
     ),
