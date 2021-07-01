@@ -11,7 +11,8 @@ from django_celery_results.models import TaskResult, GroupResult
 from django_celery_results.views import (
     is_task_successful,
     task_status,
-    is_group_successful
+    is_group_successful,
+    group_status
 )
 
 
@@ -100,3 +101,13 @@ class test_Views(TestCase):
         assert len(result['group']['results']) == 1
         result = json.loads(response.content.decode('utf-8'))
         assert result['group']['results'][0]['executed'] is True
+
+    def test_group_status(self):
+        meta = self.create_group_result()
+        request = self.factory.get('/group/status/{}'.format(meta.group_id))
+        response = group_status(request, meta.group_id)
+        assert response
+
+        result = json.loads(response.content.decode('utf-8'))
+        assert len(result["group"]["results"]) == 1
+        assert result["group"]["results"][0]["status"] == states.SUCCESS
