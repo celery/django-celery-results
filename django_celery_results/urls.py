@@ -57,7 +57,8 @@ urlpatterns = [
 
 if getattr(settings, 'DJANGO_CELERY_RESULTS_ID_FIRST_URLS', True):
     warnings.warn(
-        "ID first urls depricated, use noun first urls instead",
+        "ID first urls depricated, use noun first urls instead."
+        "Will be removed in 2022.",
         DeprecationWarning
     )
 
