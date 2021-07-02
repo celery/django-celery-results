@@ -5,7 +5,9 @@
 * ``/$task_id/status/``
     URL  to :func:`~celery.views.task_status`.
 """
+import warnings
 
+from django.conf import settings
 from django.urls import path, register_converter
 
 from . import views
@@ -32,23 +34,53 @@ register_converter(TaskPatternConverter, 'task_pattern')
 
 urlpatterns = [
     path(
-        '<task_pattern:task_id>/done/',
+        'task/done/<task_pattern:task_id>/',
         views.is_task_successful,
         name='celery-is_task_successful'
     ),
     path(
-        '<task_pattern:task_id>/status/',
+        'task/status/<task_pattern:task_id>/',
         views.task_status,
         name='celery-task_status'
     ),
     path(
-        '<task_pattern:group_id>/group/done/',
+        'group/done/<task_pattern:group_id>/',
         views.is_group_successful,
         name='celery-is_group_successful'
     ),
     path(
-        '<task_pattern:group_id>/group/status/',
+        'group/status/<task_pattern:group_id> /',
         views.group_status,
         name='celery-group_status'
     ),
 ]
+
+if getattr(settings, 'DJANGO_CELERY_RESULTS_ID_FIRST_URLS', True):
+    warnings.warn(
+        "ID first urls depricated, use noun first urls instead."
+        "Will be removed in 2022.",
+        DeprecationWarning
+    )
+
+    urlpatterns += [
+        path(
+            '<task_pattern:task_id>/done/',
+            views.is_task_successful,
+            name='celery-is_task_successful'
+        ),
+        path(
+            '<task_pattern:task_id>/status/',
+            views.task_status,
+            name='celery-task_status'
+        ),
+        path(
+            '<task_pattern:group_id>/group/done/',
+            views.is_group_successful,
+            name='celery-is_group_successful'
+        ),
+        path(
+            '<task_pattern:group_id>/group/status/',
+            views.group_status,
+            name='celery-group_status'
+        ),
+    ]
