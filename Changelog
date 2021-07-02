@@ -4,6 +4,20 @@
  Change history
 ================
 
+.. _version-2.2.0:
+
+2.2.0
+=====
+:release-date: 2021-07-02 11:00 a.m. UTC+6:00
+:release-by: Asif Saif Uddin
+
+- add new urls with nouns first structure (#216) 
+- Remove duplicate indexes 
+- fix group status view return data, add tests for it (#215)
+- typo fix (#218)
+- Use the DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH for group_id/task_id
+- Minor code clean up
+
 .. _version-2.1.0:
 
 2.1.0
