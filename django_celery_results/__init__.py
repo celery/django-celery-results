@@ -7,6 +7,8 @@ import re
 
 from collections import namedtuple
 
+import django
+
 __version__ = '2.2.0'
 __author__ = 'Asif Saif Uddin, Ask Solem'
 __contact__ = 'auvipy@gmai.com, ask@celeryproject.org'
@@ -30,4 +32,5 @@ del(re)
 
 __all__ = []
 
-default_app_config = 'django_celery_results.apps.CeleryResultConfig'
+if django.VERSION < (3, 2):
+    default_app_config = 'django_celery_results.apps.CeleryResultConfig'
