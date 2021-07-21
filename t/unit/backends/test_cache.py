@@ -1,13 +1,9 @@
-import pytest
 import sys
-
 from datetime import timedelta
 
+import pytest
 from billiard.einfo import ExceptionInfo
-
-from celery import result
-from celery import states
-from celery import uuid
+from celery import result, states, uuid
 
 from django_celery_results.backends.cache import CacheBackend
 

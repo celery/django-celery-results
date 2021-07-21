@@ -4,14 +4,15 @@ import json
 from celery import maybe_signature
 from celery.backends.base import BaseDictBackend
 from celery.exceptions import ChordError
-from celery.result import allow_join_result, result_from_tuple, GroupResult
-from celery.utils.serialization import b64encode, b64decode
+from celery.result import GroupResult, allow_join_result, result_from_tuple
 from celery.utils.log import get_logger
-from kombu.exceptions import DecodeError
+from celery.utils.serialization import b64decode, b64encode
 from django.db import transaction
+from kombu.exceptions import DecodeError
 
-from ..models import TaskResult, ChordCounter, GroupResult as GroupResultModel
-
+from ..models import ChordCounter
+from ..models import GroupResult as GroupResultModel
+from ..models import TaskResult
 
 logger = get_logger(__name__)
 

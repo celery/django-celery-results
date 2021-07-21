@@ -6,8 +6,8 @@
 
 from __future__ import absolute_import, unicode_literals
 
-from django.db import migrations, models
 import django.utils.timezone
+from django.db import migrations, models
 
 
 def copy_date_done_to_date_created(apps, schema_editor):

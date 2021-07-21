@@ -1,8 +1,7 @@
 """Result Task Admin interface."""
 
-from django.contrib import admin
-
 from django.conf import settings
+from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
 try:
@@ -11,7 +10,7 @@ except (AttributeError, KeyError):
     ALLOW_EDITS = False
     pass
 
-from .models import TaskResult, GroupResult
+from .models import GroupResult, TaskResult
 
 
 class TaskResultAdmin(admin.ModelAdmin):

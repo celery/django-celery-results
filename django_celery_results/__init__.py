@@ -4,7 +4,6 @@
 # :license:   BSD (3 Clause), see LICENSE for more details.
 
 import re
-
 from collections import namedtuple
 
 import django

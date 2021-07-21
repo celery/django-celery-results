@@ -1,14 +1,13 @@
-import mock
-import celery
 import json
-import pytest
-import re
 import pickle
+import re
 
-from celery import uuid
-from celery import states
+import celery
+import mock
+import pytest
+from celery import states, uuid
 from celery.app.task import Context
-from celery.result import GroupResult, AsyncResult
+from celery.result import AsyncResult, GroupResult
 from celery.utils.serialization import b64decode
 from celery.worker.request import Request
 from celery.worker.strategy import hybrid_to_proto2

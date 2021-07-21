@@ -1,18 +1,18 @@
 import json
-import pytest
 
+import pytest
+from celery import states, uuid
+from celery.result import AsyncResult
+from celery.result import GroupResult as CeleryGroupResult
 from django.test import TestCase
 from django.test.client import RequestFactory
 
-from celery import states, uuid
-from celery.result import GroupResult as CeleryGroupResult, AsyncResult
-
-from django_celery_results.models import TaskResult, GroupResult
+from django_celery_results.models import GroupResult, TaskResult
 from django_celery_results.views import (
+    group_status,
+    is_group_successful,
     is_task_successful,
     task_status,
-    is_group_successful,
-    group_status
 )
 
 

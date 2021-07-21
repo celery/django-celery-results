@@ -1,9 +1,8 @@
 """Views."""
-from django.http import JsonResponse
-
 from celery import states
 from celery.result import AsyncResult, GroupResult
 from celery.utils import get_full_cls_name
+from django.http import JsonResponse
 from kombu.utils.encoding import safe_repr
 
 
