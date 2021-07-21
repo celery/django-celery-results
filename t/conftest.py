@@ -1,6 +1,11 @@
 import pytest
 
-pytest_plugins = ("celery.contrib.pytest", )
+# we have to import the pytest plugin fixtures here,
+# in case user did not do the `python setup.py develop` yet,
+# that installs the pytest plugin into the setuptools registry.
+from celery.contrib.pytest import (celery_app, celery_enable_logging,
+                                   celery_parameters, depends_on_current_app,
+                                   celery_config, use_celery_app_trap)
 from celery.contrib.testing.app import TestApp, Trap
 
 # Tricks flake8 into silencing redefining fixtures warnings.
