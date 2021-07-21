@@ -3,7 +3,7 @@ import pickle
 import re
 
 import celery
-import mock
+from unittest import mock
 import pytest
 from celery import states, uuid
 from celery.app.task import Context

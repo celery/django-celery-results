@@ -205,7 +205,7 @@ class GroupResult(models.Model):
         }
 
     def __str__(self):
-        return '<Group: {0.group_id}>'.format(self)
+        return f'<Group: {self.group_id}>'
 
     objects = managers.GroupResultManager()
 

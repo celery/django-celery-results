@@ -225,7 +225,7 @@ def trigger_callback(app, callback, group_result):
     except Exception as exc:  # pylint: disable=broad-except
         try:
             culprit = next(group_result._failed_join_report())
-            reason = "Dependency {0.id} raised {1!r}".format(culprit, exc)
+            reason = f"Dependency {culprit.id} raised {exc!r}"
         except StopIteration:
             reason = repr(exc)
         logger.exception("Chord %r raised: %r", group_result.id, exc)
@@ -236,5 +236,5 @@ def trigger_callback(app, callback, group_result):
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Chord %r raised: %r", group_result.id, exc)
             app.backend.chord_error_from_stack(
-                callback, exc=ChordError("Callback error: {0!r}".format(exc))
+                callback, exc=ChordError(f"Callback error: {exc!r}")
             )

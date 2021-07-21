@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import codecs
 import os
@@ -18,7 +17,7 @@ except (AttributeError, ImportError):
 
 NAME = 'django_celery_results'
 
-E_UNSUPPORTED_PYTHON = '%s 1.0 requires %%s %%s or later!' % (NAME,)
+E_UNSUPPORTED_PYTHON = f'{NAME} 1.0 requires %s %s or later!'
 
 PYIMP = _pyimp()
 PY36_OR_LESS = sys.version_info < (3, 6)
@@ -111,7 +110,7 @@ def reqs(*f):
 if os.path.exists('README.rst'):
     long_description = codecs.open('README.rst', 'r', 'utf-8').read()
 else:
-    long_description = 'See http://pypi.python.org/pypi/%s' % (NAME,)
+    long_description = f'See http://pypi.python.org/pypi/{NAME}'
 
 # -*- %%% -*-
 

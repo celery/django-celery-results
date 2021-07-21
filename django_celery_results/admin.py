@@ -58,9 +58,9 @@ class TaskResultAdmin(admin.ModelAdmin):
         if ALLOW_EDITS:
             return self.readonly_fields
         else:
-            return list(set(
-                [field.name for field in self.opts.local_fields]
-            ))
+            return list({
+                field.name for field in self.opts.local_fields
+            })
 
 
 admin.site.register(TaskResult, TaskResultAdmin)
