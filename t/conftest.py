@@ -1,8 +1,5 @@
 import pytest
 
-# we have to import the pytest plugin fixtures here,
-# in case user did not do the `python setup.py develop` yet,
-# that installs the pytest plugin into the setuptools registry.
 pytest_plugins = ("celery.contrib.pytest", )
 from celery.contrib.testing.app import TestApp, Trap
 
