@@ -1,9 +1,9 @@
 import json
 import pickle
 import re
+from unittest import mock
 
 import celery
-from unittest import mock
 import pytest
 from celery import states, uuid
 from celery.app.task import Context
