@@ -1,18 +1,18 @@
 import json
-import pytest
 
+import pytest
+from celery import states, uuid
+from celery.result import AsyncResult
+from celery.result import GroupResult as CeleryGroupResult
 from django.test import TestCase
 from django.test.client import RequestFactory
 
-from celery import states, uuid
-from celery.result import GroupResult as CeleryGroupResult, AsyncResult
-
-from django_celery_results.models import TaskResult, GroupResult
+from django_celery_results.models import GroupResult, TaskResult
 from django_celery_results.views import (
+    group_status,
+    is_group_successful,
     is_task_successful,
     task_status,
-    is_group_successful,
-    group_status
 )
 
 
@@ -36,7 +36,7 @@ class test_Views(TestCase):
 
     def test_is_task_successful(self):
         taskmeta = self.create_task_result()
-        request = self.factory.get('/done/{}'.format(taskmeta.task_id))
+        request = self.factory.get(f'/done/{taskmeta.task_id}')
         response = is_task_successful(request, taskmeta.task_id)
         assert response
         result = json.loads(response.content.decode('utf-8'))
@@ -50,7 +50,7 @@ class test_Views(TestCase):
             status=states.SUCCESS
         )
 
-        request = self.factory.get('/done/{}'.format(taskmeta.task_id))
+        request = self.factory.get(f'/done/{taskmeta.task_id}')
         response = is_task_successful(request, taskmeta.task_id)
         assert response
         result = json.loads(response.content.decode('utf-8'))
@@ -58,7 +58,7 @@ class test_Views(TestCase):
 
     def test_task_status(self):
         taskmeta = self.create_task_result()
-        request = self.factory.get('/status/{}'.format(taskmeta.task_id))
+        request = self.factory.get(f'/status/{taskmeta.task_id}')
         response = task_status(request, taskmeta.task_id)
         assert response
         result = json.loads(response.content.decode('utf-8'))
@@ -72,7 +72,7 @@ class test_Views(TestCase):
             status=states.SUCCESS
         )
 
-        request = self.factory.get('/status/{}'.format(taskmeta.task_id))
+        request = self.factory.get(f'/status/{taskmeta.task_id}')
         response = task_status(request, taskmeta.task_id)
         assert response
         result = json.loads(response.content.decode('utf-8'))
@@ -93,7 +93,7 @@ class test_Views(TestCase):
 
     def test_is_group_successful(self):
         meta = self.create_group_result()
-        request = self.factory.get('/group/done/{}'.format(meta.group_id))
+        request = self.factory.get(f'/group/done/{meta.group_id}')
         response = is_group_successful(request, meta.group_id)
         assert response
 
@@ -104,7 +104,7 @@ class test_Views(TestCase):
 
     def test_group_status(self):
         meta = self.create_group_result()
-        request = self.factory.get('/group/status/{}'.format(meta.group_id))
+        request = self.factory.get(f'/group/status/{meta.group_id}')
         response = group_status(request, meta.group_id)
         assert response
 

@@ -1,11 +1,11 @@
 import os
 
-from django.test import TestCase
 from django.apps import apps
-from django.db.migrations.state import ProjectState
 from django.db.migrations.autodetector import MigrationAutodetector
 from django.db.migrations.loader import MigrationLoader
 from django.db.migrations.questioner import NonInteractiveMigrationQuestioner
+from django.db.migrations.state import ProjectState
+from django.test import TestCase
 
 from django_celery_results import migrations as result_migrations
 

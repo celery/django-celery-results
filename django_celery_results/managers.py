@@ -1,15 +1,12 @@
 """Model managers."""
 
 import warnings
-
 from functools import wraps
 from itertools import count
 
 from celery.utils.time import maybe_timedelta
-
-from django.db import connections, router, transaction
-from django.db import models
 from django.conf import settings
+from django.db import connections, models, router, transaction
 
 from .utils import now
 

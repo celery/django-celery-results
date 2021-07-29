@@ -4,14 +4,15 @@ import json
 from celery import maybe_signature
 from celery.backends.base import BaseDictBackend
 from celery.exceptions import ChordError
-from celery.result import allow_join_result, result_from_tuple, GroupResult
-from celery.utils.serialization import b64encode, b64decode
+from celery.result import GroupResult, allow_join_result, result_from_tuple
 from celery.utils.log import get_logger
-from kombu.exceptions import DecodeError
+from celery.utils.serialization import b64decode, b64encode
 from django.db import transaction
+from kombu.exceptions import DecodeError
 
-from ..models import TaskResult, ChordCounter, GroupResult as GroupResultModel
-
+from ..models import ChordCounter
+from ..models import GroupResult as GroupResultModel
+from ..models import TaskResult
 
 logger = get_logger(__name__)
 
@@ -224,7 +225,7 @@ def trigger_callback(app, callback, group_result):
     except Exception as exc:  # pylint: disable=broad-except
         try:
             culprit = next(group_result._failed_join_report())
-            reason = "Dependency {0.id} raised {1!r}".format(culprit, exc)
+            reason = f"Dependency {culprit.id} raised {exc!r}"
         except StopIteration:
             reason = repr(exc)
         logger.exception("Chord %r raised: %r", group_result.id, exc)
@@ -235,5 +236,5 @@ def trigger_callback(app, callback, group_result):
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Chord %r raised: %r", group_result.id, exc)
             app.backend.chord_error_from_stack(
-                callback, exc=ChordError("Callback error: {0!r}".format(exc))
+                callback, exc=ChordError(f"Callback error: {exc!r}")
             )

@@ -1,13 +1,11 @@
-import pytest
-
 from datetime import datetime, timedelta
 
+import pytest
+from celery import states, uuid
 from django.db import transaction
 from django.test import TransactionTestCase
 
-from celery import states, uuid
-
-from django_celery_results.models import TaskResult, GroupResult
+from django_celery_results.models import GroupResult, TaskResult
 from django_celery_results.utils import now
 
 

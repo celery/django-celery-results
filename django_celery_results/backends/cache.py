@@ -1,8 +1,8 @@
 """Celery cache backend using the Django Cache Framework."""
 
-from django.core.cache import cache as default_cache, caches
-
 from celery.backends.base import KeyValueStoreBackend
+from django.core.cache import cache as default_cache
+from django.core.cache import caches
 
 
 class CacheBackend(KeyValueStoreBackend):

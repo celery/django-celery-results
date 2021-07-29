@@ -7,7 +7,7 @@ while in-place changing migration 0009
 to not add the duplicates for new installs
 """
 
-from django.db import migrations, DatabaseError
+from django.db import DatabaseError, migrations
 
 
 class TryRemoveIndex(migrations.RemoveIndex):
