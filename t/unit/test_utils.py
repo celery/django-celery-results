@@ -12,7 +12,7 @@ class RawDeleteTest(TransactionTestCase):
 
     def setUp(self):
         # setup test results to be used against raw_delete
-        results = TaskResult.objects.bulk_create(
+        TaskResult.objects.bulk_create(
             [TaskResult(task_id=uuid()) for _ in range(_TEST_RECORDS_COUNT)]
         )
         assert TaskResult.objects.count() == _TEST_RECORDS_COUNT
@@ -24,14 +24,15 @@ class RawDeleteTest(TransactionTestCase):
         assert TaskResult.objects.count() == 0
 
     def test_correct_rows_delete(self):
-        # get random 10 rows
-        sample_count = 10
-        sample_result_ids = TaskResult.objects.values_list("pk").all().order_by("?")[:sample_count]
+        # sample random 10 rows
+        sample_size = 10
+        sample_ids = TaskResult.objects.values_list("pk").order_by("?")[:sample_size]
         # update task_name to "test"
-        TaskResult.objects.filter(pk__in=sample_result_ids).update(task_name="test")
+        TaskResult.objects.filter(pk__in=sample_ids).update(task_name="test")
         # "raw delete" results with name = "test"
         raw_delete(
             queryset=TaskResult.objects.filter(task_name="test")
         )
         assert TaskResult.objects.filter(task_name="test").count() == 0
-        assert TaskResult.objects.count() == (_TEST_RECORDS_COUNT - sample_count)
+        results_remaining = _TEST_RECORDS_COUNT - sample_size
+        assert TaskResult.objects.count() == results_remaining
