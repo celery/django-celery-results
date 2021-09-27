@@ -18,8 +18,5 @@ def now():
 
 
 def raw_delete(queryset):
-    """
-    Raw delete given queryset. This is to avoid loading objects
-    in-memory (in certain conditions like - singals or cascade check).
-    """
+    """Raw delete given queryset, to avoid loading objects in some conditions."""
     return queryset._raw_delete(queryset.db)
