@@ -18,5 +18,5 @@ def now():
 
 
 def raw_delete(queryset):
-    """Raw delete given queryset, to avoid loading objects."""
+    """Raw delete given queryset."""
     return queryset._raw_delete(queryset.db)
