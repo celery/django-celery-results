@@ -17,7 +17,7 @@ class RawDeleteTest(TransactionTestCase):
         )
         assert TaskResult.objects.count() == _TEST_RECORDS_COUNT
 
-    def _get_sample_results(self, count):
+    def _get_sample_result_ids(self, count):
         return TaskResult.objects.values_list("pk").order_by("?")[:count]
 
     def test_all_rows_delete(self):
@@ -26,10 +26,10 @@ class RawDeleteTest(TransactionTestCase):
         )
         assert TaskResult.objects.count() == 0
 
-    def test_correct_rows_delete(self):
+    def test_correct_rows_deleted(self):
         # sample random 10 rows
         sample_size = 10
-        sample_ids = self._get_sample_results(count=sample_size)
+        sample_ids = self._get_sample_result_ids(count=sample_size)
         # update task_name to "test"
         TaskResult.objects.filter(pk__in=sample_ids).update(task_name="test")
         # "raw delete" results with name = "test"
