@@ -1,11 +1,6 @@
 import os
 
-from django.apps import apps
 from django.core.management import call_command
-from django.db.migrations.autodetector import MigrationAutodetector
-from django.db.migrations.loader import MigrationLoader
-from django.db.migrations.questioner import NonInteractiveMigrationQuestioner
-from django.db.migrations.state import ProjectState
 from django.test import TestCase, override_settings
 
 from django_celery_results import migrations as result_migrations
