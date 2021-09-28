@@ -36,4 +36,4 @@ class MigrationTests(TestCase):
         This logic make sure that no pending migrations created even if
         the user changes the `DEFAULT_AUTO_FIELD`.
         """
-        self.test_no_pending_migrations()
+        self.test_models_match_migrations()
