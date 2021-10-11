@@ -61,8 +61,9 @@ class test_CacheBackend:
         assert rindb.get('bar').data == 12345
 
     def test_convert_key_from_byte_to_str(self):
-        """ Tests that key in byte form passed into cache are succesfully retrieved """
-        tid = str_to_bytes(uuid())
+        """ Tests that key in byte form passed into cache 
+            are succesfully completed """
+        tid = bytes_to_str(uuid())
 
         assert self.b.get_status(tid) == states.PENDING
         assert self.b.get_result(tid) is None
@@ -70,7 +71,7 @@ class test_CacheBackend:
         self.b.mark_as_done(tid, 42)
         assert self.b.get_status(tid) == states.SUCCESS
         assert self.b.get_result(tid) == 42
-        
+
     def test_mark_as_failure(self):
         einfo = None
         tid3 = uuid()
