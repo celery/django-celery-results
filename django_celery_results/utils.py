@@ -15,3 +15,8 @@ def now():
         return now_localtime(timezone.now())
     else:
         return timezone.now()
+
+
+def raw_delete(queryset):
+    """Raw delete given queryset."""
+    return queryset._raw_delete(queryset.db)
