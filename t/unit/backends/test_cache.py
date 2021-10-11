@@ -60,7 +60,7 @@ class test_CacheBackend:
         assert rindb.get('foo') == 'baz'
         assert rindb.get('bar').data == 12345
 
-   def test_convert_key_from_byte_to_str(self):
+    def test_convert_key_from_byte_to_str(self):
         """ Tests that key in byte form passed into cache are succesfully retrieved """
         tid = str_to_bytes(uuid())
 
