@@ -3,6 +3,7 @@
 from celery.backends.base import KeyValueStoreBackend
 from django.core.cache import cache as default_cache
 from django.core.cache import caches
+from kombu.utils.encoding import bytes_to_str
 
 
 class CacheBackend(KeyValueStoreBackend):
@@ -15,12 +16,15 @@ class CacheBackend(KeyValueStoreBackend):
         self.serializer = 'pickle'
 
     def get(self, key):
+        key = bytes_to_str(key)
         return self.cache_backend.get(key)
 
     def set(self, key, value):
+        key = bytes_to_str(key)
         self.cache_backend.set(key, value, self.expires)
 
     def delete(self, key):
+        key = bytes_to_str(key)
         self.cache_backend.delete(key)
 
     def encode(self, data):
