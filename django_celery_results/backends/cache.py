@@ -1,9 +1,9 @@
 """Celery cache backend using the Django Cache Framework."""
-from __future__ import absolute_import, unicode_literals
 
-from django.core.cache import cache as default_cache, caches
-from kombu.utils.encoding import bytes_to_str
 from celery.backends.base import KeyValueStoreBackend
+from django.core.cache import cache as default_cache
+from django.core.cache import caches
+from kombu.utils.encoding import bytes_to_str
 
 
 class CacheBackend(KeyValueStoreBackend):
