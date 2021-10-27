@@ -10,7 +10,7 @@ globals().update(conf.build_config(
     canonical_url='http://django-celery-results.readthedocs.io',
     webdomain='',
     github_project='celery/django-celery-results',
-    copyright='2009-2016',
+    copyright='2009-2022',
     django_settings='proj.settings',
     include_intersphinx={'python', 'sphinx', 'django', 'celery'},
     path_additions=[os.path.join(os.pardir, 't')],
