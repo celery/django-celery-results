@@ -136,7 +136,7 @@ msgstr "Мета информация Задания"
 msgid ""
 "JSON meta information about the task, such as information on child tasks"
 msgstr ""
-"JSON мета информаиц о Задании, такая как информация о дочерних Заданиях"
+"JSON мета информация о Задании, такая как информация о дочерних Заданиях"
 
 #: django_celery_results/models.py:91
 msgid "task result"
