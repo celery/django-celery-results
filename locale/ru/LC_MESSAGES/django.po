@@ -102,7 +102,7 @@ msgstr "Данные результата"
 msgid ""
 "The data returned by the task.  Use content_encoding and content_type fields "
 "to read."
-msgstr "Данные возвращенные Заданием. Используйте поля content_encoding и content_type"
+msgstr "Данные возвращенные Заданием. Используйте поля content_encoding и content_type для их чтения."
 
 #: django_celery_results/models.py:68 django_celery_results/models.py:176
 msgid "Created DateTime"
