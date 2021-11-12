@@ -170,11 +170,11 @@ msgstr "Celery ID для группы которая была запущена"
 
 #: django_celery_results/models.py:177
 msgid "Datetime field when the group result was created in UTC"
-msgstr "Поле ДатаВремя когда результат группы был создан в UTC"
+msgstr "Поле ДатаВремя если результат группы был создан в UTC"
 
 #: django_celery_results/models.py:182
 msgid "Datetime field when the group was completed in UTC"
-msgstr "Поле ДатаВремя когда группа была завершена в UTC"
+msgstr "Поле ДатаВремя если группа была завершена в UTC"
 
 #: django_celery_results/models.py:217
 msgid "group result"
