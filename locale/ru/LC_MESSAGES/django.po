@@ -76,7 +76,7 @@ msgstr "Исполнитель"
 
 #: django_celery_results/models.py:51
 msgid "Worker that executes the task"
-msgstr "Испольнитель который выполняет Задание"
+msgstr "Исполнитель который выполняет Задание"
 
 #: django_celery_results/models.py:55 django_celery_results/models.py:186
 msgid "Result Content Type"
