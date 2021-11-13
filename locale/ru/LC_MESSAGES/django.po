@@ -48,11 +48,11 @@ msgstr "Название задачи которая была запущена"
 
 #: django_celery_results/models.py:36
 msgid "Task Positional Arguments"
-msgstr "Позиционные аргументы задачи"
+msgstr "Аргументы задачи"
 
 #: django_celery_results/models.py:37
 msgid "JSON representation of the positional arguments used with the task"
-msgstr "JSON с позиционными аргументами задачи"
+msgstr "JSON с позиционными аргументами задачи (*args)"
 
 #: django_celery_results/models.py:41
 msgid "Task Named Arguments"
@@ -60,7 +60,7 @@ msgstr "Именнованные аргументы задачи"
 
 #: django_celery_results/models.py:42
 msgid "JSON representation of the named arguments used with the task"
-msgstr "JSON с именованными аргументами задачи"
+msgstr "JSON с именованными аргументами задачи (**kwargs)"
 
 #: django_celery_results/models.py:47
 msgid "Task State"
