@@ -32,19 +32,19 @@ msgstr "Результаты Celery"
 
 #: django_celery_results/models.py:28
 msgid "Task ID"
-msgstr "ID Задания"
+msgstr "ID Задачи"
 
 #: django_celery_results/models.py:29
 msgid "Celery ID for the Task that was run"
-msgstr "Celery ID для Задания которое было запущено"
+msgstr "Celery ID для Задачи которое было запущено"
 
 #: django_celery_results/models.py:32
 msgid "Task Name"
-msgstr "Название Задания"
+msgstr "Название Задачи"
 
 #: django_celery_results/models.py:33
 msgid "Name of the Task which was run"
-msgstr "Наименование Задачи которая была запущена"
+msgstr "Название Задачи которая была запущена"
 
 #: django_celery_results/models.py:36
 msgid "Task Positional Arguments"
@@ -106,19 +106,19 @@ msgstr "Данные возвращенные Заданием. Использу
 
 #: django_celery_results/models.py:68 django_celery_results/models.py:176
 msgid "Created DateTime"
-msgstr "ДатаВремя создания"
+msgstr "Дата и время создания"
 
 #: django_celery_results/models.py:69
 msgid "Datetime field when the task result was created in UTC"
-msgstr "Поле ДатаВремя когда результат Задания было создано в UTC"
+msgstr "Поле Дата и время когда результат был создан (UTC)"
 
 #: django_celery_results/models.py:72 django_celery_results/models.py:181
 msgid "Completed DateTime"
-msgstr "ДатаВремя Завершения"
+msgstr "Дата и время завершения"
 
 #: django_celery_results/models.py:73
 msgid "Datetime field when the task was completed in UTC"
-msgstr "Поле ДатаВремя когда Задание было заверщено в UTC"
+msgstr "Поле Дата и время когда задание было завершено (UTC)"
 
 #: django_celery_results/models.py:76
 msgid "Traceback"
@@ -126,17 +126,17 @@ msgstr "Traceback"
 
 #: django_celery_results/models.py:77
 msgid "Text of the traceback if the task generated one"
-msgstr "Текст traceback если Задание его сгенерировало"
+msgstr "Текст traceback, если есть"
 
 #: django_celery_results/models.py:80
 msgid "Task Meta Information"
-msgstr "Мета информация Задания"
+msgstr "Метаинформация Задания"
 
 #: django_celery_results/models.py:81
 msgid ""
 "JSON meta information about the task, such as information on child tasks"
 msgstr ""
-"JSON мета информация о Задании, такая как информация о дочерних Заданиях"
+"JSON мета-информация о Задании, к примеру о дочерних Заданиях"
 
 #: django_celery_results/models.py:91
 msgid "task result"
@@ -144,7 +144,7 @@ msgstr "результат задания"
 
 #: django_celery_results/models.py:92
 msgid "task results"
-msgstr "результаты задания"
+msgstr "результаты заданий"
 
 #: django_celery_results/models.py:129 django_celery_results/models.py:171
 msgid "Group ID"
@@ -158,7 +158,7 @@ msgstr "Celery ID для заголовка группы"
 msgid ""
 "JSON serialized list of task result tuples. use .group_result() to decode"
 msgstr ""
-"JSON сериалованный список таплов результата задания. Используйте .group_result() для декодирования"
+"JSON-список кортежей результата. Используйте .group_result() для декодирования"
 
 #: django_celery_results/models.py:140
 msgid "Starts at len(chord header) and decrements after each task is finished"
@@ -170,11 +170,11 @@ msgstr "Celery ID для группы которая была запущена"
 
 #: django_celery_results/models.py:177
 msgid "Datetime field when the group result was created in UTC"
-msgstr "Поле ДатаВремя если результат группы был создан в UTC"
+msgstr "Дата и время если результат группы был создан (UTC)"
 
 #: django_celery_results/models.py:182
 msgid "Datetime field when the group was completed in UTC"
-msgstr "Поле ДатаВремя если группа была завершена в UTC"
+msgstr "Дата и время, когда группа была завершена (UTC)"
 
 #: django_celery_results/models.py:217
 msgid "group result"
@@ -182,4 +182,4 @@ msgstr "результат группы"
 
 #: django_celery_results/models.py:218
 msgid "group results"
-msgstr "результаты группы"
+msgstr "результаты групп"
