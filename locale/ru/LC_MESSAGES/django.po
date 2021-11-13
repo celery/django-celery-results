@@ -36,51 +36,51 @@ msgstr "ID Задачи"
 
 #: django_celery_results/models.py:29
 msgid "Celery ID for the Task that was run"
-msgstr "Celery ID для Задачи которое было запущено"
+msgstr "Celery ID задачи"
 
 #: django_celery_results/models.py:32
 msgid "Task Name"
-msgstr "Название Задачи"
+msgstr "Название задачи"
 
 #: django_celery_results/models.py:33
 msgid "Name of the Task which was run"
-msgstr "Название Задачи которая была запущена"
+msgstr "Название задачи которая была запущена"
 
 #: django_celery_results/models.py:36
 msgid "Task Positional Arguments"
-msgstr "Позиционные аргументы Задания"
+msgstr "Позиционные аргументы задачи"
 
 #: django_celery_results/models.py:37
 msgid "JSON representation of the positional arguments used with the task"
-msgstr "Представление JSON позиционных аргументов использованных в Задании"
+msgstr "JSON с позиционными аргументами задачи"
 
 #: django_celery_results/models.py:41
 msgid "Task Named Arguments"
-msgstr "Именнованные аргументы Задания"
+msgstr "Именнованные аргументы задачи"
 
 #: django_celery_results/models.py:42
 msgid "JSON representation of the named arguments used with the task"
-msgstr "Представление JSON именованных аргументов использованных в Задании"
+msgstr "JSON с именованными аргументами задачи"
 
 #: django_celery_results/models.py:47
 msgid "Task State"
-msgstr "Состояние Задания"
+msgstr "Статус задачи"
 
 #: django_celery_results/models.py:48
 msgid "Current state of the task being run"
-msgstr "Текущее состояние запущенного Задания"
+msgstr "Текущеий статус запущенной задачи"
 
 #: django_celery_results/models.py:51
 msgid "Worker"
-msgstr "Исполнитель"
+msgstr "Воркер"
 
 #: django_celery_results/models.py:51
 msgid "Worker that executes the task"
-msgstr "Исполнитель который выполняет Задание"
+msgstr "Воркер который выполняет задачу"
 
 #: django_celery_results/models.py:55 django_celery_results/models.py:186
 msgid "Result Content Type"
-msgstr "Тип контента Результата"
+msgstr "Тип контента результата"
 
 #: django_celery_results/models.py:56 django_celery_results/models.py:187
 msgid "Content type of the result data"
@@ -102,7 +102,7 @@ msgstr "Данные результата"
 msgid ""
 "The data returned by the task.  Use content_encoding and content_type fields "
 "to read."
-msgstr "Данные возвращенные Заданием. Используйте поля content_encoding и content_type для их чтения."
+msgstr "Данные, которые вернула задача. Используйте content_encoding и content_type для чтения."
 
 #: django_celery_results/models.py:68 django_celery_results/models.py:176
 msgid "Created DateTime"
@@ -110,7 +110,7 @@ msgstr "Дата и время создания"
 
 #: django_celery_results/models.py:69
 msgid "Datetime field when the task result was created in UTC"
-msgstr "Поле Дата и время когда результат был создан (UTC)"
+msgstr "Дата и время когда результат был создан (UTC)"
 
 #: django_celery_results/models.py:72 django_celery_results/models.py:181
 msgid "Completed DateTime"
@@ -118,7 +118,7 @@ msgstr "Дата и время завершения"
 
 #: django_celery_results/models.py:73
 msgid "Datetime field when the task was completed in UTC"
-msgstr "Поле Дата и время когда задание было завершено (UTC)"
+msgstr "Дата и время когда задача была завершена (UTC)"
 
 #: django_celery_results/models.py:76
 msgid "Traceback"
@@ -130,21 +130,21 @@ msgstr "Текст traceback, если есть"
 
 #: django_celery_results/models.py:80
 msgid "Task Meta Information"
-msgstr "Метаинформация Задания"
+msgstr "Метаинформация задачи"
 
 #: django_celery_results/models.py:81
 msgid ""
 "JSON meta information about the task, such as information on child tasks"
 msgstr ""
-"JSON мета-информация о Задании, к примеру о дочерних Заданиях"
+"JSON мета-информация о задаче, к примеру о дочерних задачах"
 
 #: django_celery_results/models.py:91
 msgid "task result"
-msgstr "результат задания"
+msgstr "результат задачи"
 
 #: django_celery_results/models.py:92
 msgid "task results"
-msgstr "результаты заданий"
+msgstr "результаты задач"
 
 #: django_celery_results/models.py:129 django_celery_results/models.py:171
 msgid "Group ID"
@@ -162,7 +162,7 @@ msgstr ""
 
 #: django_celery_results/models.py:140
 msgid "Starts at len(chord header) and decrements after each task is finished"
-msgstr "Начинается в len(chord header) и декрементируется после каждого завершенного Здаания"
+msgstr "Начинается в len(chord header) и уменьшается после каждого завершенного Здаания"
 
 #: django_celery_results/models.py:172
 msgid "Celery ID for the Group that was run"
