@@ -40,6 +40,7 @@ class DatabaseBackend(BaseDictBackend):
         )
 
         task_name = getattr(request, 'task', None)
+        periodic_task_name = getattr(request, 'properties', None).get('periodic_task_name', None)
         worker = getattr(request, 'hostname', None)
 
         # Get input arguments
@@ -72,6 +73,7 @@ class DatabaseBackend(BaseDictBackend):
             status,
             traceback=traceback,
             meta=meta,
+            periodic_task_name=periodic_task_name,
             task_name=task_name,
             task_args=task_args,
             task_kwargs=task_kwargs,

@@ -27,6 +27,10 @@ class TaskResult(models.Model):
         unique=True,
         verbose_name=_('Task ID'),
         help_text=_('Celery ID for the Task that was run'))
+    periodic_task_name = models.CharField(
+        null=True, max_length=255,
+        verbose_name=_('Periodic Task Name'),
+        help_text=_('Name of the Periodic Task which was run'))
     task_name = models.CharField(
         null=True, max_length=255,
         verbose_name=_('Task Name'),
