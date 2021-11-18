@@ -722,6 +722,7 @@ class test_DatabaseBackend:
         request.argsrepr = "argsrepr"
         request.kwargsrepr = "kwargsrepr"
         request.hostname = "celery@ip-0-0-0-0"
+        request.properties = {"periodic_task_name": "my_periodic_task"}
         request.ignore_result = False
         result = {"foo": "baz"}
 
@@ -770,6 +771,7 @@ class test_DatabaseBackend:
         request.argsrepr = "argsrepr"
         request.kwargsrepr = "kwargsrepr"
         request.hostname = "celery@ip-0-0-0-0"
+        request.properties = {"periodic_task_name": "my_periodic_task"}
         request.ignore_result = False
         request.chord.id = cid
         result = {"foo": "baz"}
@@ -815,6 +817,7 @@ class test_DatabaseBackend:
         request.argsrepr = "argsrepr"
         request.kwargsrepr = "kwargsrepr"
         request.hostname = "celery@ip-0-0-0-0"
+        request.properties = {"periodic_task_name": "my_periodic_task"}
         request.chord.id = cid
         result = {"foo": "baz"}
 
