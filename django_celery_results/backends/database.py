@@ -40,7 +40,8 @@ class DatabaseBackend(BaseDictBackend):
         )
 
         task_name = getattr(request, 'task', None)
-        periodic_task_name = getattr(request, 'properties', None).get('periodic_task_name', None)
+        properties = getattr(request, 'properties', {})
+        periodic_task_name = properties.get('periodic_task_name', None)
         worker = getattr(request, 'hostname', None)
 
         # Get input arguments
