@@ -13,6 +13,9 @@ It defines 2 models (``django_celery_results.models.TaskResult`` and ``django_ce
 used to store task and group results, and you can query these database tables like
 any other Django model.
 
+If your `django-celery-beat` carries `request["properties"]["periodic_task_name"]`,
+it will be stored in `TaskResult.periodic_task_name` to track the periodic task.
+
 Installing
 ==========
 
