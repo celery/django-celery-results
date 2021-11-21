@@ -184,9 +184,9 @@ info:
 
 .PHONY: gettext
 gettext:
-	$(SPHINXBUILD) -b gettext $(I18NSPHINXOPTS) $(BUILDDIR)/locale
+	$(SPHINXBUILD) -b gettext $(I18NSPHINXOPTS) $(BUILDDIR)/django_celery_results/locale
 	@echo
-	@echo "Build finished. The message catalogs are in $(BUILDDIR)/locale."
+	@echo "Build finished. The message catalogs are in $(BUILDDIR)/django_celery_results/locale."
 
 .PHONY: changes
 changes:
