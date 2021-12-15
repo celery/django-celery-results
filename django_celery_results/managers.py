@@ -119,6 +119,7 @@ class TaskResultManager(ResultManager):
     def store_result(self, content_type, content_encoding,
                      task_id, result, status,
                      traceback=None, meta=None,
+                     periodic_task_name=None,
                      task_name=None, task_args=None, task_kwargs=None,
                      worker=None, using=None):
         """Store the result and status of a task.
@@ -128,6 +129,7 @@ class TaskResultManager(ResultManager):
             content_type (str): Mime-type of result and meta content.
             content_encoding (str): Type of encoding (e.g. binary/utf-8).
             task_id (str): Id of task.
+            periodic_task_name (str): Celery Periodic task name.
             task_name (str): Celery task name.
             task_args (str): Task arguments.
             task_kwargs (str): Task kwargs.
@@ -157,6 +159,7 @@ class TaskResultManager(ResultManager):
             'meta': meta,
             'content_encoding': content_encoding,
             'content_type': content_type,
+            'periodic_task_name': periodic_task_name,
             'task_name': task_name,
             'task_args': task_args,
             'task_kwargs': task_kwargs,
