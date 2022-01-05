@@ -84,7 +84,7 @@ msgstr "Worker"
 
 #: models.py:55
 msgid "Worker that executes the task"
-msgstr "Worker que executou a tarefa"
+msgstr "Worker que executa a tarefa"
 
 #: models.py:59 models.py:190
 msgid "Result Content Type"
