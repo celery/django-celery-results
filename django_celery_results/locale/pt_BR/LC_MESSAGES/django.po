@@ -114,19 +114,19 @@ msgstr "Os dados retornados pela tarefa. Use os campos content_encoding e conten
 
 #: models.py:72 models.py:180
 msgid "Created DateTime"
-msgstr "Data e horário de criação"
+msgstr "Data/Horário de criação"
 
 #: models.py:73
 msgid "Datetime field when the task result was created in UTC"
-msgstr "Data e horário em que o resultado da tarefa foi criado (em UTC)"
+msgstr "Data/Horário em que o resultado da tarefa foi criado (em UTC)"
 
 #: models.py:76 models.py:185
 msgid "Completed DateTime"
-msgstr "Data e horário em que foi concluída"
+msgstr "Data/Horário em que foi concluída"
 
 #: models.py:77
 msgid "Datetime field when the task was completed in UTC"
-msgstr "Data e horário em que a tarefa foi concluída (em UTC)"
+msgstr "Data/Horário em que a tarefa foi concluída (em UTC)"
 
 #: models.py:80
 msgid "Traceback"
@@ -176,11 +176,11 @@ msgstr "Id do celery para o grupo que foi executado"
 
 #: models.py:181
 msgid "Datetime field when the group result was created in UTC"
-msgstr "Data e horário em que o resultado do grupo foi criado (em UTC)"
+msgstr "Data/Horário em que o resultado do grupo foi criado (em UTC)"
 
 #: models.py:186
 msgid "Datetime field when the group was completed in UTC"
-msgstr "Data e horário em que o grupo foi concluída (em UTC)"
+msgstr "Data/Horário em que o grupo foi concluída (em UTC)"
 
 #: models.py:221
 msgid "group result"
