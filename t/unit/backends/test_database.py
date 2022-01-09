@@ -45,7 +45,7 @@ class test_DatabaseBackend:
         )
         if task_protocol == 1:
             body, headers, _, _ = hybrid_to_proto2(msg, msg.body)
-            properties = {}
+            properties = None
             sent_event = {}
         else:
             headers, properties, body, sent_event = msg
