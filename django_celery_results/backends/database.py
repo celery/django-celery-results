@@ -40,7 +40,7 @@ class DatabaseBackend(BaseDictBackend):
         )
 
         task_name = getattr(request, 'task', None)
-        properties = getattr(request, 'properties') or {}
+        properties = getattr(request, 'properties', {}) or {}
         periodic_task_name = properties.get('periodic_task_name', None)
         worker = getattr(request, 'hostname', None)
 
