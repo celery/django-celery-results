@@ -95,12 +95,18 @@ class TaskResult(models.Model):
         verbose_name = _('task result')
         verbose_name_plural = _('task results')
 
+        # Explicit names to solve https://code.djangoproject.com/ticket/33483
         indexes = [
-            models.Index(fields=['task_name']),
-            models.Index(fields=['status']),
-            models.Index(fields=['worker']),
-            models.Index(fields=['date_created']),
-            models.Index(fields=['date_done']),
+            models.Index(fields=['task_name'],
+                         name='django_cele_task_na_08aec9_idx'),
+            models.Index(fields=['status'],
+                         name='django_cele_status_9b6201_idx'),
+            models.Index(fields=['worker'],
+                         name='django_cele_worker_d54dd8_idx'),
+            models.Index(fields=['date_created'],
+                         name='django_cele_date_cr_f04a50_idx'),
+            models.Index(fields=['date_done'],
+                         name='django_cele_date_do_f59aad_idx'),
         ]
 
     def as_dict(self):
@@ -221,7 +227,10 @@ class GroupResult(models.Model):
         verbose_name = _('group result')
         verbose_name_plural = _('group results')
 
+        # Explicit names to solve https://code.djangoproject.com/ticket/33483
         indexes = [
-            models.Index(fields=['date_created']),
-            models.Index(fields=['date_done']),
+            models.Index(fields=['date_created'],
+                         name='django_cele_date_cr_bd6c1d_idx'),
+            models.Index(fields=['date_done'],
+                         name='django_cele_date_do_caae0e_idx'),
         ]
