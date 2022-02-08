@@ -32,7 +32,11 @@ class TaskResult(models.Model):
         verbose_name=_('Periodic Task Name'),
         help_text=_('Name of the Periodic Task which was run'))
     task_name = models.CharField(
-        null=True, max_length=255,
+        null=True, max_length=getattr(
+            settings,
+            'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
+            255
+        ),
         verbose_name=_('Task Name'),
         help_text=_('Name of the Task which was run'))
     task_args = models.TextField(

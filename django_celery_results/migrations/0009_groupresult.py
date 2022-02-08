@@ -141,7 +141,11 @@ class Migration(migrations.Migration):
             name='task_name',
             field=models.CharField(
                 help_text='Name of the Task which was run',
-                max_length=255,
+                max_length=getattr(
+                    settings,
+                    'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
+                    255
+                ),
                 null=True,
                 verbose_name='Task Name'),
         ),
