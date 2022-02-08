@@ -78,7 +78,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='taskresult',
             name='task_name',
-            field=models.CharField(db_index=True, help_text='Name of the Task which was run', max_length=255, null=True, verbose_name='Task Name'),
+            field=models.CharField(
+                db_index=True,
+                help_text='Name of the Task which was run',
+                max_length=getattr(
+                    settings,
+                    'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
+                    255
+                ),
+                null=True,
+                verbose_name='Task Name'),
         ),
         migrations.AlterField(
             model_name='taskresult',
