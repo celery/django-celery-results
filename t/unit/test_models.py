@@ -1,10 +1,13 @@
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 import pytest
 from celery import states, uuid
 from django.db import transaction
+from django.db.utils import InterfaceError
 from django.test import TransactionTestCase
 
+from django_celery_results.backends import DatabaseBackend
 from django_celery_results.models import GroupResult, TaskResult
 from django_celery_results.utils import now
 
@@ -92,6 +95,94 @@ class test_Models(TransactionTestCase):
 
         assert TaskResult.objects.get_task(m1.task_id).status != states.SUCCESS
         assert TaskResult.objects.get_task(m2.task_id).status == states.SUCCESS
+
+    def test_retry_store_result_fails(self):
+        """
+        Test the retry logic for InterfaceErrors.
+        When result_backend_always_retry is False,
+        and an InterfaceError is raised during _store_result(),
+        then the InterfaceError will be re-raised.
+        """
+        m = self.create_task_result()
+        assert set(TaskResult.objects.all()) == set(
+            TaskResult.objects.using('secondary').all()
+        )
+
+        always_retry = self.app.conf.get('result_backend_always_retry')
+        self.app.conf.result_backend_always_retry = False
+        backend = DatabaseBackend(self.app)
+
+        with patch.object(
+            backend,
+            '_store_result',
+            side_effect=[
+                InterfaceError('Connection closed')
+            ]
+        ) as patched_store_result:
+            with patch.object(
+                backend,
+                'exception_safe_to_retry',
+                return_value=backend.exception_safe_to_retry
+            ) as patched_safe_to_retry:
+                # InterfaceError should be re-raised
+                with pytest.raises(InterfaceError):
+                    backend.store_result(
+                        m.task_id,
+                        result=states.SUCCESS,
+                        state=states.SUCCESS
+                    )
+                assert patched_safe_to_retry.call_count == 0
+                assert patched_store_result.call_count == 1
+
+        self.app.conf.result_backend_always_retry = always_retry
+        if always_retry is None:
+            del self.app.conf.result_backend_always_retry
+
+    def test_retry_store_result_succeeds(self):
+        """
+        Test the retry logic for InterfaceErrors.
+        When result_backend_always_retry is True,
+        and an InterfaceError is raised during _store_result(),
+        then the InterfaceError will be hidden,
+        the connection to the database will be closed,
+        and then automatically reopened for the next retry.
+        """
+        m = self.create_task_result()
+        assert set(TaskResult.objects.all()) == set(
+            TaskResult.objects.using('secondary').all()
+        )
+
+        always_retry = self.app.conf.get('result_backend_always_retry')
+        self.app.conf.result_backend_always_retry = True
+        backend = DatabaseBackend(self.app)
+
+        with patch.object(
+            backend,
+            '_store_result',
+            side_effect=[
+                InterfaceError('Connection closed'),
+                backend._store_result
+            ]
+        ) as patched_store_result:
+            with patch.object(
+                backend,
+                'exception_safe_to_retry',
+                return_value=backend.exception_safe_to_retry
+            ) as patched_safe_to_retry:
+                # InterfaceError should be hidden
+                # And new connection opened
+                # Then unpatched function called for retry
+                backend.store_result(
+                    m.task_id,
+                    result=states.SUCCESS,
+                    state=states.SUCCESS
+                )
+                assert patched_safe_to_retry.call_count == 1
+                assert patched_store_result.call_count == 2
+
+        self.app.conf.result_backend_always_retry = always_retry
+        if always_retry is None:
+            del self.app.conf.result_backend_always_retry
 
     def create_group_result(self):
         id = uuid()
