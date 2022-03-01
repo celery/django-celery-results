@@ -10,13 +10,18 @@ from celery.utils.serialization import b64decode, b64encode
 from django.db import connection, transaction
 from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
-from psycopg2 import InterfaceError as Psycopg2InterfaceError
 
 from ..models import ChordCounter
 from ..models import GroupResult as GroupResultModel
 from ..models import TaskResult
 
-EXCEPTIONS_TO_CATCH = (InterfaceError, Psycopg2InterfaceError)
+EXCEPTIONS_TO_CATCH = (InterfaceError,)
+
+try:
+    from psycopg2 import InterfaceError as Psycopg2InterfaceError
+    EXCEPTIONS_TO_CATCH += (Psycopg2InterfaceError,)
+except ImportError:
+    pass
 
 logger = get_logger(__name__)
 
