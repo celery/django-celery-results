@@ -7,12 +7,16 @@ from celery.exceptions import ChordError
 from celery.result import GroupResult, allow_join_result, result_from_tuple
 from celery.utils.log import get_logger
 from celery.utils.serialization import b64decode, b64encode
-from django.db import transaction
+from django.db import connection, transaction
+from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
+from psycopg2 import InterfaceError as Psycopg2InterfaceError
 
 from ..models import ChordCounter
 from ..models import GroupResult as GroupResultModel
 from ..models import TaskResult
+
+EXCEPTIONS_TO_CATCH = (InterfaceError, Psycopg2InterfaceError)
 
 logger = get_logger(__name__)
 
@@ -23,6 +27,27 @@ class DatabaseBackend(BaseDictBackend):
     TaskModel = TaskResult
     GroupModel = GroupResultModel
     subpolling_interval = 0.5
+
+    def exception_safe_to_retry(self, exc):
+        """Check if an exception is safe to retry.
+
+        Backends have to overload this method with correct predicates
+        dealing with their exceptions.
+
+        By default no exception is safe to retry, it's up to
+        backend implementation to define which exceptions are safe.
+
+        For Celery / django-celery-results, retry Django / Psycopg2
+        InterfaceErrors, like "Connection already closed", with new connection.
+
+        Set result_backend_always_retry to True in order to enable retries.
+        """
+        for exc_type in EXCEPTIONS_TO_CATCH:
+            if isinstance(exc, exc_type):
+                # Only called if InterfaceError occurs and always_retry is True
+                connection.close()
+                return True
+        return False
 
     def _store_result(
             self,
