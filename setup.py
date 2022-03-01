@@ -20,12 +20,12 @@ NAME = 'django_celery_results'
 E_UNSUPPORTED_PYTHON = f'{NAME} 1.0 requires %s %s or later!'
 
 PYIMP = _pyimp()
-PY36_OR_LESS = sys.version_info < (3, 6)
+PY37_OR_LESS = sys.version_info < (3, 7)
 PYPY_VERSION = getattr(sys, 'pypy_version_info', None)
-PYPY24_ATLEAST = PYPY_VERSION and PYPY_VERSION >= (2, 4)
+PYPY73_ATLEAST = PYPY_VERSION and PYPY_VERSION >= (7, 3)
 
-if PY36_OR_LESS and not PYPY24_ATLEAST:
-    raise Exception(E_UNSUPPORTED_PYTHON % (PYIMP, '3.6'))
+if PY37_OR_LESS and not PYPY73_ATLEAST:
+    raise Exception(E_UNSUPPORTED_PYTHON % (PYIMP, '3.7'))
 
 # -*- Classifiers -*-
 
@@ -34,7 +34,6 @@ classes = """
     License :: OSI Approved :: BSD License
     Programming Language :: Python
     Programming Language :: Python :: 3
-    Programming Language :: Python :: 3.6
     Programming Language :: Python :: 3.7
     Programming Language :: Python :: 3.8
     Programming Language :: Python :: 3.9
