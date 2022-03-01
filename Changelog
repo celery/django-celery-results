@@ -4,6 +4,30 @@
  Change history
 ================
 
+.. _version-2.3.0:
+
+2.3.0
+=====
+:release-date: 2022-03-01 1:45 p.m. UTC+6:00
+:release-by: Asif Saif Uddin
+
+- Fix default_app_config deprecation (#221)  
+- Use string values for django-cache keys #230 (#242)
+- feat: raw delete expired instead of Queryset.delete (#235)
+- Fix `pydoc.ErrorDuringImport: problem in django_celery_results url
+- Russian language support (#255)
+- Add Simplified Chinese translation strings.
+- Minor code clean up
+- feat: add periodic_task_name (#261)
+- Update CI with django 4.0 (#272)
+- Add translation of the messages to brazilian portuguese (#278)
+- Fix properties default value (#281)
+- Work around Oracle migration instability
+- Fix field size for MySQL (#285)
+- Update python & pypy min version (#291)
+- bum min pytest versions
+
+
 .. _version-2.2.0:
 
 2.2.0
