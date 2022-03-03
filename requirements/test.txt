@@ -3,4 +3,4 @@ pytest>=6.2.5
 pytest-django>=4.5.2
 pytest-benchmark
 pytz>dev
-psycopg2cffi
+psycopg2-binary
