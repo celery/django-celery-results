@@ -144,3 +144,41 @@ msgstr "任务结果"
 #: django_celery_results/models.py:92
 msgid "task results"
 msgstr "任务结果"
+
+#: django_celery_results/models.py:129 django_celery_results/models.py:171
+msgid "Group ID"
+msgstr "分组 ID"
+
+#: django_celery_results/models.py:130
+msgid "Celery ID for the Chord header group"
+msgstr "Chord header 分组的 Celery ID"
+
+#: django_celery_results/models.py:134
+msgid ""
+"JSON serialized list of task result tuples. use .group_result() to decode"
+msgstr ""
+"任务结果元组的 JSON 序列化列表。使用 .group_result() 进行解码"
+
+#: django_celery_results/models.py:140
+msgid "Starts at len(chord header) and decrements after each task is finished"
+msgstr "在 len(chord header) 处开始并且会在每个任务结束后递减"
+
+#: django_celery_results/models.py:172
+msgid "Celery ID for the Group that was run"
+msgstr "已运行分组的 Celery ID"
+
+#: django_celery_results/models.py:177
+msgid "Datetime field when the group result was created in UTC"
+msgstr "分组结果创建时的 UTC 格式 datetime 字段"
+
+#: django_celery_results/models.py:182
+msgid "Datetime field when the group was completed in UTC"
+msgstr "分组结果完成时的 UTC 格式 datetime 字段"
+
+#: django_celery_results/models.py:217
+msgid "group result"
+msgstr "分组结果"
+
+#: django_celery_results/models.py:218
+msgid "group results"
+msgstr "分组结果"
