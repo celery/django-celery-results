@@ -4,6 +4,18 @@
  Change history
 ================
 
+.. _version-2.3.1:
+
+2.3.1
+=====
+:release-date: 2022-04-17 12:50 P.M. UTC+6:00
+:release-by: Asif Saif Uddin
+
+- Remove hard dependency on psycopg2.  
+- Fix #296 Stop producing a universal wheel, python 2 is unspported.
+- fix: The description content type for setuptools needs to be rst to markdown.
+
+
 .. _version-2.3.0:
 
 2.3.0
