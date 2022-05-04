@@ -1,10 +1,6 @@
-"""Database models."""
-
-import json
+"""Abstract models."""
 
 from celery import states
-from celery.result import GroupResult as CeleryGroupResult
-from celery.result import result_from_tuple
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -15,9 +11,7 @@ ALL_STATES = sorted(states.ALL_STATES)
 TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
 
 
-class TaskResult(models.Model):
-    """Task result/status."""
-
+class AbstractTaskResult(models.Model):
     task_id = models.CharField(
         max_length=getattr(
             settings,
@@ -94,8 +88,8 @@ class TaskResult(models.Model):
     class Meta:
         """Table information."""
 
+        abstract = True
         ordering = ['-date_done']
-
         verbose_name = _('task result')
         verbose_name_plural = _('task results')
 
@@ -131,48 +125,8 @@ class TaskResult(models.Model):
         return '<Task: {0.task_id} ({0.status})>'.format(self)
 
 
-class ChordCounter(models.Model):
-    """Chord synchronisation."""
 
-    group_id = models.CharField(
-        max_length=getattr(
-            settings,
-            "DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH",
-            255),
-        unique=True,
-        verbose_name=_("Group ID"),
-        help_text=_("Celery ID for the Chord header group"),
-    )
-    sub_tasks = models.TextField(
-        help_text=_(
-            "JSON serialized list of task result tuples. "
-            "use .group_result() to decode"
-        )
-    )
-    count = models.PositiveIntegerField(
-        help_text=_(
-            "Starts at len(chord header) and decrements after each task is "
-            "finished"
-        )
-    )
-
-    def group_result(self, app=None):
-        """Return the GroupResult of self.
-
-        Arguments:
-        ---------
-            app (Celery): app instance to create the GroupResult with.
-
-        """
-        return CeleryGroupResult(
-            self.group_id,
-            [result_from_tuple(r, app=app)
-             for r in json.loads(self.sub_tasks)],
-            app=app
-        )
-
-
-class GroupResult(models.Model):
+class AbstractGroupResult(models.Model):
     """Task Group result/status."""
 
     group_id = models.CharField(
@@ -228,8 +182,74 @@ class GroupResult(models.Model):
 
         ordering = ['-date_done']
 
+
+        # Explicit names to solve https://code.djangoproject.com/ticket/33483
+        indexes = [
+            models.Index(fields=['date_created'],
+                         name='django_cele_date_cr_bd6c1d_idx'),
+            models.Index(fields=['date_done'],
+                         name='django_cele_date_do_caae0e_idx'),
+        ]
+
+
+class AbstractGroupResult(models.Model):
+    """Task Group result/status."""
+
+    group_id = models.CharField(
+        max_length=getattr(
+            settings,
+            "DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH",
+            255
+        ),
+        unique=True,
+        verbose_name=_("Group ID"),
+        help_text=_("Celery ID for the Group that was run"),
+    )
+    date_created = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created DateTime"),
+        help_text=_("Datetime field when the group result was created in UTC"),
+    )
+    date_done = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_("Completed DateTime"),
+        help_text=_("Datetime field when the group was completed in UTC"),
+    )
+    content_type = models.CharField(
+        max_length=128,
+        verbose_name=_("Result Content Type"),
+        help_text=_("Content type of the result data"),
+    )
+    content_encoding = models.CharField(
+        max_length=64,
+        verbose_name=_("Result Encoding"),
+        help_text=_("The encoding used to save the task result data"),
+    )
+    result = models.TextField(
+        null=True, default=None, editable=False,
+        verbose_name=_('Result Data'),
+        help_text=_('The data returned by the task.  '
+                    'Use content_encoding and content_type fields to read.'))
+
+    def as_dict(self):
+        return {
+            'group_id': self.group_id,
+            'result': self.result,
+            'date_done': self.date_done,
+        }
+
+    def __str__(self):
+        return f'<Group: {self.group_id}>'
+
+    objects = managers.GroupResultManager()
+
+    class Meta:
+        """Table information."""
+
+        abstract = True
         verbose_name = _('group result')
         verbose_name_plural = _('group results')
+        ordering = ['-date_done']
 
         # Explicit names to solve https://code.djangoproject.com/ticket/33483
         indexes = [
