@@ -1,10 +1,6 @@
-"""Database models."""
-
-import json
+"""Abstract models."""
 
 from celery import states
-from celery.result import GroupResult as CeleryGroupResult
-from celery.result import result_from_tuple
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -15,8 +11,8 @@ ALL_STATES = sorted(states.ALL_STATES)
 TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
 
 
-class TaskResult(models.Model):
-    """Task result/status."""
+class AbstractTaskResult(models.Model):
+    """Abstract Task result/status."""
 
     task_id = models.CharField(
         max_length=getattr(
@@ -94,8 +90,8 @@ class TaskResult(models.Model):
     class Meta:
         """Table information."""
 
+        abstract = True
         ordering = ['-date_done']
-
         verbose_name = _('task result')
         verbose_name_plural = _('task results')
 
@@ -131,49 +127,8 @@ class TaskResult(models.Model):
         return '<Task: {0.task_id} ({0.status})>'.format(self)
 
 
-class ChordCounter(models.Model):
-    """Chord synchronisation."""
-
-    group_id = models.CharField(
-        max_length=getattr(
-            settings,
-            "DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH",
-            255),
-        unique=True,
-        verbose_name=_("Group ID"),
-        help_text=_("Celery ID for the Chord header group"),
-    )
-    sub_tasks = models.TextField(
-        help_text=_(
-            "JSON serialized list of task result tuples. "
-            "use .group_result() to decode"
-        )
-    )
-    count = models.PositiveIntegerField(
-        help_text=_(
-            "Starts at len(chord header) and decrements after each task is "
-            "finished"
-        )
-    )
-
-    def group_result(self, app=None):
-        """Return the GroupResult of self.
-
-        Arguments:
-        ---------
-            app (Celery): app instance to create the GroupResult with.
-
-        """
-        return CeleryGroupResult(
-            self.group_id,
-            [result_from_tuple(r, app=app)
-             for r in json.loads(self.sub_tasks)],
-            app=app
-        )
-
-
-class GroupResult(models.Model):
-    """Task Group result/status."""
+class AbstractGroupResult(models.Model):
+    """Abstract Task Group result/status."""
 
     group_id = models.CharField(
         max_length=getattr(
@@ -226,8 +181,8 @@ class GroupResult(models.Model):
     class Meta:
         """Table information."""
 
+        abstract = True
         ordering = ['-date_done']
-
         verbose_name = _('group result')
         verbose_name_plural = _('group results')
 
