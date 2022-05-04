@@ -187,9 +187,9 @@ class AbstractGroupResult(models.Model):
         """Table information."""
 
         abstract = True
-        ordering = ['-date_done']
         verbose_name = _('group result')
         verbose_name_plural = _('group results')
+        ordering = ['-date_done']
 
         # Explicit names to solve https://code.djangoproject.com/ticket/33483
         indexes = [
