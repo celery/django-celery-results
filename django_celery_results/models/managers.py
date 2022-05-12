@@ -8,7 +8,7 @@ from celery.utils.time import maybe_timedelta
 from django.conf import settings
 from django.db import connections, models, router, transaction
 
-from .utils import now
+from ..utils import now
 
 W_ISOLATION_REP = """
 Polling results with transaction isolation level 'repeatable-read'
