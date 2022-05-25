@@ -55,7 +55,6 @@ class DatabaseBackend(BaseDictBackend):
         return False
 
     def _get_extended_properties(self, request, traceback, using):
-        properties = getattr(request, 'properties', {}) or {}
         extended_props = {
             'periodic_task_name': None,
             'task_args': None,
@@ -66,7 +65,7 @@ class DatabaseBackend(BaseDictBackend):
             'worker': None,
         }
         if request and self.app.conf.find_value_for_key('extended', 'result'):
-            
+
             if getattr(request, 'argsrepr', None) is not None:
                 # task protocol 2
                 task_args = request.argsrepr
@@ -87,9 +86,11 @@ class DatabaseBackend(BaseDictBackend):
 
             if task_kwargs is not None:
                 _, _, task_kwargs = self.encode_content(task_kwargs)
-            
+
+            properties = getattr(request, 'properties', {}) or {}
+            periodic_task_name = properties.get('periodic_task_name', None)
             extended_props.update({
-                'periodic_task_name': properties.get('periodic_task_name', None),
+                'periodic_task_name': periodic_task_name,
                 'task_args': task_kwargs,
                 'task_kwargs': task_args,
                 'task_name': getattr(request, 'task', None),
@@ -97,7 +98,7 @@ class DatabaseBackend(BaseDictBackend):
                 'using': using,
                 'worker': getattr(request, 'hostname', None),
             })
-        
+
         return extended_props
 
     def _store_result(
@@ -117,15 +118,17 @@ class DatabaseBackend(BaseDictBackend):
 
         task_props = {
             'content_encoding': content_encoding,
-            'content_type' : content_type,
+            'content_type': content_type,
             'meta': meta,
             'result': result,
-            'status': status, 
+            'status': status,
             'task_id': task_id,
             'traceback': traceback,
         }
 
-        task_props.update(self._get_extended_properties(request, traceback, using))
+        task_props.update(
+            self._get_extended_properties(request, traceback, using)
+        )
 
         self.TaskModel._default_manager.store_result(**task_props)
         return result
