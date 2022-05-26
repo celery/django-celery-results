@@ -860,3 +860,30 @@ class test_DatabaseBackend:
         restored_group = self.b.restore_group(group_id=group_id)
 
         assert restored_group == group
+
+    def test_backend_result_extended_is_false(self):
+        self.app.conf.result_extended = False
+        self.b = DatabaseBackend(app=self.app)
+        tid2 = uuid()
+        request = self._create_request(
+            task_id=tid2,
+            name='my_task',
+            args=['a', 1, True],
+            kwargs={'c': 6, 'd': 'e', 'f': False},
+        )
+        result = 'foo'
+
+        self.b.mark_as_done(tid2, result, request=request)
+
+        mindb = self.b.get_task_meta(tid2)
+
+        # check meta data
+        assert mindb.get('result') == 'foo'
+        assert mindb.get('task_name') is None
+        assert mindb.get('task_args') is None
+        assert mindb.get('task_kwargs') is None
+
+        # check task_result object
+        tr = TaskResult.objects.get(task_id=tid2)
+        assert tr.task_args is None
+        assert tr.task_kwargs is None
