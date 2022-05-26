@@ -13,13 +13,9 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                python-version: [ 3.7, 3.8, 3.9, "3.10" ]
-                django: [ 22, 32, 40 ]
-                exclude:
-                    - python-version: "3.10"
-                      django: 22
-                    - python-version: 3.7
-                      django: 40
+                python-version: [ 3.8, 3.9, "3.10" ]
+                django: [ 32, 40 ]
+                
         services:
             postgres:
                 image: postgres
