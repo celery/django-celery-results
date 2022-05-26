@@ -91,8 +91,8 @@ class DatabaseBackend(BaseDictBackend):
             periodic_task_name = properties.get('periodic_task_name', None)
             extended_props.update({
                 'periodic_task_name': periodic_task_name,
-                'task_args': task_kwargs,
-                'task_kwargs': task_args,
+                'task_args': task_args,
+                'task_kwargs': task_kwargs,
                 'task_name': getattr(request, 'task', None),
                 'traceback': traceback,
                 'using': using,
