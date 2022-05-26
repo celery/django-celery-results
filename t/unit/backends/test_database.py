@@ -31,6 +31,7 @@ class test_DatabaseBackend:
         self.app.conf.result_serializer = 'json'
         self.app.conf.result_backend = (
             'django_celery_results.backends:DatabaseBackend')
+        self.app.conf.result_extended = True
         self.b = DatabaseBackend(app=self.app)
 
     def _create_request(self, task_id, name, args, kwargs,
