@@ -1,4 +1,4 @@
-:Version: 2.3.1
+:Version: 2.3.1-patch
 :Web: http://django-celery-results.readthedocs.io/
 :Download: http://pypi.python.org/pypi/django-celery-results
 :Source: http://github.com/celery/django-celery-results
