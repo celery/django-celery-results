@@ -54,14 +54,13 @@ class DatabaseBackend(BaseDictBackend):
                 return True
         return False
 
-    def _get_extended_properties(self, request, traceback, using):
+    def _get_extended_properties(self, request, traceback):
         extended_props = {
             'periodic_task_name': None,
             'task_args': None,
             'task_kwargs': None,
             'task_name': None,
             'traceback': None,
-            'using': None,
             'worker': None,
         }
         if request and self.app.conf.find_value_for_key('extended', 'result'):
@@ -95,7 +94,6 @@ class DatabaseBackend(BaseDictBackend):
                 'task_kwargs': task_kwargs,
                 'task_name': getattr(request, 'task', None),
                 'traceback': traceback,
-                'using': using,
                 'worker': getattr(request, 'hostname', None),
             })
 
@@ -124,10 +122,11 @@ class DatabaseBackend(BaseDictBackend):
             'status': status,
             'task_id': task_id,
             'traceback': traceback,
+            'using': using,
         }
 
         task_props.update(
-            self._get_extended_properties(request, traceback, using)
+            self._get_extended_properties(request, traceback)
         )
 
         self.TaskModel._default_manager.store_result(**task_props)
