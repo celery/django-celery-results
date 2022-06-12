@@ -4,6 +4,16 @@
  Change history
 ================
 
+.. _version-2.4.0:
+
+2.4.0
+=====
+:release-date: NA
+:release-by: NA
+
+- Fix [#315](https://github.com/celery/django-celery-results/issues/315) Save args, kwargs and other extended props only when result_extended config is set to True
+
+
 .. _version-2.3.1:
 
 2.3.1

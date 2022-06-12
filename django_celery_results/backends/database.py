@@ -54,6 +54,51 @@ class DatabaseBackend(BaseDictBackend):
                 return True
         return False
 
+    def _get_extended_properties(self, request, traceback):
+        extended_props = {
+            'periodic_task_name': None,
+            'task_args': None,
+            'task_kwargs': None,
+            'task_name': None,
+            'traceback': None,
+            'worker': None,
+        }
+        if request and self.app.conf.find_value_for_key('extended', 'result'):
+
+            if getattr(request, 'argsrepr', None) is not None:
+                # task protocol 2
+                task_args = request.argsrepr
+            else:
+                # task protocol 1
+                task_args = getattr(request, 'args', None)
+
+            if getattr(request, 'kwargsrepr', None) is not None:
+                # task protocol 2
+                task_kwargs = request.kwargsrepr
+            else:
+                # task protocol 1
+                task_kwargs = getattr(request, 'kwargs', None)
+
+            # Encode input arguments
+            if task_args is not None:
+                _, _, task_args = self.encode_content(task_args)
+
+            if task_kwargs is not None:
+                _, _, task_kwargs = self.encode_content(task_kwargs)
+
+            properties = getattr(request, 'properties', {}) or {}
+            periodic_task_name = properties.get('periodic_task_name', None)
+            extended_props.update({
+                'periodic_task_name': periodic_task_name,
+                'task_args': task_args,
+                'task_kwargs': task_kwargs,
+                'task_name': getattr(request, 'task', None),
+                'traceback': traceback,
+                'worker': getattr(request, 'hostname', None),
+            })
+
+        return extended_props
+
     def _store_result(
             self,
             task_id,
@@ -69,48 +114,22 @@ class DatabaseBackend(BaseDictBackend):
             {'children': self.current_task_children(request)}
         )
 
-        task_name = getattr(request, 'task', None)
-        properties = getattr(request, 'properties', {}) or {}
-        periodic_task_name = properties.get('periodic_task_name', None)
-        worker = getattr(request, 'hostname', None)
+        task_props = {
+            'content_encoding': content_encoding,
+            'content_type': content_type,
+            'meta': meta,
+            'result': result,
+            'status': status,
+            'task_id': task_id,
+            'traceback': traceback,
+            'using': using,
+        }
 
-        # Get input arguments
-        if getattr(request, 'argsrepr', None) is not None:
-            # task protocol 2
-            task_args = request.argsrepr
-        else:
-            # task protocol 1
-            task_args = getattr(request, 'args', None)
-
-        if getattr(request, 'kwargsrepr', None) is not None:
-            # task protocol 2
-            task_kwargs = request.kwargsrepr
-        else:
-            # task protocol 1
-            task_kwargs = getattr(request, 'kwargs', None)
-
-        # Encode input arguments
-        if task_args is not None:
-            _, _, task_args = self.encode_content(task_args)
-
-        if task_kwargs is not None:
-            _, _, task_kwargs = self.encode_content(task_kwargs)
-
-        self.TaskModel._default_manager.store_result(
-            content_type,
-            content_encoding,
-            task_id,
-            result,
-            status,
-            traceback=traceback,
-            meta=meta,
-            periodic_task_name=periodic_task_name,
-            task_name=task_name,
-            task_args=task_args,
-            task_kwargs=task_kwargs,
-            worker=worker,
-            using=using,
+        task_props.update(
+            self._get_extended_properties(request, traceback)
         )
+
+        self.TaskModel._default_manager.store_result(**task_props)
         return result
 
     def _get_task_meta_for(self, task_id):
