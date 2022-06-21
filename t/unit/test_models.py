@@ -5,7 +5,7 @@ import pytest
 from celery import states, uuid
 from django.db import transaction
 from django.db.utils import InterfaceError
-from django.test import TransactionTestCase
+from django.test import TransactionTestCase, override_settings
 
 from django_celery_results.backends import DatabaseBackend
 from django_celery_results.models import GroupResult, TaskResult
@@ -209,3 +209,21 @@ class test_Models(TransactionTestCase):
                 raise TransactionError()
         except TransactionError:
             pass
+
+
+@pytest.mark.usefixtures('depends_on_current_app')
+class test_ModelsOnSecondaryDbOnly(TransactionTestCase):
+    """
+    These tests will fail with the below error incase we
+    try to read/write from a db other than the secondary
+
+    AssertionError: Database connections to 'default' are
+    not allowed in this test.
+    """
+    databases = ['secondary']
+
+    @override_settings(
+        DATABASE_ROUTERS=['t.proj.db_routers.AlwaysSecondaryDbRouter'],
+    )
+    def test_operations_with_atomic_transactions(self):
+        TaskResult.objects.delete_expired(expires=10)
