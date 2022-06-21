@@ -1,10 +1,10 @@
 """Some helpers to humanize values."""
-from __future__ import absolute_import, unicode_literals
 
 from datetime import datetime
 
-from django.utils.translation import ungettext, ugettext as _
 from django.utils.timezone import now
+from django.utils.translation import ugettext as _
+from django.utils.translation import ungettext
 
 
 def pluralize_year(n):

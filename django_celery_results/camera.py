@@ -1,5 +1,4 @@
 """The Celery events camera."""
-from __future__ import absolute_import, unicode_literals
 
 from datetime import timedelta
 
@@ -9,7 +8,7 @@ from celery.utils.imports import symbol_by_name
 from celery.utils.log import get_logger
 from celery.utils.time import maybe_iso8601
 
-from .utils import fromtimestamp, correct_awareness
+from .utils import correct_awareness, fromtimestamp
 
 WORKER_UPDATE_FREQ = 60  # limit worker timestamp write freq.
 SUCCESS_STATES = frozenset([states.SUCCESS])
@@ -27,7 +26,7 @@ class Camera(Polaroid):
     worker_update_freq = WORKER_UPDATE_FREQ
 
     def __init__(self, *args, **kwargs):
-        super(Camera, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # Expiry can be timedelta or None for never expire.
         self.app.add_defaults({
             'monitors_expire_success': timedelta(days=1),
@@ -50,7 +49,7 @@ class Camera(Polaroid):
         django.setup()
 
     def install(self):
-        super(Camera, self).install()
+        super().install()
         self.django_setup()
 
     @property
