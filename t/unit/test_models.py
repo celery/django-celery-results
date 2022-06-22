@@ -212,18 +212,25 @@ class test_Models(TransactionTestCase):
 
 
 @pytest.mark.usefixtures('depends_on_current_app')
-class test_ModelsOnSecondaryDbOnly(TransactionTestCase):
+class test_ModelsWithoutDefaultDB(TransactionTestCase):
     """
-    These tests will fail with the below error incase we
-    try to read/write from a db other than the secondary
+    This class to ensure all operations are done on the
+    same db we use and dont leak accidentally into another
+    db. we dont include the default db in databases as by
+    default an incorrect behavior would route there and
+    would not be detectable.
 
-    AssertionError: Database connections to 'default' are
-    not allowed in this test.
+    The tests will fail with the below error incase we
+    try to interact from a db other than the one we have
+    specified.
+
+    `AssertionError: Database connections to 'default' are
+    not allowed in this test`
     """
-    databases = ['secondary']
 
-    @override_settings(
-        DATABASE_ROUTERS=['t.proj.db_routers.AlwaysSecondaryDbRouter'],
-    )
+    non_default_test_db = 'secondary'
+    databases = [non_default_test_db]
+
     def test_operations_with_atomic_transactions(self):
-        TaskResult.objects.delete_expired(expires=10)
+        TaskResult.objects.db_manager(self.non_default_test_db).delete_expired(expires=10)
+        GroupResult.objects.db_manager(self.non_default_test_db).delete_expired(expires=10)
