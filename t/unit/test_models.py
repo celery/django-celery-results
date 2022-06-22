@@ -5,7 +5,7 @@ import pytest
 from celery import states, uuid
 from django.db import transaction
 from django.db.utils import InterfaceError
-from django.test import TransactionTestCase, override_settings
+from django.test import TransactionTestCase
 
 from django_celery_results.backends import DatabaseBackend
 from django_celery_results.models import GroupResult, TaskResult
@@ -232,5 +232,9 @@ class test_ModelsWithoutDefaultDB(TransactionTestCase):
     databases = [non_default_test_db]
 
     def test_operations_with_atomic_transactions(self):
-        TaskResult.objects.db_manager(self.non_default_test_db).delete_expired(expires=10)
-        GroupResult.objects.db_manager(self.non_default_test_db).delete_expired(expires=10)
+        TaskResult.objects.db_manager(
+            self.non_default_test_db
+        ).delete_expired(expires=10)
+        GroupResult.objects.db_manager(
+            self.non_default_test_db
+        ).delete_expired(expires=10)
