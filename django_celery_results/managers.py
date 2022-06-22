@@ -87,7 +87,7 @@ class ResultManager(models.Manager):
 
     def delete_expired(self, expires):
         """Delete all expired results."""
-        with transaction.atomic():
+        with transaction.atomic(using=self.db):
             raw_delete(queryset=self.get_all_expired(expires))
 
 
