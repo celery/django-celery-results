@@ -236,11 +236,12 @@ class DatabaseBackend(BaseDictBackend):
             # wrap the update in a transaction
             # with a `select_for_update` lock to prevent race conditions.
             # SELECT FOR UPDATE is not supported on all databases
-            chord_counter = (
-                ChordCounter.objects.select_for_update()
-                .filter(group_id=gid).first()
-            )
-            if chord_counter is None:
+            try:
+                chord_counter = (
+                    ChordCounter.objects.select_for_update()
+                    .get(group_id=gid)
+                )
+            except ChordCounter.DoesNotExist:
                 logger.warning("Can't find ChordCounter for Group %s", gid)
                 return
             chord_counter.count -= 1
