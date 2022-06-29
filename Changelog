@@ -8,10 +8,12 @@
 
 2.4.0
 =====
-:release-date: NA
-:release-by: NA
+:release-date: 2022-06-29 4:30 P.M. UTC+6:00
+:release-by: Asif Saif Uddin
 
-- Fix [#315](https://github.com/celery/django-celery-results/issues/315) Save args, kwargs and other extended props only when result_extended config is set to True
+- Fix [#315] Save args, kwargs and other extended props only when result_extended config is set to True.
+- Fix atomic transaction not routing to the the correct DB (#324).
+- Drop django 2.2 from matrix
 
 
 .. _version-2.3.1:
