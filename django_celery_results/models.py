@@ -161,7 +161,8 @@ class ChordCounter(models.Model):
         Return the :class:`celery.result.GroupResult` of self.
 
         Arguments:
-            app (celery.app.base.Celery): app instance to create the :class:`celery.result.GroupResult` with.
+            app (celery.app.base.Celery): app instance to create the
+               :class:`celery.result.GroupResult` with.
 
         """
         return CeleryGroupResult(
