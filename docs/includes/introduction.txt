@@ -9,21 +9,14 @@ About
 
 This extension enables you to store Celery task and group results using the Django ORM.
 
-It defines 2 models (``django_celery_results.models.TaskResult`` and ``django_celery_results.models.GroupResult``)
+It defines 2 models (:class:`django_celery_results.models.TaskResult` and :class:`django_celery_results.models.GroupResult`)
 used to store task and group results, and you can query these database tables like
 any other Django model.
 
-If your `django-celery-beat` carries `request["properties"]["periodic_task_name"]`,
-it will be stored in `TaskResult.periodic_task_name` to track the periodic task.
+If your ``django-celery-beat`` carries ``request["properties"]["periodic_task_name"]``,
+it will be stored in :attr:`TaskResult.periodic_task_name <django_celery_results.models.TaskResult.periodic_task_name>` to track the periodic task.
 
 Installing
 ==========
 
-The installation instructions for this extension is available
-from the `Celery documentation`_:
-
-http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
-
-
-.. _`Celery documentation`:
-    http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
+The installation instructions for this extension is available from the :ref:`Celery documentation <django-celery-results>`.
