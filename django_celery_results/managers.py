@@ -29,7 +29,6 @@ def transaction_retry(max_retries=1):
     retrying if the operation fails.
 
     Keyword Arguments:
-    -----------------
         max_retries (int): Maximum number of retries.  Default one retry.
 
     """
@@ -92,7 +91,7 @@ class ResultManager(models.Manager):
 
 
 class TaskResultManager(ResultManager):
-    """Manager for :class:`celery.models.TaskResult` models."""
+    """Manager for :class:`~.models.TaskResult` models."""
 
     _last_id = None
 
@@ -100,7 +99,6 @@ class TaskResultManager(ResultManager):
         """Get result for task by ``task_id``.
 
         Keyword Arguments:
-        -----------------
             exception_retry_count (int): How many times to retry by
                 transaction rollback on exception.  This could
                 happen in a race condition if another worker is trying to
@@ -125,7 +123,6 @@ class TaskResultManager(ResultManager):
         """Store the result and status of a task.
 
         Arguments:
-        ---------
             content_type (str): Mime-type of result and meta content.
             content_encoding (str): Type of encoding (e.g. binary/utf-8).
             task_id (str): Id of task.
@@ -145,7 +142,6 @@ class TaskResultManager(ResultManager):
                 children).
 
         Keyword Arguments:
-        -----------------
             exception_retry_count (int): How many times to retry by
                 transaction rollback on exception.  This could
                 happen in a race condition if another worker is trying to
@@ -175,7 +171,7 @@ class TaskResultManager(ResultManager):
 
 
 class GroupResultManager(ResultManager):
-    """Manager for :class:`celery.models.GroupResult` models."""
+    """Manager for :class:`~.models.GroupResult` models."""
 
     _last_id = None
 
@@ -183,7 +179,6 @@ class GroupResultManager(ResultManager):
         """Get result for group by ``group_id``.
 
         Keyword Arguments:
-        -----------------
             exception_retry_count (int): How many times to retry by
                 transaction rollback on exception.  This could
                 happen in a race condition if another worker is trying to

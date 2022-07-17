@@ -54,11 +54,9 @@ To use :pypi:`django-celery-results` with your project you need to follow these 
                 'LOCATION': 'my_cache_table',
             }
         }
-        
-    If you want to include extended information about your tasks remember to enable the `result_extended` setting. 
-    More information here: https://docs.celeryq.dev/en/stable/userguide/configuration.html#result-extended
-    
-    .. code-block:: python
-        
-        CELERY_RESULT_EXTENDED = True
 
+    If you want to include extended information about your tasks remember to enable the :setting:`result_extended` setting.
+
+    .. code-block:: python
+
+        CELERY_RESULT_EXTENDED = True

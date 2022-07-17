@@ -23,7 +23,7 @@
 :release-date: 2022-04-17 12:50 P.M. UTC+6:00
 :release-by: Asif Saif Uddin
 
-- Remove hard dependency on psycopg2.  
+- Remove hard dependency on psycopg2.
 - Fix #296 Stop producing a universal wheel, python 2 is unspported.
 - fix: The description content type for setuptools needs to be rst to markdown.
 
@@ -35,10 +35,10 @@
 :release-date: 2022-03-01 1:45 p.m. UTC+6:00
 :release-by: Asif Saif Uddin
 
-- Fix default_app_config deprecation (#221)  
+- Fix default_app_config deprecation (#221)
 - Use string values for django-cache keys #230 (#242)
 - feat: raw delete expired instead of Queryset.delete (#235)
-- Fix `pydoc.ErrorDuringImport: problem in django_celery_results url
+- Fix ``pydoc.ErrorDuringImport`` problem in django_celery_results url
 - Russian language support (#255)
 - Add Simplified Chinese translation strings.
 - Minor code clean up
@@ -59,8 +59,8 @@
 :release-date: 2021-07-02 11:00 a.m. UTC+6:00
 :release-by: Asif Saif Uddin
 
-- add new urls with nouns first structure (#216) 
-- Remove duplicate indexes 
+- add new urls with nouns first structure (#216)
+- Remove duplicate indexes
 - fix group status view return data, add tests for it (#215)
 - typo fix (#218)
 - Use the DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH for group_id/task_id
@@ -73,7 +73,7 @@
 :release-date: 2021-06-14 09:00 p.m. UTC+6:00
 :release-by: Asif Saif Uddin
 
-- Don't raise an error when ChordCounter is not found 
+- Don't raise an error when ChordCounter is not found
 - add default_auto_field to apps.py
 - Use the provided chord_size when available
 - Match apply_chord call signature to Celery 5.1
@@ -85,20 +85,20 @@
 2.0.1
 =====
 :release-date: 2021-01-19 07:30 p.m. UTC+6:00
-:release-by: 
+:release-by:
 
 - Fix backward compatibility in DatabaseBackend._store_result function
 - Fix 'args' and 'kwargs' propiertes of AsyncResult for DatabaseBackend
 - Fix task_args/task_kwargs in task_protocol=1
 - Test refactors
-- Add task_args and task_kwargs to admins searchable fields (#182) 
+- Add task_args and task_kwargs to admins searchable fields (#182)
 
 .. _version-2.0.0:
 
 2.0.0
 =====
-:release-date: 
-:release-by: 
+:release-date:
+:release-by:
 
 - Add Spanish translations (#134)
 - Add support for Django 3.0 and 3.1 (#145, #163)

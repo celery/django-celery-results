@@ -157,11 +157,11 @@ class ChordCounter(models.Model):
     )
 
     def group_result(self, app=None):
-        """Return the GroupResult of self.
+        """Return the :class:`celery.result.GroupResult` of self.
 
         Arguments:
-        ---------
-            app (Celery): app instance to create the GroupResult with.
+            app (celery.app.base.Celery): app instance to create the
+               :class:`celery.result.GroupResult` with.
 
         """
         return CeleryGroupResult(
