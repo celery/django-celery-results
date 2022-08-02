@@ -83,11 +83,21 @@ class ResultManager(models.Manager):
     def get_all_expired(self, expires):
         """Get all expired results."""
         return self.filter(date_done__lt=now() - maybe_timedelta(expires))
+    
+    
+    def get_all_expired(self, expires, app):
+        """Get all expired task results."""
+        if app.conf.expires_filters_args or app.conf.expires_filters_kwargs:
+            return self.filter(
+                *app.conf.expires_filters_args,
+                **app.conf.expires_filters_kwargs)
+        return self.filter(date_done__lt=now() - maybe_timedelta(expires))
+
 
     def delete_expired(self, expires):
         """Delete all expired results."""
         with transaction.atomic(using=self.db):
-            raw_delete(queryset=self.get_all_expired(expires))
+            raw_delete(queryset=self.get_all_expired(expires, app))
 
 
 class TaskResultManager(ResultManager):
