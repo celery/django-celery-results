@@ -161,11 +161,15 @@ class TaskResultManager(models.Manager):
         except AttributeError:
             return settings.DATABASE_ENGINE
 
-    def get_all_expired(self, expires):
+    def get_all_expired(self, expires, app):
         """Get all expired task results."""
+        if app.conf.expires_filters_args or app.conf.expires_filters_kwargs:
+            return self.filter(
+                *app.conf.expires_filters_args,
+                **app.conf.expires_filters_kwargs)
         return self.filter(date_done__lt=now() - maybe_timedelta(expires))
 
-    def delete_expired(self, expires):
+    def delete_expired(self, expires, app):
         """Delete all expired results."""
         with transaction.atomic():
-            self.get_all_expired(expires).delete()
+            self.get_all_expired(expires, app).delete()

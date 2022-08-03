@@ -87,7 +87,7 @@ class DatabaseBackend(BaseDictBackend):
 
     def cleanup(self):
         """Delete expired metadata."""
-        self.TaskModel._default_manager.delete_expired(self.expires)
+        self.TaskModel._default_manager.delete_expired(self.expires, self.app)
 
     def apply_chord(self, header_result, body, **kwargs):
         """Add a ChordCounter with the expected number of results"""
