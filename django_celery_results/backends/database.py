@@ -80,7 +80,7 @@ class DatabaseBackend(BaseDictBackend):
                 # task protocol 1
                 task_kwargs = getattr(request, 'kwargs', None)
 
-            # TODO: We assuming that task protocol 1 could be always in use. :/
+            # TODO: We assume that task protocol 1 could be always in use. :/
             extra_fields = extend_task_props_callback(
                 getattr(request, 'kwargs', None)
             )
@@ -151,6 +151,8 @@ class DatabaseBackend(BaseDictBackend):
         task_props.update(
             self._get_extended_properties(request, traceback)
         )
+        task_props.update(
+            extend_task_props_callback(request, dict(task_props)))
 
         if status == states.STARTED:
             task_props['date_started'] = Now()
