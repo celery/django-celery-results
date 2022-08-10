@@ -21,6 +21,7 @@ class TaskResult(AbstractTaskResult):
         """Table information."""
 
         abstract = False
+        app_label = "django_celery_results"
 
 
 class ChordCounter(models.Model):
@@ -48,6 +49,10 @@ class ChordCounter(models.Model):
         )
     )
 
+    class Meta:
+        app_label = "django_celery_results"
+
+
     def group_result(self, app=None):
         """Return the GroupResult of self.
 
@@ -71,3 +76,4 @@ class GroupResult(AbstractGroupResult):
         """Table information."""
 
         abstract = False
+        app_label = "django_celery_results"
