@@ -8,7 +8,7 @@ from celery.utils.time import maybe_timedelta
 from django.conf import settings
 from django.db import connections, models, router, transaction
 
-from ..utils import now
+from .utils import now
 
 W_ISOLATION_REP = """
 Polling results with transaction isolation level 'repeatable-read'
@@ -119,7 +119,7 @@ class TaskResultManager(ResultManager):
                      traceback=None, meta=None,
                      periodic_task_name=None,
                      task_name=None, task_args=None, task_kwargs=None,
-                     worker=None, using=None, **kwargs):
+                     worker=None, using=None, extra_fields=None, **kwargs):
         """Store the result and status of a task.
 
         Arguments:
@@ -140,6 +140,7 @@ class TaskResultManager(ResultManager):
                 exception (only passed if the task failed).
             meta (str): Serialized result meta data (this contains e.g.
                 children).
+            extra_fields (dict, optional): Extra (model) fields to store.
 
         Keyword Arguments:
             exception_retry_count (int): How many times to retry by
@@ -159,7 +160,8 @@ class TaskResultManager(ResultManager):
             'task_name': task_name,
             'task_args': task_args,
             'task_kwargs': task_kwargs,
-            'worker': worker
+            'worker': worker,
+            **extra_fields
         }
         if 'date_started' in kwargs:
             fields['date_started'] = kwargs['date_started']
