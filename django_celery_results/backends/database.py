@@ -1,5 +1,6 @@
 import binascii
 import json
+from typing import Mapping
 
 from celery import maybe_signature, states
 from celery.backends.base import BaseDictBackend, get_current_task
@@ -14,7 +15,7 @@ from kombu.exceptions import DecodeError
 
 from ..models import ChordCounter
 from ..models.helpers import groupresult_model, taskresult_model
-from ..settings import extend_task_props_callback
+from ..settings import get_task_props_extension
 
 EXCEPTIONS_TO_CATCH = (InterfaceError,)
 
@@ -148,11 +149,8 @@ class DatabaseBackend(BaseDictBackend):
             'using': using,
         }
 
-        task_props.update(
-            self._get_extended_properties(request, traceback)
-        )
-        task_props.update(
-            extend_task_props_callback(request, dict(task_props)))
+        task_props.update(self._get_extended_properties(request, traceback))
+        task_props.update(get_task_props_extension(request, dict(task_props)))
 
         if status == states.STARTED:
             task_props['date_started'] = Now()

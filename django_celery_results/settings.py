@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from collections.abc import Mapping
 
 
 def get_callback_function(settings_name, default=None):
@@ -16,5 +17,21 @@ def get_callback_function(settings_name, default=None):
 
 
 extend_task_props_callback = get_callback_function(
-    "CELERY_RESULTS_EXTEND_TASK_PROPS_CALLBACK", dict
+    "CELERY_RESULTS_EXTEND_TASK_PROPS_CALLBACK"
 )
+
+
+def get_task_props_extension(request, task_props):
+    """Extend the task properties with custom properties to fill custom models."""
+
+    task_props_extension = extend_task_props_callback(request, task_props) or {}
+    if task_props_extension is None:
+        return {}
+
+    if not isinstance(task_props_extension, Mapping):
+        raise ImproperlyConfigured(
+            "CELERY_RESULTS_EXTEND_TASK_PROPS_CALLBACK must return a Mapping "
+            "instance."
+        )
+
+    return task_props_extension
