@@ -2,7 +2,8 @@ from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-from .generic import TaskResult, GroupResult
+from .generic import GroupResult, TaskResult
+
 
 def taskresult_model():
     """Return the TaskResult model that is active in this project."""

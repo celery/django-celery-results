@@ -1,6 +1,7 @@
+from collections.abc import Mapping
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from collections.abc import Mapping
 
 
 def get_callback_function(settings_name, default=None):
