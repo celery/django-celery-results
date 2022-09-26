@@ -30,6 +30,7 @@ class TaskResultAdmin(admin.ModelAdmin):
             'fields': (
                 'task_id',
                 'task_name',
+                'periodic_task_name',
                 'status',
                 'worker',
                 'content_type',
