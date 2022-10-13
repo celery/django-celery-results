@@ -9,7 +9,7 @@ def taskresult_model():
     """Return the TaskResult model that is active in this project."""
     if not hasattr(settings, 'CELERY_RESULTS_TASKRESULT_MODEL'):
         return TaskResult
-    
+
     try:
         return apps.get_model(
             settings.CELERY_RESULTS_TASKRESULT_MODEL
@@ -26,11 +26,12 @@ def taskresult_model():
             "been installed"
         )
 
+
 def groupresult_model():
     """Return the GroupResult model that is active in this project."""
     if not hasattr(settings, 'CELERY_RESULTS_GROUPRESULT_MODEL'):
         return GroupResult
-    
+
     try:
         return apps.get_model(
             settings.CELERY_RESULTS_GROUPRESULT_MODEL

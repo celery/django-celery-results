@@ -52,7 +52,6 @@ class ChordCounter(models.Model):
     class Meta:
         app_label = "django_celery_results"
 
-
     def group_result(self, app=None):
         """Return the GroupResult of self.
 

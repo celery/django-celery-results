@@ -26,7 +26,7 @@ def get_task_props_extension(request, task_props):
     if not extend_task_props_callback:
         return {}
 
-    task_props_extension = extend_task_props_callback(request, task_props) or {}
+    task_props_extension = extend_task_props_callback(request, task_props) or {}  # noqa E501
     if not isinstance(task_props_extension, Mapping):
         raise ImproperlyConfigured(
             "CELERY_RESULTS_EXTEND_TASK_PROPS_CALLBACK must return a Mapping."
