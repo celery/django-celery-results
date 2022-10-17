@@ -20,7 +20,7 @@ To extend the Task Results model follow the next steps:
         
         CELERY_RESULTS_TASKRESULT_MODEL = 'myapp.TaskResult'
 
-#. Write a function in your Django project's :file:`settings.py` that will consume a `request` and `task_properties` as positional arguments and will return a dictionary with the additional information that you want to store in the your custom `TaskResult` model. The keys of this dictionary will be the fields of the custom model and the values the data you can retrieve from the `request` and/or `task_properties`.
+#. Write a function that will consume a `request` and `task_properties` as positional arguments and will return a dictionary with the additional information that you want to store in your custom `TaskResult` model. The keys of this dictionary will be the fields of the custom model and the values the data you can retrieve from the `request` and/or `task_properties`.
 
     .. code-block:: python
 
