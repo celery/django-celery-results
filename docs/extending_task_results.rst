@@ -1,7 +1,7 @@
 Extending Task Results
 ======================
 
-There are situations where you want to extend the Task Results with additional information that will make you able to retrieve information that was important at execution time of the task but not part of the task result itself. For example if you use :pypi:`django-celery-results` to track the task results from an tenant.
+There are situations where you want to extend the Task Results with additional information that will make you able to retrieve information that was important at execution time of the task but not part of the task result itself. For example if you use :pypi:`django-celery-results` to track the task results from a tenant.
 
 To extend the Task Results model follow the next steps:
 
