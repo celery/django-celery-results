@@ -30,7 +30,7 @@ To extend the Task Results model follow the next steps:
 
             return {"tenant_id": task_kwargs.get("tenant_id", None)}
 
-#. To let :pypi:`django-celery-results` call this function internally you've to set the `CELERY_RESULTS_EXTEND_TASK_PROPS_CALLBACK` constant in your Django project's :file:`settings.py` with the function that you've just created.
+#. To let :pypi:`django-celery-results` call this function, you'll have to set the `CELERY_RESULTS_EXTEND_TASK_PROPS_CALLBACK` constant in your Django project's :file:`settings.py`.
 
         .. code-block:: python
         
