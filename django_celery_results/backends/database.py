@@ -246,7 +246,7 @@ class DatabaseBackend(BaseDictBackend):
                 return
             chord_counter.count -= 1
             if chord_counter.count != 0:
-                chord_counter.save()
+                chord_counter.save(update_fields=["count"])
             else:
                 # Last task in the chord header has finished
                 call_callback = True
