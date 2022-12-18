@@ -13,8 +13,17 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                python-version: [ 3.8, 3.9, "3.10" ]
-                django: [ 32, 40 ]
+                python-version: [ 3.7, 3.8, 3.9, "3.10", "3.11", "pypy3.9" ]
+                django: [ 32, 40, 41 ]
+                exclude:
+                    - python-version: 3.7
+                      django: 40
+                    - python-version: 3.7
+                      django: 41
+                    - python-version: "3.11"
+                      django: 32
+                    - python-version: "3.11"
+                      django: 40
                 
         services:
             postgres:
@@ -33,8 +42,8 @@ jobs:
                     POSTGRES_PASSWORD: "postgres"
 
         steps:
-            -   uses: actions/checkout@v2
-            -   uses: actions/setup-python@v2.2.2
+            -   uses: actions/checkout@v3
+            -   uses: actions/setup-python@v4
                 with:
                     python-version: ${{ matrix.python-version }}
             -   run: pip install tox

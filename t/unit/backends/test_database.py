@@ -740,7 +740,8 @@ class test_DatabaseBackend:
         request.chord.delay.assert_called_once()
 
     def test_on_chord_part_return_counter_not_found(self):
-        """Test if the chord does not raise an error if the ChordCounter is not found
+        """Test if the chord does not raise an error if the ChordCounter is
+        not found
 
         Basically this covers the case where a chord was created with a version
         <2.0.0 and the update was done before the chord was finished
@@ -795,8 +796,8 @@ class test_DatabaseBackend:
         assert TaskResult.objects.get(task_id=cid).status == states.FAILURE
 
     def test_on_chord_part_return_failure(self):
-        """Test if a failure in one of the chord header tasks is properly handled
-        and the callback was not triggered
+        """Test if a failure in one of the chord header tasks is properly
+        handled and the callback was not triggered
         """
         gid = uuid()
         tid1 = uuid()

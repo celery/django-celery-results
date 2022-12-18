@@ -1,2 +1,3 @@
 pytest-cov
 codecov
+importlib-metadata<5.0; python_version<"3.8"
