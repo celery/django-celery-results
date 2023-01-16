@@ -68,8 +68,11 @@ class ResultManager(models.Manager):
                 if isolation == 'REPEATABLE-READ':
                     warnings.warn(TxIsolationWarning(W_ISOLATION_REP.strip()))
 
+    def database_for_write(self):
+        return router.db_for_write(self.model)
+
     def connection_for_write(self):
-        return connections[router.db_for_write(self.model)]
+        return connections[self.database_for_write()]
 
     def connection_for_read(self):
         return connections[self.db]
@@ -86,7 +89,7 @@ class ResultManager(models.Manager):
 
     def delete_expired(self, expires):
         """Delete all expired results."""
-        with transaction.atomic(using=self.db):
+        with transaction.atomic(using=self.database_for_write()):
             raw_delete(queryset=self.get_all_expired(expires))
 
 
