@@ -517,6 +517,38 @@ class test_DatabaseBackend:
         assert json.loads(tr.task_args) == ['a', 1, True]
         assert json.loads(tr.task_kwargs) == {'c': 6, 'd': 'e', 'f': False}
 
+    def test_backend__task_result_meta_injection(self):
+        self.app.conf.result_serializer = 'json'
+        self.app.conf.accept_content = {'pickle', 'json'}
+        self.b = DatabaseBackend(app=self.app)
+
+        tid2 = uuid()
+        request = self._create_request(
+            task_id=tid2,
+            name='my_task',
+            args=[],
+            kwargs={},
+            task_protocol=1,
+        )
+        result = None
+
+        # inject request meta arbitrary data
+        request.meta = {
+            'some_key': 'some_value'
+        }
+
+        self.b.mark_as_done(tid2, result, request=request)
+        mindb = self.b.get_task_meta(tid2)
+
+        # check task meta
+        assert mindb.get('result') is None
+        assert mindb.get('task_name') == 'my_task'
+        assert mindb.get('meta') == {'some_key': 'some_value'}
+
+        # check task_result object
+        tr = TaskResult.objects.get(task_id=tid2)
+        assert json.loads(tr.meta) == {}
+
     def xxx_backend(self):
         tid = uuid()
 
