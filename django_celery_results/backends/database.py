@@ -2,7 +2,7 @@ import binascii
 import json
 
 from celery import maybe_signature
-from celery.backends.base import BaseDictBackend
+from celery.backends.base import BaseDictBackend, get_current_task
 from celery.exceptions import ChordError
 from celery.result import GroupResult, allow_join_result, result_from_tuple
 from celery.utils.log import get_logger
@@ -99,6 +99,17 @@ class DatabaseBackend(BaseDictBackend):
 
         return extended_props
 
+    def _get_meta_from_request(self, request=None):
+        """
+        Use the request or get_current_task to evaluate the `meta` attribute.
+
+        With this, is possible to assign arbitrary data in request.meta to be
+        retrieve and stored on the TaskResult.
+        """
+        request = request or getattr(get_current_task(), "request", None)
+        if request:
+            return getattr(request, "meta", {})
+
     def _store_result(
             self,
             task_id,
@@ -110,14 +121,19 @@ class DatabaseBackend(BaseDictBackend):
     ):
         """Store return value and status of an executed task."""
         content_type, content_encoding, result = self.encode_content(result)
-        _, _, meta = self.encode_content(
-            {'children': self.current_task_children(request)}
+
+        meta = {
+            **self._get_meta_from_request(request),
+            "children": self.current_task_children(request),
+        }
+        _, _, encoded_meta = self.encode_content(
+            meta,
         )
 
         task_props = {
             'content_encoding': content_encoding,
             'content_type': content_type,
-            'meta': meta,
+            'meta': encoded_meta,
             'result': result,
             'status': status,
             'task_id': task_id,
