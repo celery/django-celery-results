@@ -23,7 +23,7 @@ To save arbitrary data on the field TaskResult.meta, the Celery Task Request mus
             #     meta={'some_key': 'some_value'}  # some discrepancies apply as I didn't document the json parse and children data
             # )
             return 'hello world'
-        
+
         # After task is completed, if TaskResult is queried from DB at this momento it will yield
         # TaskResult(
         #     result='hello world',
@@ -35,7 +35,8 @@ This way, the value of ``task_instance.request.meta`` will be stored on ``TaskRe
 Note that the `meta` arg in the method `update_state` is not really a metadata and it's not stored on ``TaskResult.meta``.
 This arg is used to save the CURRENT result of the task. So it's stored on ``TaskResult.result``.
 
-It works this way because while a task is executing, the TaskResult is used really as current task state; holding information, temporarily, until the task completes.
-Subsequent calls calls to update_state update the same TaskResult, overwriting what was there previously.
-Upon completion of the task, the results of the task are stored in the same TaskResult, overwriting the previous state of the task. So the return from the function is stored in ``TaskResult.result`` and ``TaskResult.status`` is set to 'SUCCESS' (or 'FAILURE').
+It works this way because while a task is executing, the `TaskResult` is used really as current task state; holding information, temporarily, until the task completes.
+Subsequent calls to `update_state` will update the same `TaskResult`, overwriting what was there previously.
+Upon completion of the task, the results of the task are stored in the same TaskResult, overwriting the previous state of the task.
+So the return from the function is stored in ``TaskResult.result`` and ``TaskResult.status`` is set to 'SUCCESS' (or 'FAILURE').
 
