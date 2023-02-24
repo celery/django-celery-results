@@ -9,8 +9,9 @@ Contents
 
 .. toctree::
     :maxdepth: 1
-    
+
     getting_started
+    injecting_metadata
     copyright
 
 .. toctree::
