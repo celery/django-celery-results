@@ -543,11 +543,10 @@ class test_DatabaseBackend:
         # check task meta
         assert mindb.get('result') is None
         assert mindb.get('task_name') == 'my_task'
-        assert mindb.get('meta') == {'some_key': 'some_value'}
 
         # check task_result object
         tr = TaskResult.objects.get(task_id=tid2)
-        assert json.loads(tr.meta) == {}
+        assert json.loads(tr.meta) == {'some_key': 'some_value', 'children': []}
 
     def xxx_backend(self):
         tid = uuid()
