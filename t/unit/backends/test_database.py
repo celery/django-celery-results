@@ -534,7 +534,7 @@ class test_DatabaseBackend:
 
         # inject request meta arbitrary data
         request.meta = {
-            'some_key': 'some_value'
+            'key': 'value'
         }
 
         self.b.mark_as_done(tid2, result, request=request)
@@ -546,7 +546,7 @@ class test_DatabaseBackend:
 
         # check task_result object
         tr = TaskResult.objects.get(task_id=tid2)
-        assert json.loads(tr.meta) == {'some_key': 'some_value', 'children': []}
+        assert json.loads(tr.meta) == {'key': 'value', 'children': []}
 
     def xxx_backend(self):
         tid = uuid()
