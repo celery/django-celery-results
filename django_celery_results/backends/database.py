@@ -107,8 +107,7 @@ class DatabaseBackend(BaseDictBackend):
         retrieve and stored on the TaskResult.
         """
         request = request or getattr(get_current_task(), "request", None)
-        if request:
-            return getattr(request, "meta", {})
+        return getattr(request, "meta", {})
 
     def _store_result(
             self,
