@@ -4,6 +4,19 @@
  Change history
 ================
 
+.. _version-2.5.0:
+
+2.5.0
+=====
+:release-date: 2023-03-13 5:45 P.M. UTC+6:00
+:release-by: Asif Saif Uddin
+
+- try possible fix to avoid a oracle regression (#325).
+- Added periodic_task_name to admin fieldset for parity with list view.
+- Only update the ChordCounter.count field when saving.
+- Meta injection (#366).
+
+
 .. _version-2.4.0:
 
 2.4.0
