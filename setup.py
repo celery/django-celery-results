@@ -113,7 +113,7 @@ def reqs(*f):
 if os.path.exists('README.rst'):
     long_description = codecs.open('README.rst', 'r', 'utf-8').read()
 else:
-    long_description = f'See http://pypi.python.org/pypi/{NAME}'
+    long_description = f'See https://pypi.python.org/pypi/{NAME}'
 
 # -*- %%% -*-
 

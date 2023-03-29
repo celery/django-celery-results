@@ -5,9 +5,9 @@
 |build-status| |coverage| |license| |wheel| |pyversion| |pyimp|
 
 :Version: 2.5.0
-:Web: http://django-celery-results.readthedocs.io/
-:Download: http://pypi.python.org/pypi/django-celery-results
-:Source: http://github.com/celery/django-celery-results
+:Web: https://django-celery-results.readthedocs.io/
+:Download: https://pypi.python.org/pypi/django-celery-results
+:Source: https://github.com/celery/django-celery-results
 :Keywords: django, celery, database, results
 
 About
@@ -26,7 +26,7 @@ The installation instructions for this extension is available
 from the `Celery documentation`_
 
 .. _`Celery documentation`:
-    http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
+    https://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
 
 .. _installation:
 
@@ -46,7 +46,7 @@ Downloading and installing from source
 --------------------------------------
 
 Download the latest version of django-celery-results from
-http://pypi.python.org/pypi/django-celery-results
+https://pypi.python.org/pypi/django-celery-results
 
 You can install it by doing the following,::
 
@@ -103,16 +103,16 @@ max_length of **191** seems to work for MySQL.
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/django-celery-results.svg
     :alt: django-celery-results can be installed via wheel
-    :target: http://pypi.python.org/pypi/django-celery-results/
+    :target: https://pypi.python.org/pypi/django-celery-results/
 
 .. |pyversion| image:: https://img.shields.io/pypi/pyversions/django-celery-results.svg
     :alt: Supported Python versions.
-    :target: http://pypi.python.org/pypi/django-celery-results/
+    :target: https://pypi.python.org/pypi/django-celery-results/
 
 .. |pyimp| image:: https://img.shields.io/pypi/implementation/django-celery-results.svg
     :alt: Support Python implementations.
-    :target: http://pypi.python.org/pypi/django-celery-results/
-    
+    :target: https://pypi.python.org/pypi/django-celery-results/
+
 django-celery-results for enterprise
 ------------------------------------
 
