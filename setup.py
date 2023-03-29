@@ -139,6 +139,16 @@ setuptools.setup(
     author=meta['author'],
     author_email=meta['contact'],
     url=meta['homepage'],
+    project_urls={
+        'Documentation': (
+            'https://django-celery-results.readthedocs.io/en/latest/'
+        ),
+        'Changelog': (
+            'https://django-celery-results.readthedocs.io/en/latest/'
+            'changelog.html'
+        ),
+        'Repository': 'https://github.com/celery/django-celery-results',
+    },
     platforms=['any'],
     license='BSD',
     classifiers=classifiers,
