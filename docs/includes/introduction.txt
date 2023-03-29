@@ -1,7 +1,7 @@
 :Version: 2.5.0
-:Web: http://django-celery-results.readthedocs.io/
-:Download: http://pypi.python.org/pypi/django-celery-results
-:Source: http://github.com/celery/django-celery-results
+:Web: https://django-celery-results.readthedocs.io/
+:Download: https://pypi.python.org/pypi/django-celery-results
+:Source: https://github.com/celery/django-celery-results
 :Keywords: django, celery, database, results
 
 About

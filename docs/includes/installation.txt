@@ -16,7 +16,7 @@ Downloading and installing from source
 --------------------------------------
 
 Download the latest version of django-celery-results from
-http://pypi.python.org/pypi/django-celery-results
+https://pypi.python.org/pypi/django-celery-results
 
 You can install it by doing the following,::
 

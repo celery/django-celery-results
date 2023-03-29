@@ -8,7 +8,7 @@ the new BSD license).  The license is an OSI approved Open Source
 license and is GPL-compatible(1).
 
 The license text can also be found here:
-http://www.opensource.org/licenses/BSD-3-Clause
+https://opensource.org/license/bsd-3-clause/
 
 License
 =======
@@ -43,7 +43,7 @@ The documentation portion of django-celery-results (the rendered contents of the
 "docs" directory of a software distribution or checkout) is supplied
 under the "Creative Commons Attribution-ShareAlike 4.0
 International" (CC BY-SA 4.0) License as described by
-http://creativecommons.org/licenses/by-sa/4.0/
+https://creativecommons.org/licenses/by-sa/4.0/
 
 Footnotes
 =========

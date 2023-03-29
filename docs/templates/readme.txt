@@ -21,12 +21,12 @@
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/django-celery-results.svg
     :alt: django-celery-results can be installed via wheel
-    :target: http://pypi.python.org/pypi/django-celery-results/
+    :target: https://pypi.python.org/pypi/django-celery-results/
 
 .. |pyversion| image:: https://img.shields.io/pypi/pyversions/django-celery-results.svg
     :alt: Supported Python versions.
-    :target: http://pypi.python.org/pypi/django-celery-results/
+    :target: https://pypi.python.org/pypi/django-celery-results/
 
 .. |pyimp| image:: https://img.shields.io/pypi/implementation/django-celery-results.svg
     :alt: Support Python implementations.
-    :target: http://pypi.python.org/pypi/django-celery-results/
+    :target: https://pypi.python.org/pypi/django-celery-results/

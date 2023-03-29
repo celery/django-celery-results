@@ -7,7 +7,7 @@ globals().update(conf.build_config(
     project='django_celery_results',
     # version_dev='2.0',
     # version_stable='1.4',
-    canonical_url='http://django-celery-results.readthedocs.io',
+    canonical_url='https://django-celery-results.readthedocs.io',
     webdomain='',
     github_project='celery/django-celery-results',
     copyright='2009-2022',
