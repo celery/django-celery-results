@@ -8,7 +8,7 @@ from celery.utils.time import maybe_timedelta
 from django.conf import settings
 from django.db import connections, models, router, transaction
 
-from .utils import now, raw_delete
+from .utils import now
 
 W_ISOLATION_REP = """
 Polling results with transaction isolation level 'repeatable-read'
@@ -87,7 +87,7 @@ class ResultManager(models.Manager):
     def delete_expired(self, expires):
         """Delete all expired results."""
         with transaction.atomic(using=self.db):
-            raw_delete(queryset=self.get_all_expired(expires))
+            self.get_all_expired(expires).delete()
 
 
 class TaskResultManager(ResultManager):
