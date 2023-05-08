@@ -4,6 +4,16 @@
  Change history
 ================
 
+.. _version-2.5.1:
+
+2.5.1
+=====
+:release-date: 2023-05-08 8:15 P.M. UTC+6:00
+:release-by: Asif Saif Uddin
+
+- Revert "feat: raw delete expired instead of Queryset.delete (#235)" partially.
+
+
 .. _version-2.5.0:
 
 2.5.0
