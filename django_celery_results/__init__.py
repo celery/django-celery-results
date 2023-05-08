@@ -1,5 +1,6 @@
 """Celery result backends for Django."""
 # :copyright: (c) 2016, Ask Solem.
+# :copyright: (c) 2017-2033, Asif Saif Uddin.
 #             All rights reserved.
 # :license:   BSD (3 Clause), see LICENSE for more details.
 
@@ -10,7 +11,7 @@ import django
 
 __version__ = '2.5.0'
 __author__ = 'Asif Saif Uddin, Ask Solem'
-__contact__ = 'auvipy@gmai.com, ask@celeryproject.org'
+__contact__ = 'auvipy@gmail.com'
 __homepage__ = 'https://github.com/celery/django-celery-results'
 __docformat__ = 'restructuredtext'
 
