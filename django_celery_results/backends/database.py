@@ -277,7 +277,8 @@ class DatabaseBackend(BaseDictBackend):
                 )
                 chord_counter.delete()
             else:
-                logger.warning("ChordCounter for Group %s 0 but not ready yet.", gid)
+                logger.warning("ChordCounter for Group %s 0 "
+                               "but not ready yet.", gid)
 
 
 def trigger_callback(app, callback, group_result):
