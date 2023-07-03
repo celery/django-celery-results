@@ -265,7 +265,6 @@ class DatabaseBackend(BaseDictBackend):
             else:
                 # Last task in the chord header has finished
                 call_callback = True
-                chord_counter.delete()
 
         if call_callback:
             deps = chord_counter.group_result(app=self.app)
@@ -276,6 +275,9 @@ class DatabaseBackend(BaseDictBackend):
                     callback=callback,
                     group_result=deps
                 )
+                chord_counter.delete()
+            else:
+                logger.warning("ChordCounter for Group %s 0 but not ready yet.", gid)
 
 
 def trigger_callback(app, callback, group_result):
