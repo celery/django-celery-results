@@ -3,7 +3,6 @@
 *$py.class
 *~
 .*.sw[pon]
-*.mo
 dist/
 *.egg-info
 *.egg
