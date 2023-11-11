@@ -12,8 +12,8 @@ from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
 
 from ..models import ChordCounter
-from ..models import GroupResult as GroupResultModel
-from ..models import TaskResult
+from ..models.helpers import groupresult_model, taskresult_model
+from ..settings import get_task_props_extension
 
 EXCEPTIONS_TO_CATCH = (InterfaceError,)
 
@@ -29,8 +29,8 @@ logger = get_logger(__name__)
 class DatabaseBackend(BaseDictBackend):
     """The Django database backend, using models to store task state."""
 
-    TaskModel = TaskResult
-    GroupModel = GroupResultModel
+    TaskModel = taskresult_model()
+    GroupModel = groupresult_model()
     subpolling_interval = 0.5
 
     def exception_safe_to_retry(self, exc):
@@ -140,9 +140,8 @@ class DatabaseBackend(BaseDictBackend):
             'using': using,
         }
 
-        task_props.update(
-            self._get_extended_properties(request, traceback)
-        )
+        task_props.update(self._get_extended_properties(request, traceback))
+        task_props.update(get_task_props_extension(request, dict(task_props)))
 
         self.TaskModel._default_manager.store_result(**task_props)
         return result
