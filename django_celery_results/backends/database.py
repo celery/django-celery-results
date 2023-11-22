@@ -236,9 +236,11 @@ class DatabaseBackend(BaseDictBackend):
         results = [r.as_tuple() for r in header_result]
         chord_size = body.get("chord_size", None) or len(results)
         data = json.dumps(results)
-        ChordCounter.objects.create(
-            group_id=header_result.id, sub_tasks=data, count=chord_size
-        )
+        ChordCounter.objects.update_or_create(group_id=header_result.id,
+                                              defaults={
+                                                  "sub_tasks": data,
+                                                  "count": chord_size
+                                              })
 
     def on_chord_part_return(self, request, state, result, **kwargs):
         """Called on finishing each part of a Chord header"""
