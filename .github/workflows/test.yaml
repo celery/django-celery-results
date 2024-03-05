@@ -18,9 +18,9 @@ jobs:
                 exclude:
                     - python-version: "3.11"
                       django: 32
-                    - python-version: "3.8"
+                    - python-version: 3.8
                       django: 50
-                    - python-version: "3.9"
+                    - python-version: 3.9
                       django: 50
                 
         services:
