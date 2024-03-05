@@ -1,2 +1,2 @@
-django>=4.2.11,<5.0
+django>=5.0.3,<5.1
 psycopg>=3.1.8 # necessary due to https://docs.djangoproject.com/en/4.2/releases/4.2/#psycopg-3-support

@@ -14,10 +14,14 @@ jobs:
         strategy:
             matrix:
                 python-version: [ 3.8, 3.9, "3.10", "3.11", "pypy3.9" ]
-                django: [ 32, 41, 42]
+                django: [ 32, 41, 42, 50]
                 exclude:
                     - python-version: "3.11"
                       django: 32
+                    - python-version: "3.8"
+                      django: 50
+                    - python-version: "3.9"
+                      django: 50
                 
         services:
             postgres:
