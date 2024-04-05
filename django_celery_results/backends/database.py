@@ -246,7 +246,7 @@ class DatabaseBackend(BaseDictBackend):
         if not gid or not tid:
             return
         call_callback = False
-        with transaction.atomic():
+        with transaction.atomic(using=ChordCounter.objects.db):
             # We need to know if `count` hits 0.
             # wrap the update in a transaction
             # with a `select_for_update` lock to prevent race conditions.
