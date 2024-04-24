@@ -782,10 +782,11 @@ class test_DatabaseBackend:
         request.group = uuid()
         self.b.on_chord_part_return(request=request, state=None, result=None)
 
-    @pytest.mark.django_db(databases=['default', 'read'])
     def test_on_chord_part_return_multiple_databases(self):
-        """Test if the ChordCounter is properly decremented and the callback is
-        triggered after all chord parts have returned with multiple databases"""
+        """
+        Test if the ChordCounter is properly decremented and the callback is
+        triggered after all chord parts have returned with multiple databases
+        """
         gid = uuid()
         tid1 = uuid()
         tid2 = uuid()
@@ -793,7 +794,9 @@ class test_DatabaseBackend:
         group = GroupResult(id=gid, results=subtasks)
         self.b.apply_chord(group, self.add.s())
 
-        chord_counter = ChordCounter.objects.using("read").get(group_id=gid)
+        chord_counter = ChordCounter.objects.using(
+            "secondary"
+        ).get(group_id=gid)
         assert chord_counter.count == 2
 
         request = mock.MagicMock()
@@ -817,7 +820,7 @@ class test_DatabaseBackend:
         self.b.mark_as_done(tid2, result, request=request)
 
         with pytest.raises(ChordCounter.DoesNotExist):
-            ChordCounter.objects.using("read").get(group_id=gid)
+            ChordCounter.objects.using("secondary").get(group_id=gid)
 
         request.chord.delay.assert_called_once()
 
