@@ -782,6 +782,45 @@ class test_DatabaseBackend:
         request.group = uuid()
         self.b.on_chord_part_return(request=request, state=None, result=None)
 
+    @pytest.mark.django_db(databases=['default', 'read'])
+    def test_on_chord_part_return_multiple_databases(self):
+        """Test if the ChordCounter is properly decremented and the callback is
+        triggered after all chord parts have returned with multiple databases"""
+        gid = uuid()
+        tid1 = uuid()
+        tid2 = uuid()
+        subtasks = [AsyncResult(tid1), AsyncResult(tid2)]
+        group = GroupResult(id=gid, results=subtasks)
+        self.b.apply_chord(group, self.add.s())
+
+        chord_counter = ChordCounter.objects.using("read").get(group_id=gid)
+        assert chord_counter.count == 2
+
+        request = mock.MagicMock()
+        request.id = subtasks[0].id
+        request.group = gid
+        request.task = "my_task"
+        request.args = ["a", 1, "password"]
+        request.kwargs = {"c": 3, "d": "e", "password": "password"}
+        request.argsrepr = "argsrepr"
+        request.kwargsrepr = "kwargsrepr"
+        request.hostname = "celery@ip-0-0-0-0"
+        request.properties = {"periodic_task_name": "my_periodic_task"}
+        request.ignore_result = False
+        result = {"foo": "baz"}
+
+        self.b.mark_as_done(tid1, result, request=request)
+
+        chord_counter.refresh_from_db()
+        assert chord_counter.count == 1
+
+        self.b.mark_as_done(tid2, result, request=request)
+
+        with pytest.raises(ChordCounter.DoesNotExist):
+            ChordCounter.objects.using("read").get(group_id=gid)
+
+        request.chord.delay.assert_called_once()
+
     def test_callback_failure(self):
         """Test if a failure in the chord callback is properly handled"""
         gid = uuid()
