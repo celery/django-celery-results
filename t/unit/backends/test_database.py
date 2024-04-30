@@ -922,8 +922,24 @@ class test_DatabaseBackend:
         assert tr.task_kwargs is None
 
 
+class DjangoCeleryResultRouter:
+    route_app_labels = {"django_celery_results"}
+
+    def db_for_read(self, model, **hints):
+        """Route read access to the read-only database"""
+        if model._meta.app_label in self.route_app_labels:
+            return "read-only"
+        return None
+
+    def db_for_write(self, model, **hints):
+        """Route write access to the default database"""
+        if model._meta.app_label in self.route_app_labels:
+            return "default"
+        return None
+
+
 class ChordPartReturnTestCase(TransactionTestCase):
-    databases = "__all__"
+    databases = {"default", "read-only"}
 
     def setUp(self):
         super().setUp()
@@ -938,39 +954,48 @@ class ChordPartReturnTestCase(TransactionTestCase):
         Test if the ChordCounter is properly decremented and the callback is
         triggered after all chord parts have returned with multiple databases
         """
-        gid = uuid()
-        tid1 = uuid()
-        tid2 = uuid()
-        subtasks = [AsyncResult(tid1), AsyncResult(tid2)]
-        group = GroupResult(id=gid, results=subtasks)
-        self.b.apply_chord(group, self.add.s())
+        with self.settings(DATABASE_ROUTERS=[DjangoCeleryResultRouter()]):
+            gid = uuid()
+            tid1 = uuid()
+            tid2 = uuid()
+            subtasks = [AsyncResult(tid1), AsyncResult(tid2)]
+            group = GroupResult(id=gid, results=subtasks)
 
-        chord_counter = ChordCounter.objects.using(
-            "secondary"
-        ).get(group_id=gid)
-        assert chord_counter.count == 2
+            assert ChordCounter.objects.count() == 0
+            assert ChordCounter.objects.using("read-only").count() == 0
+            assert ChordCounter.objects.using("default").count() == 0
 
-        request = mock.MagicMock()
-        request.id = subtasks[0].id
-        request.group = gid
-        request.task = "my_task"
-        request.args = ["a", 1, "password"]
-        request.kwargs = {"c": 3, "d": "e", "password": "password"}
-        request.argsrepr = "argsrepr"
-        request.kwargsrepr = "kwargsrepr"
-        request.hostname = "celery@ip-0-0-0-0"
-        request.properties = {"periodic_task_name": "my_periodic_task"}
-        request.ignore_result = False
-        result = {"foo": "baz"}
+            self.b.apply_chord(group, self.add.s())
 
-        self.b.mark_as_done(tid1, result, request=request)
+            # Check if the ChordCounter was created in the correct database
+            assert ChordCounter.objects.count() == 1
+            assert ChordCounter.objects.using("read-only").count() == 1
+            assert ChordCounter.objects.using("default").count() == 1
 
-        chord_counter.refresh_from_db()
-        assert chord_counter.count == 1
+            chord_counter = ChordCounter.objects.get(group_id=gid)
+            assert chord_counter.count == 2
 
-        self.b.mark_as_done(tid2, result, request=request)
+            request = mock.MagicMock()
+            request.id = subtasks[0].id
+            request.group = gid
+            request.task = "my_task"
+            request.args = ["a", 1, "password"]
+            request.kwargs = {"c": 3, "d": "e", "password": "password"}
+            request.argsrepr = "argsrepr"
+            request.kwargsrepr = "kwargsrepr"
+            request.hostname = "celery@ip-0-0-0-0"
+            request.properties = {"periodic_task_name": "my_periodic_task"}
+            request.ignore_result = False
+            result = {"foo": "baz"}
 
-        with pytest.raises(ChordCounter.DoesNotExist):
-            ChordCounter.objects.using("secondary").get(group_id=gid)
+            self.b.mark_as_done(tid1, result, request=request)
 
-        request.chord.delay.assert_called_once()
+            chord_counter.refresh_from_db()
+            assert chord_counter.count == 1
+
+            self.b.mark_as_done(tid2, result, request=request)
+
+            with pytest.raises(ChordCounter.DoesNotExist):
+                ChordCounter.objects.get(group_id=gid)
+
+            request.chord.delay.assert_called_once()
