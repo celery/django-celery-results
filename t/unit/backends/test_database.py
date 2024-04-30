@@ -862,8 +862,8 @@ class test_DatabaseBackend:
         request.id = tid2
         self.b.mark_as_failure(tid2, ValueError(), request=request)
 
-        with pytest.raises(ChordCounter.DoesNotExist):
-            ChordCounter.objects.get(group_id=gid)
+        chord_counter.refresh_from_db()
+        assert chord_counter.count == 1
 
         request.chord.delay.assert_not_called()
 
