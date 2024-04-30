@@ -32,7 +32,6 @@ try:
             'NAME': 'postgres',
             'USER': 'postgres',
             'PASSWORD': 'postgres',
-            "PORT": 5434,
             'OPTIONS': {
                 'connect_timeout': 1000,
             }
@@ -43,7 +42,6 @@ try:
             'NAME': 'postgres',
             'USER': 'postgres',
             'PASSWORD': 'postgres',
-            "PORT": 5434,
             'OPTIONS': {
                 'connect_timeout': 1000,
             },
@@ -57,7 +55,6 @@ try:
             'NAME': 'read-only-database',
             'USER': 'postgres',
             'PASSWORD': 'postgres',
-            "PORT": 5434,
             'OPTIONS': {
                 'connect_timeout': 1000,
                 'options': '-c default_transaction_read_only=on',
