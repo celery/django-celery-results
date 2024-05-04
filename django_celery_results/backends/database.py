@@ -7,7 +7,7 @@ from celery.exceptions import ChordError
 from celery.result import GroupResult, allow_join_result, result_from_tuple
 from celery.utils.log import get_logger
 from celery.utils.serialization import b64decode, b64encode
-from django.db import connection, transaction
+from django.db import connection, router, transaction
 from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
 
@@ -246,7 +246,7 @@ class DatabaseBackend(BaseDictBackend):
         if not gid or not tid:
             return
         call_callback = False
-        with transaction.atomic():
+        with transaction.atomic(using=router.db_for_write(ChordCounter)):
             # We need to know if `count` hits 0.
             # wrap the update in a transaction
             # with a `select_for_update` lock to prevent race conditions.

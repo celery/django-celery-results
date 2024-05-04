@@ -11,6 +11,7 @@ from celery.result import AsyncResult, GroupResult
 from celery.utils.serialization import b64decode
 from celery.worker.request import Request
 from celery.worker.strategy import hybrid_to_proto2
+from django.test import TransactionTestCase
 
 from django_celery_results.backends.database import DatabaseBackend
 from django_celery_results.models import ChordCounter, TaskResult
@@ -919,3 +920,82 @@ class test_DatabaseBackend:
         tr = TaskResult.objects.get(task_id=tid2)
         assert tr.task_args is None
         assert tr.task_kwargs is None
+
+
+class DjangoCeleryResultRouter:
+    route_app_labels = {"django_celery_results"}
+
+    def db_for_read(self, model, **hints):
+        """Route read access to the read-only database"""
+        if model._meta.app_label in self.route_app_labels:
+            return "read-only"
+        return None
+
+    def db_for_write(self, model, **hints):
+        """Route write access to the default database"""
+        if model._meta.app_label in self.route_app_labels:
+            return "default"
+        return None
+
+
+class ChordPartReturnTestCase(TransactionTestCase):
+    databases = {"default", "read-only"}
+
+    def setUp(self):
+        super().setUp()
+        self.app.conf.result_serializer = 'json'
+        self.app.conf.result_backend = (
+            'django_celery_results.backends:DatabaseBackend')
+        self.app.conf.result_extended = True
+        self.b = DatabaseBackend(app=self.app)
+
+    def test_on_chord_part_return_multiple_databases(self):
+        """
+        Test if the ChordCounter is properly decremented and the callback is
+        triggered after all chord parts have returned with multiple databases
+        """
+        with self.settings(DATABASE_ROUTERS=[DjangoCeleryResultRouter()]):
+            gid = uuid()
+            tid1 = uuid()
+            tid2 = uuid()
+            subtasks = [AsyncResult(tid1), AsyncResult(tid2)]
+            group = GroupResult(id=gid, results=subtasks)
+
+            assert ChordCounter.objects.count() == 0
+            assert ChordCounter.objects.using("read-only").count() == 0
+            assert ChordCounter.objects.using("default").count() == 0
+
+            self.b.apply_chord(group, self.add.s())
+
+            # Check if the ChordCounter was created in the correct database
+            assert ChordCounter.objects.count() == 1
+            assert ChordCounter.objects.using("read-only").count() == 1
+            assert ChordCounter.objects.using("default").count() == 1
+
+            chord_counter = ChordCounter.objects.get(group_id=gid)
+            assert chord_counter.count == 2
+
+            request = mock.MagicMock()
+            request.id = subtasks[0].id
+            request.group = gid
+            request.task = "my_task"
+            request.args = ["a", 1, "password"]
+            request.kwargs = {"c": 3, "d": "e", "password": "password"}
+            request.argsrepr = "argsrepr"
+            request.kwargsrepr = "kwargsrepr"
+            request.hostname = "celery@ip-0-0-0-0"
+            request.properties = {"periodic_task_name": "my_periodic_task"}
+            request.ignore_result = False
+            result = {"foo": "baz"}
+
+            self.b.mark_as_done(tid1, result, request=request)
+
+            chord_counter.refresh_from_db()
+            assert chord_counter.count == 1
+
+            self.b.mark_as_done(tid2, result, request=request)
+
+            with pytest.raises(ChordCounter.DoesNotExist):
+                ChordCounter.objects.get(group_id=gid)
+
+            request.chord.delay.assert_called_once()

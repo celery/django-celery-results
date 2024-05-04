@@ -49,6 +49,20 @@ try:
                 'MIRROR': 'default',
             },
         },
+        'read-only': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST': 'localhost',
+            'NAME': 'read-only-database',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'OPTIONS': {
+                'connect_timeout': 1000,
+                'options': '-c default_transaction_read_only=on',
+            },
+            'TEST': {
+                'MIRROR': 'default',
+            },
+        }
     }
 except ImportError:
     DATABASES = {
@@ -66,6 +80,13 @@ except ImportError:
                 'timeout': 1000,
             }
         },
+        'read-only': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'OPTIONS': {
+                'timeout': 1000,
+            }
+        }
     }
 
 # Quick-start development settings - unsuitable for production
