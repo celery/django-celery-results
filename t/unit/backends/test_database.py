@@ -1,3 +1,4 @@
+import datetime
 import json
 import pickle
 import re
@@ -548,6 +549,39 @@ class test_DatabaseBackend:
         # check task_result object
         tr = TaskResult.objects.get(task_id=tid2)
         assert json.loads(tr.meta) == {'key': 'value', 'children': []}
+
+    def test_backend__task_result_date(self):
+        tid2 = uuid()
+
+        self.b.store_result(tid2, None, states.PENDING)
+
+        tr = TaskResult.objects.get(task_id=tid2)
+        assert tr.status == states.PENDING
+        assert isinstance(tr.date_created, datetime.datetime)
+        assert tr.date_started is None
+        assert isinstance(tr.date_done, datetime.datetime)
+
+        date_created = tr.date_created
+        date_done = tr.date_done
+
+        self.b.mark_as_started(tid2)
+
+        tr = TaskResult.objects.get(task_id=tid2)
+        assert tr.status == states.STARTED
+        assert date_created == tr.date_created
+        assert isinstance(tr.date_started, datetime.datetime)
+        assert tr.date_done > date_done
+
+        date_started = tr.date_started
+        date_done = tr.date_done
+
+        self.b.mark_as_done(tid2, 42)
+
+        tr = TaskResult.objects.get(task_id=tid2)
+        assert tr.status == states.SUCCESS
+        assert tr.date_created == date_created
+        assert tr.date_started == date_started
+        assert tr.date_done > date_done
 
     def xxx_backend(self):
         tid = uuid()

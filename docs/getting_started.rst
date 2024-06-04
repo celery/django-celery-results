@@ -61,8 +61,8 @@ To use :pypi:`django-celery-results` with your project you need to follow these 
 
         CELERY_RESULT_EXTENDED = True
 
-    If you want to track the execution duration of your tasks (by comparing `date_created` and `date_done` in TaskResult), enable the :setting:`track_started` setting.
-    
+    If you want to track the execution duration of your tasks (by comparing `date_started` and `date_done` in TaskResult), enable the :setting:`track_started` setting.
+
     .. code-block:: python
 
         CELERY_TASK_TRACK_STARTED = True

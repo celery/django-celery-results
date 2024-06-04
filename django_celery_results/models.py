@@ -75,6 +75,10 @@ class TaskResult(models.Model):
         auto_now_add=True,
         verbose_name=_('Created DateTime'),
         help_text=_('Datetime field when the task result was created in UTC'))
+    date_started = models.DateTimeField(
+        null=True, default=None,
+        verbose_name=_('Started DateTime'),
+        help_text=_('Datetime field when the task was started in UTC'))
     date_done = models.DateTimeField(
         auto_now=True,
         verbose_name=_('Completed DateTime'),
