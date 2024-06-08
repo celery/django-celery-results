@@ -8,8 +8,8 @@ from celery.result import GroupResult, allow_join_result, result_from_tuple
 from celery.utils.log import get_logger
 from celery.utils.serialization import b64decode, b64encode
 from django.db import connection, router, transaction
-from django.db.utils import InterfaceError
 from django.db.models.functions import Now
+from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
 
 from ..models import ChordCounter
