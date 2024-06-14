@@ -66,3 +66,14 @@ To use :pypi:`django-celery-results` with your project you need to follow these 
     .. code-block:: python
 
         CELERY_TASK_TRACK_STARTED = True
+
+    For example, if you write [additional codes](https://github.com/celery/django-celery-results/issues/286#issuecomment-1789094153) to record when a task becomes PENDING,  you can calculate the waiting time in the queue or the actual processing time of the worker.
+
+    .. code-block:: python
+
+        task_result = TaskResult.objects.get(task_id='xxx')
+
+        waiting_time = task_result.date_started - task_result.date_created
+        processing_time = task_result.date_done - task_result.date_started
+        total_time = task_result.date_done - task_result.date_created
+        print(f'result: {waiting_time=}, {processing_time=}, {total_time=}')
