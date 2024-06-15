@@ -1,13 +1,14 @@
 import binascii
 import json
 
-from celery import maybe_signature
+from celery import maybe_signature, states
 from celery.backends.base import BaseDictBackend, get_current_task
 from celery.exceptions import ChordError
 from celery.result import GroupResult, allow_join_result, result_from_tuple
 from celery.utils.log import get_logger
 from celery.utils.serialization import b64decode, b64encode
 from django.db import connection, router, transaction
+from django.db.models.functions import Now
 from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
 
@@ -143,6 +144,9 @@ class DatabaseBackend(BaseDictBackend):
         task_props.update(
             self._get_extended_properties(request, traceback)
         )
+
+        if status == states.STARTED:
+            task_props['date_started'] = Now()
 
         self.TaskModel._default_manager.store_result(**task_props)
         return result
