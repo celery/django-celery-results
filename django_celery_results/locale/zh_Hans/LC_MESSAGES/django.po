@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-19 22:23+0800\n"
+"POT-Creation-Date: 2024-02-01 17:16+0800\n"
 "PO-Revision-Date: 2021-11-20 23:00+0800\n"
 "Last-Translator: ifmos <acwzy@live.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,39 +80,39 @@ msgstr "运行中任务的当前状态"
 
 #: django_celery_results/models.py:59
 msgid "Worker"
-msgstr "Worker"
+msgstr "工作器"
 
 #: django_celery_results/models.py:59
 msgid "Worker that executes the task"
 msgstr "执行该任务的 Worker"
 
-#: django_celery_results/models.py:63 django_celery_results/models.py:200
+#: django_celery_results/models.py:63 django_celery_results/models.py:204
 msgid "Result Content Type"
 msgstr "结果内容类型"
 
-#: django_celery_results/models.py:64 django_celery_results/models.py:201
+#: django_celery_results/models.py:64 django_celery_results/models.py:205
 msgid "Content type of the result data"
 msgstr "结果数据的内容类型"
 
-#: django_celery_results/models.py:67 django_celery_results/models.py:205
+#: django_celery_results/models.py:67 django_celery_results/models.py:209
 msgid "Result Encoding"
 msgstr "结果编码格式"
 
-#: django_celery_results/models.py:68 django_celery_results/models.py:206
+#: django_celery_results/models.py:68 django_celery_results/models.py:210
 msgid "The encoding used to save the task result data"
 msgstr "保存结果数据的编码格式"
 
-#: django_celery_results/models.py:71 django_celery_results/models.py:210
+#: django_celery_results/models.py:71 django_celery_results/models.py:214
 msgid "Result Data"
 msgstr "结果数据"
 
-#: django_celery_results/models.py:72 django_celery_results/models.py:211
+#: django_celery_results/models.py:72 django_celery_results/models.py:215
 msgid ""
 "The data returned by the task.  Use content_encoding and content_type fields "
 "to read."
 msgstr "该任务返回数据，根据 content_encoding 和 content_type 字段读取。"
 
-#: django_celery_results/models.py:76 django_celery_results/models.py:190
+#: django_celery_results/models.py:76 django_celery_results/models.py:194
 msgid "Created DateTime"
 msgstr "创建时间"
 
@@ -120,7 +120,7 @@ msgstr "创建时间"
 msgid "Datetime field when the task result was created in UTC"
 msgstr "UTC格式的任务创建时间字段"
 
-#: django_celery_results/models.py:80 django_celery_results/models.py:195
+#: django_celery_results/models.py:80 django_celery_results/models.py:199
 msgid "Completed DateTime"
 msgstr "完成时间"
 
@@ -130,7 +130,7 @@ msgstr "UTC格式的任务完成时间字段"
 
 #: django_celery_results/models.py:84
 msgid "Traceback"
-msgstr "Traceback"
+msgstr "回溯"
 
 #: django_celery_results/models.py:85
 msgid "Text of the traceback if the task generated one"
@@ -153,7 +153,7 @@ msgstr "任务结果"
 msgid "task results"
 msgstr "任务结果"
 
-#: django_celery_results/models.py:143 django_celery_results/models.py:185
+#: django_celery_results/models.py:143 django_celery_results/models.py:189
 msgid "Group ID"
 msgstr "分组 ID"
 
@@ -170,22 +170,30 @@ msgstr "任务结果元组的 JSON 序列化列表。使用 .group_result() 进�
 msgid "Starts at len(chord header) and decrements after each task is finished"
 msgstr "在 len(chord header) 处开始并且会在每个任务结束后递减"
 
-#: django_celery_results/models.py:186
+#: django_celery_results/models.py:175
+msgid "chord counter"
+msgstr "和弦计数器"
+
+#: django_celery_results/models.py:176
+msgid "chord counters"
+msgstr "和弦计数器"
+
+#: django_celery_results/models.py:190
 msgid "Celery ID for the Group that was run"
 msgstr "已运行分组的 Celery ID"
 
-#: django_celery_results/models.py:191
+#: django_celery_results/models.py:195
 msgid "Datetime field when the group result was created in UTC"
 msgstr "分组结果创建时的 UTC 格式 datetime 字段"
 
-#: django_celery_results/models.py:196
+#: django_celery_results/models.py:200
 msgid "Datetime field when the group was completed in UTC"
 msgstr "分组结果完成时的 UTC 格式 datetime 字段"
 
-#: django_celery_results/models.py:231
+#: django_celery_results/models.py:235
 msgid "group result"
 msgstr "分组结果"
 
-#: django_celery_results/models.py:232
+#: django_celery_results/models.py:236
 msgid "group results"
 msgstr "分组结果"
