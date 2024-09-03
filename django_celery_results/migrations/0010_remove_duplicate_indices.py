@@ -21,6 +21,10 @@ class TryRemoveIndex(migrations.RemoveIndex):
             super().database_forwards(*args, **kwargs)
         except DatabaseError:
             pass
+        except Exception:
+            # Not all DB engines throw DatabaseError when the
+            #   index does not exist.
+            pass
 
     def database_backwards(self, *args, **kwargs):
         """Don't re-add the index when reverting this migration"""
