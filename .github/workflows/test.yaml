@@ -10,7 +10,7 @@ on:
 jobs:
     matrix:
         name: Unittest Matrix
-        runs-on: ubuntu-latest
+        runs-on: blacksmith-4vcpu-ubuntu-2204
         strategy:
             matrix:
                 python-version: [ "3.8", "3.9", "3.10", "3.11", "pypy3.9" ]
@@ -53,7 +53,7 @@ jobs:
 
     rest:
         name: Integration/Coverage/Docs/Codestyle
-        runs-on: ubuntu-latest
+        runs-on: blacksmith-4vcpu-ubuntu-2204
         strategy:
             matrix:
                 toxenv: [ flake8, pydocstyle, cov, integration ]
