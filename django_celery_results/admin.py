@@ -1,10 +1,9 @@
 """Result Task Admin interface."""
 
-from django.conf import settings
-from django.contrib import admin
-from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
 from celery import current_app as celery_app
+from django.conf import settings
+from django.contrib import admin, messages
+from django.utils.translation import gettext_lazy as _
 
 try:
     ALLOW_EDITS = settings.DJANGO_CELERY_RESULTS['ALLOW_EDITS']
