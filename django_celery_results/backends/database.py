@@ -12,8 +12,7 @@ from django.db.models.functions import Now
 from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
 
-from ..models import ChordCounter
-from ..models.helpers import groupresult_model, taskresult_model
+from ..models.helpers import chordcounter_model, groupresult_model, taskresult_model
 from ..settings import get_task_props_extension
 
 EXCEPTIONS_TO_CATCH = (InterfaceError,)
@@ -32,6 +31,7 @@ class DatabaseBackend(BaseDictBackend):
 
     TaskModel = taskresult_model()
     GroupModel = groupresult_model()
+    ChordCounterModel = chordcounter_model()
     subpolling_interval = 0.5
 
     def exception_safe_to_retry(self, exc):
@@ -248,7 +248,7 @@ class DatabaseBackend(BaseDictBackend):
         results = [r.as_tuple() for r in header_result]
         chord_size = body.get("chord_size", None) or len(results)
         data = json.dumps(results)
-        ChordCounter.objects.create(
+        self.ChordCounterModel.objects.create(
             group_id=header_result.id, sub_tasks=data, count=chord_size
         )
 
@@ -265,10 +265,10 @@ class DatabaseBackend(BaseDictBackend):
             # SELECT FOR UPDATE is not supported on all databases
             try:
                 chord_counter = (
-                    ChordCounter.objects.select_for_update()
+                    self.ChordCounterModel.objects.select_for_update()
                     .get(group_id=gid)
                 )
-            except ChordCounter.DoesNotExist:
+            except self.ChordCounterModel.DoesNotExist:
                 logger.warning("Can't find ChordCounter for Group %s", gid)
                 return
             chord_counter.count -= 1

@@ -1,11 +1,15 @@
 """Abstract models."""
 
+import json
+
 from celery import states
+from celery.result import result_from_tuple
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .. import managers
+from ..models.helpers import groupresult_model
 
 ALL_STATES = sorted(states.ALL_STATES)
 TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
@@ -130,6 +134,53 @@ class AbstractTaskResult(models.Model):
 
     def __str__(self):
         return '<Task: {0.task_id} ({0.status})>'.format(self)
+
+
+class AbstractChordCounter(models.Model):
+    """Abstract Chord synchronisation."""
+
+    group_id = models.CharField(
+        max_length=getattr(
+            settings,
+            "DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH",
+            255
+        ),
+        unique=True,
+        verbose_name=_("Group ID"),
+        help_text=_("Celery ID for the Chord header group"),
+    )
+    sub_tasks = models.TextField(
+        help_text=_(
+            "JSON serialized list of task result tuples. "
+            "use .group_result() to decode"
+        )
+    )
+    count = models.PositiveIntegerField(
+        help_text=_(
+            "Starts at len(chord header) and decrements after each task is "
+            "finished"
+        )
+    )
+
+    class Meta:
+        """Table information."""
+
+        abstract = True
+
+    def group_result(self, app=None):
+        """Return the GroupResult of self.
+
+        Arguments:
+        ---------
+            app (Celery): app instance to create the GroupResult with.
+
+        """
+        return groupresult_model()(
+            self.group_id,
+            [result_from_tuple(r, app=app)
+             for r in json.loads(self.sub_tasks)],
+            app=app
+        )
 
 
 class AbstractGroupResult(models.Model):
