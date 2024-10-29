@@ -1,7 +1,5 @@
 """Database models."""
 
-import json
-
 from django.utils.translation import gettext_lazy as _
 
 from django_celery_results.models.abstract import (
@@ -25,6 +23,8 @@ class ChordCounter(AbstractChordCounter):
     """Chord synchronisation."""
 
     class Meta(AbstractChordCounter.Meta):
+        """Table information."""
+
         abstract = False
         app_label = "django_celery_results"
 
