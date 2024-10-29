@@ -12,7 +12,11 @@ from django.db.models.functions import Now
 from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
 
-from ..models.helpers import chordcounter_model, groupresult_model, taskresult_model
+from ..models.helpers import (
+    chordcounter_model,
+    groupresult_model,
+    taskresult_model,
+)
 from ..settings import get_task_props_extension
 
 EXCEPTIONS_TO_CATCH = (InterfaceError,)
@@ -81,7 +85,7 @@ class DatabaseBackend(BaseDictBackend):
                 task_kwargs = getattr(request, 'kwargs', None)
 
             # TODO: We assume that task protocol 1 could be always in use. :/
-            extra_fields = extend_task_props_callback(
+            extra_fields = get_task_props_extension(
                 getattr(request, 'kwargs', None)
             )
             if extra_fields:
@@ -258,7 +262,9 @@ class DatabaseBackend(BaseDictBackend):
         if not gid or not tid:
             return
         call_callback = False
-        with transaction.atomic(using=router.db_for_write(ChordCounter)):
+        with transaction.atomic(
+            using=router.db_for_write(self.ChordCounterModel)
+        ):
             # We need to know if `count` hits 0.
             # wrap the update in a transaction
             # with a `select_for_update` lock to prevent race conditions.
