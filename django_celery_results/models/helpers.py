@@ -2,12 +2,12 @@ from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-from .generic import ChordCounter, GroupResult, TaskResult
-
 
 def taskresult_model():
     """Return the TaskResult model that is active in this project."""
     if not hasattr(settings, 'CELERY_RESULTS_TASKRESULT_MODEL'):
+        from .generic import TaskResult
+
         return TaskResult
 
     try:
@@ -31,6 +31,8 @@ def chordcounter_model():
     """Return the ChordCounter model that is active in this project."""
 
     if not hasattr(settings, 'CELERY_RESULTS_CHORDCOUNTER_MODEL'):
+        from .generic import ChordCounter
+
         return ChordCounter
 
     try:
@@ -53,6 +55,8 @@ def chordcounter_model():
 def groupresult_model():
     """Return the GroupResult model that is active in this project."""
     if not hasattr(settings, 'CELERY_RESULTS_GROUPRESULT_MODEL'):
+        from .generic import GroupResult
+
         return GroupResult
 
     try:
