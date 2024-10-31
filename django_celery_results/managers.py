@@ -161,7 +161,7 @@ class TaskResultManager(ResultManager):
             'task_args': task_args,
             'task_kwargs': task_kwargs,
             'worker': worker,
-            **extra_fields
+            'extra_fields': extra_fields
         }
         if 'date_started' in kwargs:
             fields['date_started'] = kwargs['date_started']
