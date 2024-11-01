@@ -82,6 +82,7 @@ class DatabaseBackend(BaseDictBackend):
 
             # TODO: We assume that task protocol 1 could be always in use. :/
             extra_fields = get_task_props_extension(
+                request,
                 getattr(request, 'kwargs', None)
             )
             if extra_fields:
