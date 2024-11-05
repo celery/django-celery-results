@@ -3,13 +3,12 @@
 import json
 
 from celery import states
-from celery.result import result_from_tuple
+from celery.result import CeleryGroupResult, result_from_tuple
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .. import managers
-from ..models.helpers import groupresult_model
 
 ALL_STATES = sorted(states.ALL_STATES)
 TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
@@ -175,7 +174,7 @@ class AbstractChordCounter(models.Model):
             app (Celery): app instance to create the GroupResult with.
 
         """
-        return groupresult_model()(
+        return CeleryGroupResult(
             self.group_id,
             [result_from_tuple(r, app=app)
              for r in json.loads(self.sub_tasks)],
