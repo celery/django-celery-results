@@ -3,7 +3,8 @@
 import json
 
 from celery import states
-from celery.result import CeleryGroupResult, result_from_tuple
+from celery.result import GroupResult as CeleryGroupResult
+from celery.result import result_from_tuple
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
