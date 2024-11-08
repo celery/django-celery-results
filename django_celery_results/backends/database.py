@@ -12,7 +12,11 @@ from django.db.models.functions import Now
 from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
 
-from ..models.helpers import chordcounter_model, groupresult_model, taskresult_model
+from ..models.helpers import (
+    chordcounter_model,
+    groupresult_model,
+    taskresult_model,
+)
 from ..settings import get_task_props_extension
 
 EXCEPTIONS_TO_CATCH = (InterfaceError,)
