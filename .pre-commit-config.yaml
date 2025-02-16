@@ -3,7 +3,7 @@ repos:
     rev: v3.19.1
     hooks:
       - id: pyupgrade
-        args: ["--py36-plus"]
+        args: ["--py39-plus"]
 
   - repo: https://github.com/PyCQA/flake8
     rev: 7.1.1
