@@ -34,19 +34,17 @@ classes = """
     License :: OSI Approved :: BSD License
     Programming Language :: Python
     Programming Language :: Python :: 3
-    Programming Language :: Python :: 3.7
-    Programming Language :: Python :: 3.8
     Programming Language :: Python :: 3.9
     Programming Language :: Python :: 3.10
     Programming Language :: Python :: 3.11
+    Programming Language :: Python :: 3.12
+    Programming Language :: Python :: 3.13
     Programming Language :: Python :: Implementation :: CPython
     Programming Language :: Python :: Implementation :: PyPy
     Framework :: Django
-    Framework :: Django :: 3.2
-    Framework :: Django :: 4.0
-    Framework :: Django :: 4.1
     Framework :: Django :: 4.2
     Framework :: Django :: 5.0
+    Framework :: Django :: 5.1
     Operating System :: OS Independent
     Topic :: Communications
     Topic :: System :: Distributed Computing
@@ -155,6 +153,7 @@ setuptools.setup(
     platforms=['any'],
     license='BSD',
     classifiers=classifiers,
+    python_requires='>=3.9',
     install_requires=reqs('default.txt'),
     tests_require=reqs('test.txt') + reqs('test-django.txt'),
     cmdclass={'test': pytest},

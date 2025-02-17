@@ -1,2 +1,2 @@
 celery>=5.2.7,<6.0
-Django>=3.2.25
+Django>=4.2
