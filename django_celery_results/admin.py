@@ -1,7 +1,8 @@
 """Result Task Admin interface."""
 
+from celery import current_app as celery_app
 from django.conf import settings
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.utils.translation import gettext_lazy as _
 
 try:
@@ -58,6 +59,7 @@ class TaskResultAdmin(admin.ModelAdmin):
             'classes': ('extrapretty', 'wide')
         }),
     )
+    actions = ['terminate_task']
 
     def get_readonly_fields(self, request, obj=None):
         if ALLOW_EDITS:
@@ -66,6 +68,25 @@ class TaskResultAdmin(admin.ModelAdmin):
             return list({
                 field.name for field in self.opts.local_fields
             })
+
+    def terminate_task(self, request, queryset):
+        """Terminate selected tasks."""
+        task_ids = list(queryset.values_list('task_id', flat=True))
+        try:
+            celery_app.control.terminate(task_ids)
+            self.message_user(
+                request,
+                f"{len(task_ids)} Task was terminated successfully.",
+                messages.SUCCESS,
+            )
+        except Exception as e:
+            self.message_user(
+                request,
+                f"Error while terminating tasks: {e}",
+                messages.ERROR,
+            )
+
+    terminate_task.short_description = "Terminate selected tasks"
 
 
 admin.site.register(TaskResult, TaskResultAdmin)
