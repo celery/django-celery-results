@@ -51,7 +51,6 @@ class TaskResult(models.Model):
                     'used with the task'))
     status = models.CharField(
         max_length=50, default=states.PENDING,
-        choices=TASK_STATE_CHOICES,
         verbose_name=_('Task State'),
         help_text=_('Current state of the task being run'))
     worker = models.CharField(
