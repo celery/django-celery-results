@@ -12,11 +12,12 @@ from celery.contrib.pytest import (
     use_celery_app_trap,
 )
 from celery.contrib.testing.app import TestApp, Trap
+from celery.t.conftest import patching
 
 # Tricks flake8 into silencing redefining fixtures warnings.
 __all__ = (
     'celery_app', 'celery_enable_logging', 'depends_on_current_app',
-    'celery_parameters', 'celery_config', 'use_celery_app_trap'
+    'celery_parameters', 'celery_config', 'use_celery_app_trap', 'patching'
 )
 
 
