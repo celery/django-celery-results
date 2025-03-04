@@ -13,24 +13,24 @@ jobs:
         runs-on: blacksmith-4vcpu-ubuntu-2204
         strategy:
             matrix:
-                python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13", "pypy3.9" ]
-                django: [ "42", "50", "51" ]
+
+                python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.9" ]
+                django: [ "32", "42", "51" ]
+
                 exclude:
                     - python-version: "3.13"
-                      django: "50"
+                      django: "51"
                     - python-version: "3.13"
                       django: "42"
 
-                    - python-version: "3.9"
-                      django: "50"
-                    - python-version: "pypy3.9"
-                      django: "50"
-
-                    - python-version: "3.9"
+                    - python-version: "3.8"
                       django: "51"
                     - python-version: "pypy3.9"
                       django: "51"
 
+                    - python-version: "3.12"
+                      django: "32"
+                
         services:
             postgres:
                 image: postgres
