@@ -26,7 +26,7 @@ jobs:
                       django: "50"
                     - python-version: "3.12"
                       django: "32"
-                
+
         services:
             postgres:
                 image: postgres
@@ -54,7 +54,7 @@ jobs:
                     TOXENV: py-django${{ matrix.django }}
 
     rest:
-        name: Integration/Coverage/Docs/Codestyle
+        name: ${{ matrix.toxenv }}
         runs-on: blacksmith-4vcpu-ubuntu-2204
         strategy:
             matrix:
