@@ -39,6 +39,8 @@ classes = """
     Programming Language :: Python :: 3.9
     Programming Language :: Python :: 3.10
     Programming Language :: Python :: 3.11
+    Programming Language :: Python :: 3.12
+    Programming Language :: Python :: 3.13
     Programming Language :: Python :: Implementation :: CPython
     Programming Language :: Python :: Implementation :: PyPy
     Framework :: Django
@@ -47,6 +49,7 @@ classes = """
     Framework :: Django :: 4.1
     Framework :: Django :: 4.2
     Framework :: Django :: 5.0
+    Framework :: Django :: 5.1
     Operating System :: OS Independent
     Topic :: Communications
     Topic :: System :: Distributed Computing
