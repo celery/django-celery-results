@@ -88,8 +88,8 @@ class DatabaseBackend(BaseDictBackend):
                 _, _, task_kwargs = self.encode_content(task_kwargs)
 
             periodic_task_name = getattr(request, 'periodic_task_name', None)
-            shadow_task_name = getattr(request, 'shadow_task_name', None)
-            task_name = shadow_task_name or getattr(request, 'task_name', None)
+            shadow_task_name = getattr(request, 'shadow', None)
+            task_name = shadow_task_name or getattr(request, 'task', None)
 
             extended_props.update({
                 'periodic_task_name': periodic_task_name,
