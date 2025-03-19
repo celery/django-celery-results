@@ -958,6 +958,19 @@ class test_DatabaseBackend:
         assert tr.task_args is None
         assert tr.task_kwargs is None
 
+    def test_custom_state(self):
+        tid = uuid()
+
+        assert self.b.get_status(tid) == states.PENDING
+
+        self.b.store_result(tid, state="Progress", result={"progress": 10})
+        assert self.b.get_status(tid) == "Progress"
+        assert self.b.get_result(tid) == {"progress": 10}
+
+        self.b.mark_as_done(tid, 42)
+        assert self.b.get_status(tid) == states.SUCCESS
+        assert self.b.get_result(tid) == 42
+
 
 class DjangoCeleryResultRouter:
     route_app_labels = {"django_celery_results"}
