@@ -3,3 +3,4 @@ pytest-django>=4.5.2
 pytest-benchmark
 pytz
 psycopg2cffi
+psycopg
