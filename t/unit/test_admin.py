@@ -52,7 +52,8 @@ class test_Admin(TestCase):
         # Verify message_user was called with the success message
         messages = list(get_messages(request))
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 
+        self.assertEqual(
+            str(messages[0]),
             "2 Task was terminated successfully.")
         self.assertEqual(messages[0].level, constants.SUCCESS)
 
@@ -83,6 +84,7 @@ class test_Admin(TestCase):
         # Verify message_user was called with the error message
         messages = list(get_messages(request))
         self.assertEqual(len(messages), 1)
-        self.assertIn(str(messages[0]), 
+        self.assertIn(
+            str(messages[0]),
             "Error while terminating tasks: Termination failed")
         self.assertEqual(messages[0].level, constants.ERROR)
