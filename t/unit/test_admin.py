@@ -1,13 +1,15 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pytest
 from celery import uuid
-from django.test import TestCase
-from django.test import RequestFactory
-from django.contrib.messages import get_messages, constants
+from django.contrib.messages import constants, get_messages
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.test import RequestFactory, TestCase
+
 from django_celery_results.admin import TaskResultAdmin
 from django_celery_results.models import TaskResult
+
 
 @pytest.mark.usefixtures('depends_on_current_app')
 class test_Admin(TestCase):
