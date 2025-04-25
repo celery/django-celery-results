@@ -29,3 +29,5 @@ cover/
 .cache/
 htmlcov/
 coverage.xml
+venv/
+.idea/

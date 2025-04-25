@@ -176,6 +176,10 @@ class ChordCounter(models.Model):
             app=app
         )
 
+    class Meta:
+        verbose_name = _('chord counter')
+        verbose_name_plural = _('chord counters')
+
 
 class GroupResult(models.Model):
     """Task Group result/status."""
