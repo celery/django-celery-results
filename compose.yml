@@ -1,4 +1,4 @@
-name: jazzband
+name: django-celeryresult
 
 volumes:
     postgres_data:
