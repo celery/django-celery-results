@@ -28,7 +28,7 @@ services:
         build:
             context: .
             dockerfile: ./docker/Dockerfile
-        container_name: jazzband_djangoceleryresults-app
+        container_name: djangoceleryresults-app
         cpus: 0.25
         mem_limit: 512m
         mem_reservation: 256m
