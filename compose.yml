@@ -9,7 +9,7 @@ networks:
 services:
     postgres:
         image: postgres:${POSTGRES_VERSION:-15}
-        container_name: jazzband_djangoceleryresults-postgres
+        container_name: djangoceleryresults-postgres
         cpus: 0.25
         mem_limit: 256m
         mem_reservation: 128m
