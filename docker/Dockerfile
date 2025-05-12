@@ -65,7 +65,7 @@ EOF
 
 RUN pip install --upgrade pip && pip install --no-cache-dir tox
 
-WORKDIR /usr/src/jazzband/django-celery-results
+WORKDIR /usr/src/celery/django-celery-results
 
 COPY . .
 
