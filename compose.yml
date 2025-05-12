@@ -42,4 +42,4 @@ services:
         networks:
             jazzband:
         volumes:
-            - ./:/usr/src/jazzband/django-celery-results
+            - ./:/usr/src/celery/django-celery-results
