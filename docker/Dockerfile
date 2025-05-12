@@ -1,10 +1,12 @@
 FROM python:3.13.3-slim AS base
 
-LABEL author='Diego Castro <diego.castro@kubicum.com>' \
-    org.opencontainers.image.documentation='https://github.com/celery/django-celery-results' \
+LABEL authors='Diego Castro <diego.castro@kubicum.com>' \
+    org.opencontainers.image.description='A Docker image to run tests for Django Celery Results using Tox' \
+    org.opencontainers.image.documentation='https://django-celery-results.readthedocs.io/' \
+    org.opencontainers.image.license='BSD-3-Clause' \
     org.opencontainers.image.source='https://github.com/celery/django-celery-results' \
     org.opencontainers.image.title='Dockerized Tox suite for Django Celery Results' \
-    org.opencontainers.image.description='A Docker image to run tests for Django Celery Results using Tox'
+    org.opencontainers.image.vendor='Celery'
 
 RUN <<EOF
     apt-get update && apt-get install -y --no-install-recommends \
