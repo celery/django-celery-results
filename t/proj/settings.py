@@ -28,20 +28,22 @@ try:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'HOST': 'localhost',
-            'NAME': 'postgres',
-            'USER': 'postgres',
-            'PASSWORD': 'postgres',
+            'HOST': os.getenv('DB_POSTGRES_HOST', 'localhost'),
+            'PORT': os.getenv('DB_POSTGRES_PORT', '5432'),
+            'NAME': os.getenv('DB_POSTGRES_DATABASE', 'postgres'),
+            'USER': os.getenv('DB_POSTGRES_USER', 'postgres'),
+            'PASSWORD': os.getenv('DB_POSTGRES_PASSWORD', 'postgres'),
             'OPTIONS': {
                 'connect_timeout': 1000,
-            }
+            },
         },
         'secondary': {
             'ENGINE': 'django.db.backends.postgresql',
-            'HOST': 'localhost',
-            'NAME': 'postgres',
-            'USER': 'postgres',
-            'PASSWORD': 'postgres',
+            'HOST': os.getenv('DB_POSTGRES_HOST', 'localhost'),
+            'PORT': os.getenv('DB_POSTGRES_PORT', '5432'),
+            'NAME': os.getenv('DB_POSTGRES_DATABASE', 'postgres'),
+            'USER': os.getenv('DB_POSTGRES_USER', 'postgres'),
+            'PASSWORD': os.getenv('DB_POSTGRES_PASSWORD', 'postgres'),
             'OPTIONS': {
                 'connect_timeout': 1000,
             },
@@ -51,10 +53,11 @@ try:
         },
         'read-only': {
             'ENGINE': 'django.db.backends.postgresql',
-            'HOST': 'localhost',
+            'HOST': os.getenv('DB_POSTGRES_HOST', 'localhost'),
+            'PORT': os.getenv('DB_POSTGRES_PORT', '5432'),
             'NAME': 'read-only-database',
-            'USER': 'postgres',
-            'PASSWORD': 'postgres',
+            'USER': os.getenv('DB_POSTGRES_USER', 'postgres'),
+            'PASSWORD': os.getenv('DB_POSTGRES_PASSWORD', 'postgres'),
             'OPTIONS': {
                 'connect_timeout': 1000,
                 'options': '-c default_transaction_read_only=on',
@@ -62,7 +65,7 @@ try:
             'TEST': {
                 'MIRROR': 'default',
             },
-        }
+        },
     }
 except ImportError:
     DATABASES = {

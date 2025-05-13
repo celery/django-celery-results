@@ -73,6 +73,17 @@ pip command::
     $ pip install https://github.com/celery/django-celery-results/zipball/master#egg=django-celery-results
 
 
+Running with Docker Compose
+===========================
+
+To run the project using Docker Compose, ensure you have Docker and Docker Compose installed. Then, execute the following command in the project root directory::
+
+    $ docker-compose up --build
+
+This will start a containerized PostgreSQL database and run the tests using `tox`.
+
+
+
 Issues with mysql
 -----------------
 
