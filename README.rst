@@ -8,6 +8,7 @@
 :Web: https://django-celery-results.readthedocs.io/
 :Download: https://pypi.python.org/pypi/django-celery-results
 :Source: https://github.com/celery/django-celery-results
+:DeepWiki: |deepwiki|
 :Keywords: django, celery, database, results
 
 About
@@ -112,6 +113,11 @@ max_length of **191** seems to work for MySQL.
 .. |pyimp| image:: https://img.shields.io/pypi/implementation/django-celery-results.svg
     :alt: Support Python implementations.
     :target: https://pypi.python.org/pypi/django-celery-results/
+
+.. |deepwiki| image:: https://devin.ai/assets/deepwiki-badge.png
+    :alt: Ask http://DeepWiki.com
+    :target: https://deepwiki.com/celery/django-celery-results
+    :width: 125px
 
 django-celery-results for enterprise
 ------------------------------------
