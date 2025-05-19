@@ -40,6 +40,6 @@ services:
         depends_on:
             - postgres
         networks:
-            jazzband:
+            celery:
         volumes:
             - ./:/usr/src/celery/django-celery-results
