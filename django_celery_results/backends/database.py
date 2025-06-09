@@ -111,7 +111,8 @@ class DatabaseBackend(BaseDictBackend):
         meta = getattr(request, "meta", {})
 
         if getattr(request, "stamps", None):
-            meta["stamped_headers"] = request.stamped_headers
+            if hasattr(request, "stamped_headers"):
+                meta["stamped_headers"] = request.stamped_headers
             meta.update(request.stamps)
 
         return meta
