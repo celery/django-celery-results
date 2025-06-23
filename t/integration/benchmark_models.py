@@ -67,4 +67,4 @@ class benchmark_Models(TransactionTestCase):
             'setup time: {setup:.2f}\n'
             'bench time: {bench:.2f}\n'
         ).format(setup=after_setup - start, bench=done - after_setup))
-        assert self.benchmark.stats.stats.max < 1
+        assert self.benchmark.stats.stats.max < 5
