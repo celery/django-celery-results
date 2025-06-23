@@ -84,10 +84,16 @@ class ResultManager(models.Manager):
         """Get all expired results."""
         return self.filter(date_done__lt=now() - maybe_timedelta(expires))
 
-    def delete_expired(self, expires):
+    def delete_expired(self, expires, batch_size=100000):
         """Delete all expired results."""
-        with transaction.atomic(using=self.db):
-            self.get_all_expired(expires).delete()
+        qs = self.get_all_expired(expires).order_by("id")
+
+        while True:
+            ids = list(qs.values_list("id", flat=True)[:batch_size])
+            if not ids:
+                break
+            with transaction.atomic(using=self.db):
+                self.filter(id__in=ids).delete()
 
 
 class TaskResultManager(ResultManager):
