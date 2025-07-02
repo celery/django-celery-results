@@ -210,6 +210,22 @@ class test_Models(TransactionTestCase):
         except TransactionError:
             pass
 
+    def test_result_batch_deletion(self):
+        # Create 200 expired records
+        TaskResult.objects.bulk_create(
+            [
+                TaskResult(task_id=uuid(), date_done=now() - timedelta(days=1))
+                for i in range(200)
+            ]
+        )
+        assert TaskResult.objects.get_all_expired(0).count() == 200
+
+        # Run deletion in small batches
+        TaskResult.objects.delete_expired(0, batch_size=25)
+
+        # All expired records should be gone
+        assert TaskResult.objects.get_all_expired(0).count() == 0
+
 
 @pytest.mark.usefixtures('depends_on_current_app')
 class test_ModelsWithoutDefaultDB(TransactionTestCase):
