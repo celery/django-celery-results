@@ -20,7 +20,7 @@ services:
         volumes:
             - postgres_data:/var/lib/postgresql/data
         networks:
-            jazzband:
+            celery:
                 aliases:
                     - dcr-postgres
 
