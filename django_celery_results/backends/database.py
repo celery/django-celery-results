@@ -108,7 +108,14 @@ class DatabaseBackend(BaseDictBackend):
         retrieve and stored on the TaskResult.
         """
         request = request or getattr(get_current_task(), "request", None)
-        return getattr(request, "meta", {})
+        meta = getattr(request, "meta", {})
+
+        if getattr(request, "stamps", None):
+            if hasattr(request, "stamped_headers"):
+                meta["stamped_headers"] = request.stamped_headers
+            meta.update(request.stamps)
+
+        return meta
 
     def _store_result(
             self,
