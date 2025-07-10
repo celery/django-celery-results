@@ -1,7 +1,7 @@
 import json
 import logging
-from django.db import migrations, transaction
 
+from django.db import migrations, transaction
 
 logger = logging.getLogger(__name__)
 
