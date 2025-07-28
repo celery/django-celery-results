@@ -12,6 +12,7 @@ Contents
 
     getting_started
     injecting_metadata
+    configuration
     copyright
 
 .. toctree::
