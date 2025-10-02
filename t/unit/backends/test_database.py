@@ -550,6 +550,37 @@ class test_DatabaseBackend:
         tr = TaskResult.objects.get(task_id=tid2)
         assert json.loads(tr.meta) == {'key': 'value', 'children': []}
 
+    @pytest.mark.skip("Need to find how to inject stamped headers")
+    def test_backend__task_result_stamped(self):
+        self.app.conf.result_serializer = 'json'
+        self.app.conf.accept_content = {'pickle', 'json'}
+        self.b = DatabaseBackend(app=self.app)
+
+        tid2 = uuid()
+
+        request = self._create_request(
+            task_id=tid2,
+            name='my_task',
+            args=[],
+            kwargs={},
+            task_protocol=1,
+        )
+        result = None
+
+        self.b.mark_as_done(tid2, result, request=request)
+        mindb = self.b.get_task_meta(tid2)
+
+        # check task meta
+        assert mindb.get('result') is None
+        assert mindb.get('task_name') == 'my_task'
+
+        tr = TaskResult.objects.get(task_id=tid2)
+        assert json.loads(tr.meta) == {
+            "stamped_headers": ["stamp", "cust_stamp"],
+            "stamp": "value1", "cust_stamp": "value2",
+            "children": []
+        }
+
     def test_backend__task_result_date(self):
         tid2 = uuid()
 
