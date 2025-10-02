@@ -60,8 +60,8 @@ class TaskResultProxyAdminTests(TaskResultAdminTests):
 
         # The temporary registration of admin requires refreshing the URL cache
         # Otherwise, it cannot be resolved
-        default_resover = get_resolver()
-        cls.ori_url_patterns_0 = default_resover.url_patterns[0]
+        default_resolver = get_resolver()
+        cls.ori_url_patterns_0 = default_resolver.url_patterns[0]
         get_resolver().url_patterns[0] = path("admin/", admin.site.urls)
         clear_url_caches()
 
