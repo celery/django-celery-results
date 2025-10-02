@@ -2,22 +2,19 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from celery import uuid
+from django.apps import apps
+from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.contrib.messages import constants, get_messages
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory, TestCase
-
-from django.apps import apps
-from django.contrib import admin
-from django.contrib.auth import get_user_model
-from django.test import TestCase
 from django.urls import (
     clear_url_caches,
     get_resolver,
     path,
     reverse,
 )
-
 
 from django_celery_results.admin import TaskResultAdmin
 from django_celery_results.models import TaskResult
