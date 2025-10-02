@@ -1,0 +1,45 @@
+name: django-celeryresult
+
+volumes:
+    postgres_data:
+
+networks:
+    celery:
+
+services:
+    postgres:
+        image: postgres:${POSTGRES_VERSION:-15}
+        container_name: djangoceleryresults-postgres
+        cpus: 0.25
+        mem_limit: 256m
+        mem_reservation: 128m
+        environment:
+            POSTGRES_USER: ${DB_POSTGRES_USER:-postgres}
+            POSTGRES_PASSWORD: ${DB_POSTGRES_PASSWORD:-postgres}
+            POSTGRES_DB: ${DB_POSTGRES_DATABASE:-postgres}
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            celery:
+                aliases:
+                    - dcr-postgres
+
+    app:
+        build:
+            context: .
+            dockerfile: ./docker/Dockerfile
+        container_name: djangoceleryresults-app
+        cpus: 0.25
+        mem_limit: 512m
+        mem_reservation: 256m
+        environment:
+            DB_POSTGRES_USER: ${DB_POSTGRES_USER:-postgres}
+            DB_POSTGRES_PASSWORD: ${DB_POSTGRES_PASSWORD:-postgres}
+            DB_POSTGRES_DATABASE: ${DB_POSTGRES_DATABASE:-postgres}
+            DB_POSTGRES_HOST: dcr-postgres
+        depends_on:
+            - postgres
+        networks:
+            celery:
+        volumes:
+            - ./:/usr/src/celery/django-celery-results

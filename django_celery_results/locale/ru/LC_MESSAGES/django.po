@@ -56,7 +56,7 @@ msgstr "JSON с позиционными аргументами задачи (*a
 
 #: django_celery_results/models.py:41
 msgid "Task Named Arguments"
-msgstr "Именнованные аргументы задачи"
+msgstr "Именованные аргументы задачи"
 
 #: django_celery_results/models.py:42
 msgid "JSON representation of the named arguments used with the task"
@@ -68,7 +68,7 @@ msgstr "Статус задачи"
 
 #: django_celery_results/models.py:48
 msgid "Current state of the task being run"
-msgstr "Текущеий статус запущенной задачи"
+msgstr "Текущий статус запущенной задачи"
 
 #: django_celery_results/models.py:51
 msgid "Worker"
@@ -162,7 +162,7 @@ msgstr ""
 
 #: django_celery_results/models.py:140
 msgid "Starts at len(chord header) and decrements after each task is finished"
-msgstr "Начинается в len(chord header) и уменьшается после каждого завершенного Здаания"
+msgstr "Начинается в len(chord header) и уменьшается после каждого завершенного задания"
 
 #: django_celery_results/models.py:172
 msgid "Celery ID for the Group that was run"

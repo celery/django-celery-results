@@ -66,7 +66,7 @@ class TaskResultAdmin(admin.ModelAdmin):
             return self.readonly_fields
         else:
             return list({
-                field.name for field in self.opts.local_fields
+                field.name for field in self.model._meta.fields
             })
 
     def terminate_task(self, request, queryset):

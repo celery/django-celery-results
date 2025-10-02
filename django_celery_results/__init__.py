@@ -9,8 +9,8 @@ from collections import namedtuple
 
 import django
 
-__version__ = '2.5.1'
-__author__ = 'Asif Saif Uddin, Ask Solem'
+__version__ = '2.6.0'
+__author__ = 'Asif Saif Uddin'
 __contact__ = 'auvipy@gmail.com'
 __homepage__ = 'https://github.com/celery/django-celery-results'
 __docformat__ = 'restructuredtext'

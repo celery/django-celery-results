@@ -51,7 +51,6 @@ class TaskResult(models.Model):
                     'used with the task'))
     status = models.CharField(
         max_length=50, default=states.PENDING,
-        choices=TASK_STATE_CHOICES,
         verbose_name=_('Task State'),
         help_text=_('Current state of the task being run'))
     worker = models.CharField(
@@ -115,6 +114,8 @@ class TaskResult(models.Model):
                          name='django_cele_date_cr_f04a50_idx'),
             models.Index(fields=['date_done'],
                          name='django_cele_date_do_f59aad_idx'),
+            models.Index(fields=['periodic_task_name'],
+                         name='django_cele_periodi_1993cf_idx'),
         ]
 
     def as_dict(self):

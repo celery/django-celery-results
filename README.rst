@@ -4,10 +4,11 @@
 
 |build-status| |coverage| |license| |wheel| |pyversion| |pyimp|
 
-:Version: 2.5.1
+:Version: 2.6.0
 :Web: https://django-celery-results.readthedocs.io/
 :Download: https://pypi.python.org/pypi/django-celery-results
 :Source: https://github.com/celery/django-celery-results
+:DeepWiki: |deepwiki|
 :Keywords: django, celery, database, results
 
 About
@@ -72,6 +73,17 @@ pip command::
     $ pip install https://github.com/celery/django-celery-results/zipball/master#egg=django-celery-results
 
 
+Running with Docker Compose
+===========================
+
+To run the project using Docker Compose, ensure you have Docker and Docker Compose installed. Then, execute the following command in the project root directory::
+
+    $ docker-compose up --build
+
+This will start a containerized PostgreSQL database and run the tests using `tox`.
+
+
+
 Issues with mysql
 -----------------
 
@@ -112,6 +124,11 @@ max_length of **191** seems to work for MySQL.
 .. |pyimp| image:: https://img.shields.io/pypi/implementation/django-celery-results.svg
     :alt: Support Python implementations.
     :target: https://pypi.python.org/pypi/django-celery-results/
+
+.. |deepwiki| image:: https://devin.ai/assets/deepwiki-badge.png
+    :alt: Ask http://DeepWiki.com
+    :target: https://deepwiki.com/celery/django-celery-results
+    :width: 125px
 
 django-celery-results for enterprise
 ------------------------------------

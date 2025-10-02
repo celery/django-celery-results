@@ -87,8 +87,8 @@ class DatabaseBackend(BaseDictBackend):
             if task_kwargs is not None:
                 _, _, task_kwargs = self.encode_content(task_kwargs)
 
-            properties = getattr(request, 'properties', {}) or {}
-            periodic_task_name = properties.get('periodic_task_name', None)
+            periodic_task_name = getattr(request, 'periodic_task_name', None)
+
             extended_props.update({
                 'periodic_task_name': periodic_task_name,
                 'task_args': task_args,
@@ -198,6 +198,8 @@ class DatabaseBackend(BaseDictBackend):
 
     def cleanup(self):
         """Delete expired metadata."""
+        if not self.expires:
+            return
         self.TaskModel._default_manager.delete_expired(self.expires)
         self.GroupModel._default_manager.delete_expired(self.expires)
 

@@ -1,5 +1,5 @@
 Injecting metadata
-===============
+==================
 
 
 To save arbitrary data on the field TaskResult.meta, the Celery Task Request must be manipulated as such:
