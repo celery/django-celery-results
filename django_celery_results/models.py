@@ -149,7 +149,8 @@ class ChordCounter(models.Model):
         help_text=_("Celery ID for the Chord header group"),
     )
     sub_tasks = models.JSONField(
-        default=None,
+        null=True,
+        default=list,
         help_text=_(
             "JSON serialized list of task result tuples. "
             "use .group_result() to decode"
