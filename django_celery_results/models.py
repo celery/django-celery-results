@@ -39,12 +39,12 @@ class TaskResult(models.Model):
         ),
         verbose_name=_('Task Name'),
         help_text=_('Name of the Task which was run'))
-    task_args = models.TextField(
+    task_args = models.JSONField(
         null=True,
         verbose_name=_('Task Positional Arguments'),
         help_text=_('JSON representation of the positional arguments '
                     'used with the task'))
-    task_kwargs = models.TextField(
+    task_kwargs = models.JSONField(
         null=True,
         verbose_name=_('Task Named Arguments'),
         help_text=_('JSON representation of the named arguments '
@@ -86,7 +86,7 @@ class TaskResult(models.Model):
         blank=True, null=True,
         verbose_name=_('Traceback'),
         help_text=_('Text of the traceback if the task generated one'))
-    meta = models.TextField(
+    meta = models.JSONField(
         null=True, default=None, editable=False,
         verbose_name=_('Task Meta Information'),
         help_text=_('JSON meta information about the task, '
@@ -148,7 +148,9 @@ class ChordCounter(models.Model):
         verbose_name=_("Group ID"),
         help_text=_("Celery ID for the Chord header group"),
     )
-    sub_tasks = models.TextField(
+    sub_tasks = models.JSONField(
+        null=True,
+        default=list,
         help_text=_(
             "JSON serialized list of task result tuples. "
             "use .group_result() to decode"
