@@ -12,9 +12,12 @@ from django.db.models.functions import Now
 from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
 
-from ..models import ChordCounter
-from ..models import GroupResult as GroupResultModel
-from ..models import TaskResult
+from ..models.helpers import (
+    chordcounter_model,
+    groupresult_model,
+    taskresult_model,
+)
+from ..settings import get_task_props_extension
 
 EXCEPTIONS_TO_CATCH = (InterfaceError,)
 
@@ -30,8 +33,9 @@ logger = get_logger(__name__)
 class DatabaseBackend(BaseDictBackend):
     """The Django database backend, using models to store task state."""
 
-    TaskModel = TaskResult
-    GroupModel = GroupResultModel
+    TaskModel = taskresult_model()
+    GroupModel = groupresult_model()
+    ChordCounterModel = chordcounter_model()
     subpolling_interval = 0.5
 
     def exception_safe_to_retry(self, exc):
@@ -79,6 +83,14 @@ class DatabaseBackend(BaseDictBackend):
             else:
                 # task protocol 1
                 task_kwargs = getattr(request, 'kwargs', None)
+
+            # TODO: We assume that task protocol 1 could be always in use. :/
+            extra_fields = get_task_props_extension(
+                request,
+                getattr(request, 'kwargs', None)
+            )
+            if extra_fields:
+                extended_props.update({"extra_fields": extra_fields})
 
             # Encode input arguments
             if task_args is not None:
@@ -141,9 +153,8 @@ class DatabaseBackend(BaseDictBackend):
             'using': using,
         }
 
-        task_props.update(
-            self._get_extended_properties(request, traceback)
-        )
+        task_props.update(self._get_extended_properties(request, traceback))
+        task_props.update(get_task_props_extension(request, dict(task_props)))
 
         if status == states.STARTED:
             task_props['date_started'] = Now()
@@ -242,7 +253,7 @@ class DatabaseBackend(BaseDictBackend):
         results = [r.as_tuple() for r in header_result]
         chord_size = body.get("chord_size", None) or len(results)
         data = json.dumps(results)
-        ChordCounter.objects.create(
+        self.ChordCounterModel.objects.create(
             group_id=header_result.id, sub_tasks=data, count=chord_size
         )
 
@@ -252,17 +263,19 @@ class DatabaseBackend(BaseDictBackend):
         if not gid or not tid:
             return
         call_callback = False
-        with transaction.atomic(using=router.db_for_write(ChordCounter)):
+        with transaction.atomic(
+            using=router.db_for_write(self.ChordCounterModel)
+        ):
             # We need to know if `count` hits 0.
             # wrap the update in a transaction
             # with a `select_for_update` lock to prevent race conditions.
             # SELECT FOR UPDATE is not supported on all databases
             try:
                 chord_counter = (
-                    ChordCounter.objects.select_for_update()
+                    self.ChordCounterModel.objects.select_for_update()
                     .get(group_id=gid)
                 )
-            except ChordCounter.DoesNotExist:
+            except self.ChordCounterModel.DoesNotExist:
                 logger.warning("Can't find ChordCounter for Group %s", gid)
                 return
             chord_counter.count -= 1
