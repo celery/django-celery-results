@@ -64,6 +64,11 @@ class test_Models(TransactionTestCase):
         )
         assert m1 not in TaskResult.objects.all()
 
+    def test_task_result_pk_use_big_auto_field(self):
+        task_result = TaskResult.objects.create(
+            pk=5_000_000_000, task_id=uuid())
+        assert task_result.pk is not None
+
     def test_store_result(self, ctype='application/json', cenc='utf-8'):
         """
         Test the `using` argument.
