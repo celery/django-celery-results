@@ -15,6 +15,7 @@ from kombu.exceptions import DecodeError
 from ..models import ChordCounter
 from ..models import GroupResult as GroupResultModel
 from ..models import TaskResult
+from ..utils import now
 
 EXCEPTIONS_TO_CATCH = (InterfaceError,)
 
@@ -146,7 +147,7 @@ class DatabaseBackend(BaseDictBackend):
         )
 
         if status == states.STARTED:
-            task_props['date_started'] = Now()
+            task_props['date_started'] = now()
 
         self.TaskModel._default_manager.store_result(**task_props)
         return result
