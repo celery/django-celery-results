@@ -968,6 +968,26 @@ class test_DatabaseBackend:
         assert self.b.get_status(tid) == states.SUCCESS
         assert self.b.get_result(tid) == 42
 
+    def test_date_started_is_timezone_aware(self):
+        """Test that date_started is timezone-aware when task is started"""
+        tid = uuid()
+
+        # Create a task in PENDING state
+        self.b.store_result(tid, None, states.PENDING)
+        tr = TaskResult.objects.get(task_id=tid)
+        assert tr.date_started is None
+
+        # Mark as started
+        self.b.mark_as_started(tid)
+
+        # Verify date_started is set and timezone-aware
+        tr = TaskResult.objects.get(task_id=tid)
+        assert tr.date_started is not None
+        assert isinstance(tr.date_started, datetime.datetime)
+        # Check if datetime is timezone-aware (has tzinfo set)
+        assert tr.date_started.tzinfo is not None
+        assert tr.date_started.tzinfo.utcoffset(tr.date_started) is not None
+
 
 class DjangoCeleryResultRouter:
     route_app_labels = {"django_celery_results"}
