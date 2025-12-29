@@ -10,10 +10,10 @@ except (AttributeError, KeyError):
     ALLOW_EDITS = False
     pass
 
-from .models.helpers import groupresult_model, taskresult_model
+from .models.helpers import get_group_result_model, get_task_result_model
 
-GroupResult = groupresult_model()
-TaskResult = taskresult_model()
+GroupResult = get_group_result_model()
+TaskResult = get_task_result_model()
 
 
 class TaskResultAdmin(admin.ModelAdmin):

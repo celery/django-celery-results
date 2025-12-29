@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 from .generic import ChordCounter, GroupResult, TaskResult
 
 
-def taskresult_model():
+def get_task_result_model():
     """Return the TaskResult model that is active in this project."""
     if not hasattr(settings, 'CELERY_RESULTS_TASKRESULT_MODEL'):
         return TaskResult
@@ -27,7 +27,7 @@ def taskresult_model():
         )
 
 
-def chordcounter_model():
+def get_chord_counter_model():
     """Return the ChordCounter model that is active in this project."""
 
     if not hasattr(settings, 'CELERY_RESULTS_CHORDCOUNTER_MODEL'):
@@ -50,7 +50,7 @@ def chordcounter_model():
         )
 
 
-def groupresult_model():
+def get_group_result_model():
     """Return the GroupResult model that is active in this project."""
     if not hasattr(settings, 'CELERY_RESULTS_GROUPRESULT_MODEL'):
         return GroupResult
