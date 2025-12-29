@@ -15,6 +15,7 @@ class TaskResult(AbstractTaskResult):
 
         abstract = False
         app_label = "django_celery_results"
+        swappable = "CELERY_RESULTS_TASKRESULT_MODEL"
 
 
 class ChordCounter(AbstractChordCounter):
@@ -25,6 +26,7 @@ class ChordCounter(AbstractChordCounter):
 
         abstract = False
         app_label = "django_celery_results"
+        swappable = "CELERY_RESULTS_CHORDCOUNTER_MODEL"
 
 
 class GroupResult(AbstractGroupResult):
@@ -35,3 +37,4 @@ class GroupResult(AbstractGroupResult):
 
         abstract = False
         app_label = "django_celery_results"
+        swappable = "CELERY_RESULTS_GROUPRESULT_MODEL"
