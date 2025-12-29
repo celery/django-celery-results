@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib import admin, messages
 from django.utils.translation import gettext_lazy as _
 
-from .models.helpers import groupresult_model, taskresult_model
+from .models.helpers import get_group_result_model, get_task_result_model
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +17,8 @@ except (AttributeError, KeyError):
     ALLOW_EDITS = False
     pass
 
-GroupResult = groupresult_model()
-TaskResult = taskresult_model()
+GroupResult = get_group_result_model()
+TaskResult = get_task_result_model()
 
 
 class TaskResultAdmin(admin.ModelAdmin):

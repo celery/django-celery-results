@@ -13,9 +13,9 @@ from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
 
 from ..models.helpers import (
-    chordcounter_model,
-    groupresult_model,
-    taskresult_model,
+    get_chord_counter_model,
+    get_group_result_model,
+    get_task_result_model,
 )
 from ..settings import get_task_props_extension
 
@@ -33,9 +33,9 @@ logger = get_logger(__name__)
 class DatabaseBackend(BaseDictBackend):
     """The Django database backend, using models to store task state."""
 
-    TaskModel = taskresult_model()
-    GroupModel = groupresult_model()
-    ChordCounterModel = chordcounter_model()
+    TaskModel = get_task_result_model()
+    GroupModel = get_group_result_model()
+    ChordCounterModel = get_chord_counter_model()
     subpolling_interval = 0.5
 
     def exception_safe_to_retry(self, exc):
