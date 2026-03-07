@@ -6,6 +6,7 @@ from celery import current_app as celery_app
 from django.conf import settings
 from django.contrib import admin, messages
 from django.utils.translation import gettext_lazy as _
+
 from .models import GroupResult, TaskResult
 
 logger = logging.getLogger(__name__)
