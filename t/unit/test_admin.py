@@ -98,6 +98,7 @@ class test_Admin(TestCase):
             "Error while terminating tasks: Termination failed")
         self.assertEqual(messages[0].level, constants.ERROR)
 
+
 User = get_user_model()
 
 
@@ -164,4 +165,3 @@ class TaskResultProxyAdminTests(TaskResultAdminTests):
         # Restore the original URL patterns
         get_resolver().url_patterns[0] = cls.ori_url_patterns_0
         clear_url_caches()
-
