@@ -73,7 +73,8 @@ class TaskResultAdmin(admin.ModelAdmin):
         """Terminate selected tasks."""
         task_ids = list(queryset.values_list('task_id', flat=True))
         try:
-            celery_app.control.terminate(task_ids)
+            for task_id in task_ids:
+                celery_app.control.terminate(task_id)
             self.message_user(
                 request,
                 f"{len(task_ids)} Task was terminated successfully.",
