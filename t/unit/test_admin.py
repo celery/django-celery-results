@@ -33,8 +33,8 @@ class test_Admin(TestCase):
         request.session.save()
 
     def create_task_result(self):
-        id = uuid()
-        taskmeta, created = TaskResult.objects.get_or_create(task_id=id)
+        task_id = uuid()
+        taskmeta, _ = TaskResult.objects.get_or_create(task_id=task_id)
         return taskmeta
 
     @patch('celery.current_app.control.terminate')
