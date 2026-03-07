@@ -33,8 +33,8 @@ class test_Admin(TestCase):
         request.session.save()
 
     def create_task_result(self):
-        id = uuid()
-        taskmeta, created = TaskResult.objects.get_or_create(task_id=id)
+        task_id = uuid()
+        taskmeta, _ = TaskResult.objects.get_or_create(task_id=task_id)
         return taskmeta
 
     @patch('celery.current_app.control.terminate')
@@ -98,8 +98,8 @@ class test_Admin(TestCase):
         messages = list(get_messages(request))
         self.assertEqual(len(messages), 1)
         self.assertIn(
-            str(messages[0]),
-            "Error while terminating tasks: Termination failed")
+            "Error while terminating tasks: Termination failed",
+            str(messages[0]))
         self.assertEqual(messages[0].level, constants.ERROR)
 
 
