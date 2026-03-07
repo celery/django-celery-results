@@ -37,7 +37,7 @@ class test_Admin(TestCase):
         taskmeta, _ = TaskResult.objects.get_or_create(task_id=task_id)
         return taskmeta
 
-    @patch('celery.current_app.control.terminate')
+    @patch('django_celery_results.admin.celery_app.control.terminate')
     def test_terminate_task_success(self, mock_terminate):
         # Create mock request
         request = self.factory.post('/')
@@ -68,7 +68,7 @@ class test_Admin(TestCase):
             "2 task(s) was terminated successfully.")
         self.assertEqual(messages[0].level, constants.SUCCESS)
 
-    @patch('celery.current_app.control.terminate')
+    @patch('django_celery_results.admin.celery_app.control.terminate')
     def test_terminate_task_failure(self, mock_terminate):
         # Create mock request
         request = self.factory.post('/')
