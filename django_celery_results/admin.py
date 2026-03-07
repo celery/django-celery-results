@@ -1,9 +1,13 @@
 """Result Task Admin interface."""
 
+import logging
+
 from celery import current_app as celery_app
 from django.conf import settings
 from django.contrib import admin, messages
 from django.utils.translation import gettext_lazy as _
+
+logger = logging.getLogger(__name__)
 
 try:
     ALLOW_EDITS = settings.DJANGO_CELERY_RESULTS['ALLOW_EDITS']
@@ -76,17 +80,23 @@ class TaskResultAdmin(admin.ModelAdmin):
             celery_app.control.terminate(task_ids)
             self.message_user(
                 request,
-                f"{len(task_ids)} Task was terminated successfully.",
+                f"{len(task_ids)} task(s) was terminated successfully.",
                 messages.SUCCESS,
             )
         except Exception as e:
+            logger.error(
+                "Error while terminating tasks: %s",
+                e,
+                exc_info=True,
+                extra={'task_ids': task_ids}
+            )
             self.message_user(
                 request,
                 f"Error while terminating tasks: {e}",
                 messages.ERROR,
             )
 
-    terminate_task.short_description = "Terminate selected tasks"
+    terminate_task.short_description = _("Terminate selected tasks")
 
 
 admin.site.register(TaskResult, TaskResultAdmin)

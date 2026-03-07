@@ -49,21 +49,23 @@ class test_Admin(TestCase):
         tr2 = self.create_task_result()
         task_id_list = [tr1.task_id, tr2.task_id]
 
-        mock_queryset = MagicMock()
-        mock_queryset.values_list.return_value = task_id_list
+        # Use queryset
+        queryset = TaskResult.objects.filter(task_id__in=task_id_list)
 
         # Call the terminate_task method
-        self.task_admin.terminate_task(request, mock_queryset)
+        self.task_admin.terminate_task(request, queryset)
 
         # Verify terminate was called with the correct task IDs
-        mock_terminate.assert_called_once_with(task_id_list)
+        mock_terminate.assert_called_once()
+        called_args = mock_terminate.call_args[0][0]
+        self.assertEqual(sorted(called_args), sorted(task_id_list))
 
         # Verify message_user was called with the success message
         messages = list(get_messages(request))
         self.assertEqual(len(messages), 1)
         self.assertEqual(
             str(messages[0]),
-            "2 Task was terminated successfully.")
+            "2 task(s) was terminated successfully.")
         self.assertEqual(messages[0].level, constants.SUCCESS)
 
     @patch('celery.current_app.control.terminate')
@@ -78,17 +80,19 @@ class test_Admin(TestCase):
         tr2 = self.create_task_result()
         task_id_list = [tr1.task_id, tr2.task_id]
 
-        mock_queryset = MagicMock()
-        mock_queryset.values_list.return_value = task_id_list
+        # Use queryset
+        queryset = TaskResult.objects.filter(task_id__in=task_id_list)
 
         # Simulate an exception in terminate
         mock_terminate.side_effect = Exception("Termination failed")
 
         # Call the terminate_task method
-        self.task_admin.terminate_task(request, mock_queryset)
+        self.task_admin.terminate_task(request, queryset)
 
         # Verify terminate was called with the correct task IDs
-        mock_terminate.assert_called_once_with(task_id_list)
+        mock_terminate.assert_called_once()
+        called_args = mock_terminate.call_args[0][0]
+        self.assertEqual(sorted(called_args), sorted(task_id_list))
 
         # Verify message_user was called with the error message
         messages = list(get_messages(request))
