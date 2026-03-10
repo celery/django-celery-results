@@ -28,6 +28,8 @@ jobs:
                       django: "51"
                     - python-version: "3.12"
                       django: "32"
+                    - python-version: "3.11"
+                      django: "60"
                     - python-version: "3.12"
                       django: "60"
 
