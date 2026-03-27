@@ -1,4 +1,4 @@
-"""Database models."""
+"""Abstract models."""
 
 import json
 
@@ -9,14 +9,14 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from . import managers
+from .. import managers
 
 ALL_STATES = sorted(states.ALL_STATES)
 TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
 
 
-class TaskResult(models.Model):
-    """Task result/status."""
+class AbstractTaskResult(models.Model):
+    """Abstract Task result/status."""
 
     task_id = models.CharField(
         max_length=getattr(
@@ -97,8 +97,8 @@ class TaskResult(models.Model):
     class Meta:
         """Table information."""
 
+        abstract = True
         ordering = ['-date_done']
-
         verbose_name = _('task result')
         verbose_name_plural = _('task results')
 
@@ -136,14 +136,15 @@ class TaskResult(models.Model):
         return '<Task: {0.task_id} ({0.status})>'.format(self)
 
 
-class ChordCounter(models.Model):
-    """Chord synchronisation."""
+class AbstractChordCounter(models.Model):
+    """Abstract Chord synchronisation."""
 
     group_id = models.CharField(
         max_length=getattr(
             settings,
             "DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH",
-            255),
+            255
+        ),
         unique=True,
         verbose_name=_("Group ID"),
         help_text=_("Celery ID for the Chord header group"),
@@ -161,12 +162,17 @@ class ChordCounter(models.Model):
         )
     )
 
+    class Meta:
+        """Table information."""
+
+        abstract = True
+
     def group_result(self, app=None):
-        """Return the :class:`celery.result.GroupResult` of self.
+        """Return the GroupResult of self.
 
         Arguments:
-            app (celery.app.base.Celery): app instance to create the
-               :class:`celery.result.GroupResult` with.
+        ---------
+            app (Celery): app instance to create the GroupResult with.
 
         """
         return CeleryGroupResult(
@@ -177,8 +183,8 @@ class ChordCounter(models.Model):
         )
 
 
-class GroupResult(models.Model):
-    """Task Group result/status."""
+class AbstractGroupResult(models.Model):
+    """Abstract Task Group result/status."""
 
     group_id = models.CharField(
         max_length=getattr(
@@ -231,10 +237,10 @@ class GroupResult(models.Model):
     class Meta:
         """Table information."""
 
-        ordering = ['-date_done']
-
+        abstract = True
         verbose_name = _('group result')
         verbose_name_plural = _('group results')
+        ordering = ['-date_done']
 
         # Explicit names to solve https://code.djangoproject.com/ticket/33483
         indexes = [
