@@ -30,11 +30,17 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 readme = "README.rst"
+authors = [
+    {name = "Ask Solem", email = "ask@celeryproject.org"},
+    {name = "Asif Saif Uddin", email = "auvipy@gmail.com"},
+]
+maintainers = [
+    {name = "Asif Saif Uddin", email = "auvipy@gmail.com"},
+]
 dynamic = [
     "version",
     "dependencies",
     "optional-dependencies",
-    "authors",
 ]
 
 [project.entry-points."celery.result_backends"]
