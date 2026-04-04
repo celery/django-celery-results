@@ -37,8 +37,8 @@ authors = [
 maintainers = [
     {name = "Asif Saif Uddin", email = "auvipy@gmail.com"},
 ]
+version = "2.6.0"
 dynamic = [
-    "version",
     "dependencies",
     "optional-dependencies",
 ]

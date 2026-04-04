@@ -53,13 +53,16 @@ clean: clean-docs clean-pyc clean-build
 clean-dist: clean clean-git-force
 
 bump:
-	bumpversion patch
+	$(PYHTON) -m pip install bump-my-version -q
+	bump-my-version bump patch
 
 bump-minor:
-	bumpversion minor
+	$(PYHTON) -m pip install bump-my-version -q
+	bump-my-version bump minor
 
 bump-major:
-	bumpversion major
+	$(PYHTON) -m pip install bump-my-version -q
+	bump-my-version bump major
 
 release:
 	python setup.py register sdist bdist_wheel upload --sign --identity="$(PGPIDENT)"
