@@ -137,7 +137,8 @@ cov: covbuild
 	(cd $(TESTDIR); pytest -x --cov=django_celery_results --cov-report=html)
 
 build:
-	$(PYTHON) setup.py sdist bdist_wheel
+	$(PYTHON) -m pip install build
+	$(PYTHON) -m build
 
 distcheck: lint test clean
 
