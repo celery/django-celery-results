@@ -1,0 +1,19 @@
+[project]
+name = "django-celery-results"
+dynamic = [
+    "version",
+    "dependencies",
+    "optional-dependencies",
+    "entry-points",
+    "authors",
+    "classifiers",
+    "keywords",
+    "urls",
+    "readme",
+    "license",
+    "description"
+]
+
+[build-system]
+requires = ["setuptools>=82", "wheel", "build"]
+build-backend = "setuptools.build_meta"
