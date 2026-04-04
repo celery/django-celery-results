@@ -29,12 +29,12 @@ classifiers = [
     "Topic :: System :: Distributed Computing",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+readme = "README.rst"
 dynamic = [
     "version",
     "dependencies",
     "optional-dependencies",
     "authors",
-    "readme",
 ]
 
 [project.entry-points."celery.result_backends"]
