@@ -134,7 +134,7 @@ test-all: clean-pyc
 	$(TOX)
 
 test:
-	$(PYTHON) setup.py test
+	$(PYTEST)
 
 cov: covbuild
 	(cd $(TESTDIR); pytest -x --cov=django_celery_results --cov-report=html)
