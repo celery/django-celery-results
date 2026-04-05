@@ -53,15 +53,15 @@ clean: clean-docs clean-pyc clean-build
 clean-dist: clean clean-git-force
 
 bump:
-	$(PYHTON) -m pip install bump-my-version -q
+	$(PYTHON) -m pip install bump-my-version -q
 	bump-my-version bump patch
 
 bump-minor:
-	$(PYHTON) -m pip install bump-my-version -q
+	$(PYTHON) -m pip install bump-my-version -q
 	bump-my-version bump minor
 
 bump-major:
-	$(PYHTON) -m pip install bump-my-version -q
+	$(PYTHON) -m pip install bump-my-version -q
 	bump-my-version bump major
 
 release:
