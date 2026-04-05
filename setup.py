@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-import setuptools.command.test
 
+import setuptools.command.test
 
 NAME = 'django_celery_results'
 
