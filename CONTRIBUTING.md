@@ -16,6 +16,10 @@ and preferably [make](https://www.gnu.org/software/make/).
 
 1. Fork and clone the repository
 2. Create and activate a virtual environment:
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
 3. Install the package in editable mode with dependencies:
 
    ```bash
