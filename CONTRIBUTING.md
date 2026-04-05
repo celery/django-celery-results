@@ -39,4 +39,6 @@ Run `make help` to see all available targets. The most useful ones:
 
 ## Submitting Changes
 
-Please see the
+Please submit your changes as a pull request to this repository.
+For more information about the contribution and review process, please see the
+Celery project [contributing guidelines](https://docs.celeryproject.org/en/latest/contributing.html).
