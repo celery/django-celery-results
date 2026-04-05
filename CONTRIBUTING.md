@@ -23,7 +23,7 @@ and preferably [make](https://www.gnu.org/software/make/).
 3. Install the package in editable mode with dependencies:
 
    ```bash
-   pip install -e . # This will install pkgs in requirements/default.txt,
+   pip install -e . # This will install packages in requirements/default.txt.
    pip install -r requirements/test.txt
    ```
 4. If you need to install dependencies for a specific Django version,
