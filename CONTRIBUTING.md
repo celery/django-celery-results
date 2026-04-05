@@ -9,7 +9,7 @@ for more information.
 
 ### Prerequisites
 
-You need a supported python version installed, an IDE of your choice,
+You need a supported Python version installed, an IDE of your choice,
 and preferably [make](https://www.gnu.org/software/make/).
 
 ### Installation
