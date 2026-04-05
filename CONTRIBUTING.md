@@ -25,9 +25,8 @@ and preferably [make](https://www.gnu.org/software/make/).
    ```bash
    pip install -e . # This will install packages in requirements/default.txt.
    pip install -r requirements/test.txt
-   ```
-4. If you need to install dependencies for a specific Django version,
-   see the available text files in `requirements/`.
+   # Some test environments also require Django/database-specific deps:
+   pip install -r requirements/test-django.txt
 
 ### Common Make Targets
 
