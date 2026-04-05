@@ -55,3 +55,25 @@ Repository = "https://github.com/celery/django-celery-results"
 [build-system]
 requires = ["setuptools>=82", "wheel", "build"]
 build-backend = "setuptools.build_meta"
+
+[tool.bumpversion]
+current_version = "2.6.0"
+commit = true
+tag = true
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(?P<releaselevel>[a-z]+)?"
+serialize = [
+    "{major}.{minor}.{patch}{releaselevel}",
+    "{major}.{minor}.{patch}",
+]
+
+[[tool.bumpversion.files]]
+filename = "django_celery_results/__init__.py"
+
+[[tool.bumpversion.files]]
+filename = "docs/includes/introduction.txt"
+
+[[tool.bumpversion.files]]
+filename = "README.rst"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
