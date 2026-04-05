@@ -20,6 +20,8 @@ SPHINX_HTMLDIR="${SPHINX_BUILDDIR}/html"
 DOCUMENTATION=Documentation
 
 
+.PHONY: build
+
 all: help
 
 help:
