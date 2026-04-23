@@ -26,7 +26,7 @@ class SomeClass:
         self.data = data
 
 
-@pytest.mark.django_db(transaction=True)
+@pytest.mark.django_db
 @pytest.mark.usefixtures('depends_on_current_app')
 class test_DatabaseBackend:
 
