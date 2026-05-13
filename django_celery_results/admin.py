@@ -1,16 +1,21 @@
 """Result Task Admin interface."""
 
+import logging
+
+from celery import current_app as celery_app
 from django.conf import settings
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.utils.translation import gettext_lazy as _
+
+from .models import GroupResult, TaskResult
+
+logger = logging.getLogger(__name__)
 
 try:
     ALLOW_EDITS = settings.DJANGO_CELERY_RESULTS['ALLOW_EDITS']
 except (AttributeError, KeyError):
     ALLOW_EDITS = False
     pass
-
-from .models import GroupResult, TaskResult
 
 
 class TaskResultAdmin(admin.ModelAdmin):
@@ -58,6 +63,7 @@ class TaskResultAdmin(admin.ModelAdmin):
             'classes': ('extrapretty', 'wide')
         }),
     )
+    actions = ['terminate_task']
 
     def get_readonly_fields(self, request, obj=None):
         if ALLOW_EDITS:
@@ -66,6 +72,31 @@ class TaskResultAdmin(admin.ModelAdmin):
             return list({
                 field.name for field in self.model._meta.fields
             })
+
+    def terminate_task(self, request, queryset):
+        """Terminate selected tasks."""
+        task_ids = list(queryset.values_list('task_id', flat=True))
+        try:
+            celery_app.control.terminate(task_ids)
+            self.message_user(
+                request,
+                f"{len(task_ids)} task(s) was terminated successfully.",
+                messages.SUCCESS,
+            )
+        except Exception as e:
+            logger.error(
+                "Error while terminating tasks: %s",
+                e,
+                exc_info=True,
+                extra={'task_ids': task_ids}
+            )
+            self.message_user(
+                request,
+                f"Error while terminating tasks: {e}",
+                messages.ERROR,
+            )
+
+    terminate_task.short_description = _("Terminate selected tasks")
 
 
 admin.site.register(TaskResult, TaskResultAdmin)
