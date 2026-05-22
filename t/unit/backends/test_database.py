@@ -784,6 +784,7 @@ class test_DatabaseBackend:
         request.id = subtasks[0].id
         request.group = gid
         request.task = "my_task"
+        request.shadow = None
         request.args = ["a", 1, "password"]
         request.kwargs = {"c": 3, "d": "e", "password": "password"}
         request.argsrepr = "argsrepr"
@@ -834,6 +835,7 @@ class test_DatabaseBackend:
         request.id = subtasks[0].id
         request.group = gid
         request.task = "my_task"
+        request.shadow = None
         request.args = ["a", 1, "password"]
         request.kwargs = {"c": 3, "d": "e", "password": "password"}
         request.argsrepr = "argsrepr"
@@ -880,6 +882,7 @@ class test_DatabaseBackend:
         request.id = tid1
         request.group = gid
         request.task = "my_task"
+        request.shadow = None
         request.args = ["a", 1, "password"]
         request.kwargs = {"c": 3, "d": "e", "password": "password"}
         request.argsrepr = "argsrepr"
@@ -1026,6 +1029,7 @@ class ChordPartReturnTestCase(TransactionTestCase):
             request.id = subtasks[0].id
             request.group = gid
             request.task = "my_task"
+            request.shadow = None
             request.args = ["a", 1, "password"]
             request.kwargs = {"c": 3, "d": "e", "password": "password"}
             request.argsrepr = "argsrepr"
