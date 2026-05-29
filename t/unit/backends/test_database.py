@@ -26,6 +26,10 @@ class SomeClass:
         self.data = data
 
 
+class RequestTask(str):
+    ignore_result = False
+
+
 @pytest.mark.django_db
 @pytest.mark.usefixtures('depends_on_current_app')
 class test_DatabaseBackend:
@@ -60,7 +64,7 @@ class test_DatabaseBackend:
             body=body,
             sent_event=sent_event,
         )
-        request = Request(context, decoded=True, task=name)
+        request = Request(context, decoded=True, task=RequestTask(name))
         if task_protocol == 1:
             assert request.argsrepr is None
             assert request.kwargsrepr is None
@@ -552,6 +556,7 @@ class test_DatabaseBackend:
         tr = TaskResult.objects.get(task_id=tid2)
         assert json.loads(tr.meta) == {'key': 'value', 'children': []}
 
+    @pytest.mark.django_db(transaction=True)
     def test_backend__task_result_closes_stale_connection(self):
         tid = uuid()
         request = self._create_request(
@@ -564,6 +569,7 @@ class test_DatabaseBackend:
         # simulate a stale connection by setting the close time
         # to the current time
         db_conn_wrapper = connections[router.db_for_write(self.b.TaskModel)]
+        db_conn_wrapper.ensure_connection()
         db_conn_wrapper.close_at = time.monotonic()
         current_db_connection = db_conn_wrapper.connection
         self.b.mark_as_done(tid, None, request=request)
