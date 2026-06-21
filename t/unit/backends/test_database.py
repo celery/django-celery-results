@@ -52,6 +52,7 @@ class test_DatabaseBackend:
             sent_event = {}
         else:
             headers, properties, body, sent_event = msg
+        headers.setdefault('ignore_result', False)
         context = Context(
             headers=headers,
             properties=properties,
