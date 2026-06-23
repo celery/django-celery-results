@@ -7,7 +7,7 @@ from celery.exceptions import ChordError
 from celery.result import GroupResult, allow_join_result, result_from_tuple
 from celery.utils.log import get_logger
 from celery.utils.serialization import b64decode, b64encode
-from django.db import connection, router, transaction
+from django.db import connection, connections, router, transaction
 from django.db.models.functions import Now
 from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
@@ -120,6 +120,19 @@ class DatabaseBackend(BaseDictBackend):
             using=None
     ):
         """Store return value and status of an executed task."""
+
+        # If a task has been running long, it may have exceeded
+        # the max db age and/or the database connection
+        # may have been ended due to being idle for too long.
+        # As a safety, before we submit the result,
+        # we ensure it still has a valid connection, just like
+        # Django does after a request to ensure a
+        # clean connection for the next request.
+        db_alias = using or router.db_for_write(self.TaskModel)
+        db_connection = connections[db_alias]
+        if not db_connection.in_atomic_block:
+            db_connection.close_if_unusable_or_obsolete()
+
         content_type, content_encoding, result = self.encode_content(result)
 
         meta = {
@@ -147,7 +160,6 @@ class DatabaseBackend(BaseDictBackend):
 
         if status == states.STARTED:
             task_props['date_started'] = Now()
-
         self.TaskModel._default_manager.store_result(**task_props)
         return result
 

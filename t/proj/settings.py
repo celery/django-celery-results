@@ -36,6 +36,7 @@ try:
             'OPTIONS': {
                 'connect_timeout': 1000,
             },
+            'CONN_MAX_AGE': None,
         },
         'secondary': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -50,6 +51,7 @@ try:
             'TEST': {
                 'MIRROR': 'default',
             },
+            'CONN_MAX_AGE': None,
         },
         'read-only': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -65,6 +67,7 @@ try:
             'TEST': {
                 'MIRROR': 'default',
             },
+            'CONN_MAX_AGE': None,
         },
     }
 except ImportError:
