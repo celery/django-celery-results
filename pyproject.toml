@@ -1,0 +1,57 @@
+[project]
+name = "django-celery-results"
+description = "Celery result backends for Django."
+keywords = ["celery", "django", "database", "result", "backend"]
+license = {text = "BSD-3-Clause"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Framework :: Django",
+    "Framework :: Django :: 3.2",
+    "Framework :: Django :: 4.1",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
+    "Operating System :: OS Independent",
+    "Topic :: Communications",
+    "Topic :: System :: Distributed Computing",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+readme = "README.rst"
+authors = [
+    {name = "Ask Solem", email = "ask@celeryproject.org"},
+    {name = "Asif Saif Uddin", email = "auvipy@gmail.com"},
+]
+maintainers = [
+    {name = "Asif Saif Uddin", email = "auvipy@gmail.com"},
+]
+version = "2.6.0"
+dynamic = [
+    "dependencies",
+    "optional-dependencies",
+]
+
+[project.entry-points."celery.result_backends"]
+django-db = "django_celery_results.backends:DatabaseBackend"
+django-cache = "django_celery_results.backends:CacheBackend"
+
+[project.urls]
+Documentation = "https://django-celery-results.readthedocs.io/en/latest/"
+Changelog = "https://django-celery-results.readthedocs.io/en/latest/changelog.html"
+Repository = "https://github.com/celery/django-celery-results"
+
+[build-system]
+requires = ["setuptools>=82", "wheel", "build"]
+build-backend = "setuptools.build_meta"
