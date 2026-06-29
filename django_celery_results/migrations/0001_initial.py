@@ -1,5 +1,6 @@
-from django.conf import settings
 from django.db import migrations, models
+
+from django_celery_results.conf import app_settings
 
 
 class Migration(migrations.Migration):
@@ -18,11 +19,7 @@ class Migration(migrations.Migration):
                                         serialize=False,
                                         verbose_name='ID')),
                 ('task_id', models.CharField(
-                    max_length=getattr(
-                        settings,
-                        'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
-                        255
-                    ),
+                    max_length=app_settings.DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH,  # noqa: E501
                     unique=True,
                     verbose_name='task id'
                 )),

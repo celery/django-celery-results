@@ -5,11 +5,11 @@ import json
 from celery import states
 from celery.result import GroupResult as CeleryGroupResult
 from celery.result import result_from_tuple
-from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from . import managers
+from .conf import app_settings
 
 ALL_STATES = sorted(states.ALL_STATES)
 TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
@@ -19,11 +19,7 @@ class TaskResult(models.Model):
     """Task result/status."""
 
     task_id = models.CharField(
-        max_length=getattr(
-            settings,
-            'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
-            255
-        ),
+        max_length=app_settings.DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH,
         unique=True,
         verbose_name=_('Task ID'),
         help_text=_('Celery ID for the Task that was run'))
@@ -32,11 +28,8 @@ class TaskResult(models.Model):
         verbose_name=_('Periodic Task Name'),
         help_text=_('Name of the Periodic Task which was run'))
     task_name = models.CharField(
-        null=True, max_length=getattr(
-            settings,
-            'DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH',
-            255
-        ),
+        null=True,
+        max_length=app_settings.DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH,
         verbose_name=_('Task Name'),
         help_text=_('Name of the Task which was run'))
     task_args = models.TextField(
@@ -140,10 +133,7 @@ class ChordCounter(models.Model):
     """Chord synchronisation."""
 
     group_id = models.CharField(
-        max_length=getattr(
-            settings,
-            "DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH",
-            255),
+        max_length=app_settings.DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH,
         unique=True,
         verbose_name=_("Group ID"),
         help_text=_("Celery ID for the Chord header group"),
@@ -181,11 +171,7 @@ class GroupResult(models.Model):
     """Task Group result/status."""
 
     group_id = models.CharField(
-        max_length=getattr(
-            settings,
-            "DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH",
-            255
-        ),
+        max_length=app_settings.DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH,
         unique=True,
         verbose_name=_("Group ID"),
         help_text=_("Celery ID for the Group that was run"),
