@@ -170,8 +170,7 @@ class AbstractChordCounter(models.Model):
     def group_result(self, app=None):
         """Return the GroupResult of self.
 
-        Arguments:
-        ---------
+        Args:
             app (Celery): app instance to create the GroupResult with.
 
         """

@@ -1,3 +1,5 @@
+"""Settings helpers for django-celery-results."""
+
 from collections.abc import Mapping
 
 from django.conf import settings
