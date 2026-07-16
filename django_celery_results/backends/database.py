@@ -13,9 +13,9 @@ from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
 
 from ..models.helpers import (
-    get_chord_counter_model,
-    get_group_result_model,
-    get_task_result_model,
+    chordcounter_model,
+    groupresult_model,
+    taskresult_model,
 )
 from ..settings import get_task_props_extension
 
@@ -38,9 +38,9 @@ class DatabaseBackend(BaseDictBackend):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.TaskModel = get_task_result_model()
-        self.GroupModel = get_group_result_model()
-        self.ChordCounterModel = get_chord_counter_model()
+        self.TaskModel = taskresult_model()
+        self.GroupModel = groupresult_model()
+        self.ChordCounterModel = chordcounter_model()
 
     def exception_safe_to_retry(self, exc):
         """Check if an exception is safe to retry.

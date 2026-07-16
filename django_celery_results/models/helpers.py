@@ -5,68 +5,45 @@ from django.core.exceptions import ImproperlyConfigured
 from .generic import ChordCounter, GroupResult, TaskResult
 
 
-def get_task_result_model():
+def _configured_model(setting_name, default_model):
+    """Return the model configured by setting_name or default_model."""
+    model_label = getattr(settings, setting_name, None)
+    if model_label is None:
+        return default_model
+
+    try:
+        return apps.get_model(model_label)
+    except ValueError as exc:
+        raise ImproperlyConfigured(
+            f"{setting_name} must be of the form app_label.ModelName; "
+            f"got {model_label!r}"
+        ) from exc
+    except LookupError as exc:
+        raise ImproperlyConfigured(
+            f"{setting_name} refers to model {model_label!r} that has not "
+            "been installed"
+        ) from exc
+
+
+def taskresult_model():
     """Return the TaskResult model that is active in this project."""
-    if not hasattr(settings, 'CELERY_RESULTS_TASKRESULT_MODEL'):
-        return TaskResult
-
-    try:
-        return apps.get_model(
-            settings.CELERY_RESULTS_TASKRESULT_MODEL
-        )
-    except ValueError:
-        raise ImproperlyConfigured(
-            "CELERY_RESULTS_TASKRESULT_MODEL must be of the form "
-            "'app_label.model_name'"
-        )
-    except LookupError:
-        raise ImproperlyConfigured(
-            "CELERY_RESULTS_TASKRESULT_MODEL refers to model "
-            f"'{settings.CELERY_RESULTS_TASKRESULT_MODEL}' that has not "
-            "been installed"
-        )
+    return _configured_model(
+        'CELERY_RESULTS_TASKRESULT_MODEL',
+        TaskResult,
+    )
 
 
-def get_chord_counter_model():
+def chordcounter_model():
     """Return the ChordCounter model that is active in this project."""
-
-    if not hasattr(settings, 'CELERY_RESULTS_CHORDCOUNTER_MODEL'):
-        return ChordCounter
-
-    try:
-        return apps.get_model(
-            settings.CELERY_RESULTS_CHORDCOUNTER_MODEL
-        )
-    except ValueError:
-        raise ImproperlyConfigured(
-            "CELERY_RESULTS_CHORDCOUNTER_MODEL must be of the form "
-            "'app_label.model_name'"
-        )
-    except LookupError:
-        raise ImproperlyConfigured(
-            "CELERY_RESULTS_CHORDCOUNTER_MODEL refers to model "
-            f"'{settings.CELERY_RESULTS_CHORDCOUNTER_MODEL}' that has not "
-            "been installed"
-        )
+    return _configured_model(
+        'CELERY_RESULTS_CHORDCOUNTER_MODEL',
+        ChordCounter,
+    )
 
 
-def get_group_result_model():
+def groupresult_model():
     """Return the GroupResult model that is active in this project."""
-    if not hasattr(settings, 'CELERY_RESULTS_GROUPRESULT_MODEL'):
-        return GroupResult
-
-    try:
-        return apps.get_model(
-            settings.CELERY_RESULTS_GROUPRESULT_MODEL
-        )
-    except ValueError:
-        raise ImproperlyConfigured(
-            "CELERY_RESULTS_GROUPRESULT_MODEL must be of the form "
-            "'app_label.model_name'"
-        )
-    except LookupError:
-        raise ImproperlyConfigured(
-            "CELERY_RESULTS_GROUPRESULT_MODEL refers to model "
-            f"'{settings.CELERY_RESULTS_GROUPRESULT_MODEL}' that has not "
-            "been installed"
-        )
+    return _configured_model(
+        'CELERY_RESULTS_GROUPRESULT_MODEL',
+        GroupResult,
+    )
