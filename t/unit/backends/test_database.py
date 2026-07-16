@@ -12,6 +12,7 @@ from celery.result import AsyncResult, GroupResult
 from celery.utils.serialization import b64decode
 from celery.worker.request import Request
 from celery.worker.strategy import hybrid_to_proto2
+from django.core.exceptions import ImproperlyConfigured
 from django.test import TransactionTestCase, override_settings
 
 from django_celery_results.backends.database import DatabaseBackend
@@ -993,6 +994,52 @@ class test_DatabaseBackend:
         assert task_result.tenant_id == 42
         assert task_result.status == states.SUCCESS
         assert task_result.result == '"foo"'
+
+    def test_store_result_rejects_non_mapping_extra_fields(self):
+        tid = uuid()
+
+        with pytest.raises(ImproperlyConfigured):
+            TaskResult.objects.store_result(
+                'application/json',
+                'utf-8',
+                tid,
+                'foo',
+                states.SUCCESS,
+                extra_fields=['tenant_id'],
+            )
+
+    def test_store_result_rejects_extra_fields_for_builtin_fields(self):
+        tid = uuid()
+
+        with pytest.raises(ImproperlyConfigured):
+            TaskResult.objects.store_result(
+                'application/json',
+                'utf-8',
+                tid,
+                'foo',
+                states.SUCCESS,
+                extra_fields={'status': states.FAILURE},
+            )
+
+    def test_store_result_rejects_unknown_extra_fields_when_updating(self):
+        tid = uuid()
+        TaskResult.objects.store_result(
+            'application/json',
+            'utf-8',
+            tid,
+            'foo',
+            states.SUCCESS,
+        )
+
+        with pytest.raises(ImproperlyConfigured):
+            TaskResult.objects.store_result(
+                'application/json',
+                'utf-8',
+                tid,
+                'bar',
+                states.SUCCESS,
+                extra_fields={'tenantd_id': 42},
+            )
 
     def test_extend_task_props_callback_receives_task_properties_once(self):
         calls = []
