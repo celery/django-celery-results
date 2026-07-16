@@ -33,10 +33,14 @@ logger = get_logger(__name__)
 class DatabaseBackend(BaseDictBackend):
     """The Django database backend, using models to store task state."""
 
-    TaskModel = get_task_result_model()
-    GroupModel = get_group_result_model()
-    ChordCounterModel = get_chord_counter_model()
     subpolling_interval = 0.5
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.TaskModel = get_task_result_model()
+        self.GroupModel = get_group_result_model()
+        self.ChordCounterModel = get_chord_counter_model()
 
     def exception_safe_to_retry(self, exc):
         """Check if an exception is safe to retry.
@@ -83,14 +87,6 @@ class DatabaseBackend(BaseDictBackend):
             else:
                 # task protocol 1
                 task_kwargs = getattr(request, 'kwargs', None)
-
-            # TODO: We assume that task protocol 1 could be always in use. :/
-            extra_fields = get_task_props_extension(
-                request,
-                getattr(request, 'kwargs', None)
-            )
-            if extra_fields:
-                extended_props.update({"extra_fields": extra_fields})
 
             # Encode input arguments
             if task_args is not None:
@@ -154,7 +150,9 @@ class DatabaseBackend(BaseDictBackend):
         }
 
         task_props.update(self._get_extended_properties(request, traceback))
-        task_props.update(get_task_props_extension(request, dict(task_props)))
+        extra_fields = get_task_props_extension(request, dict(task_props))
+        if extra_fields:
+            task_props["extra_fields"] = extra_fields
 
         if status == states.STARTED:
             task_props['date_started'] = Now()

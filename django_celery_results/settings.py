@@ -18,13 +18,11 @@ def get_callback_function(settings_name, default=None):
     return callback
 
 
-extend_task_props_callback = get_callback_function(
-    "CELERY_RESULTS_EXTEND_TASK_PROPS_CALLBACK"
-)
-
-
 def get_task_props_extension(request, task_props):
     """Extend the task properties with custom props to fill custom models."""
+    extend_task_props_callback = get_callback_function(
+        "CELERY_RESULTS_EXTEND_TASK_PROPS_CALLBACK"
+    )
     if not extend_task_props_callback:
         return {}
 

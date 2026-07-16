@@ -113,6 +113,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_celery_results',
+    't.result_models',
 ]
 
 MIDDLEWARE = [
