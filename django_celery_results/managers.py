@@ -125,7 +125,8 @@ class TaskResultManager(ResultManager):
                      traceback=None, meta=None,
                      periodic_task_name=None,
                      task_name=None, task_args=None, task_kwargs=None,
-                     worker=None, using=None, **kwargs):
+                     worker=None, using=None, queue=None, retries=None,
+                     **kwargs):
         """Store the result and status of a task.
 
         Arguments:
@@ -141,6 +142,8 @@ class TaskResultManager(ResultManager):
             status (str): Task status.  See :mod:`celery.states` for a list of
                 possible status values.
             worker (str): Worker that executes the task.
+            queue (str): Queue the task was sent to.
+            retries (int): Number of times the task has been retried.
             using (str): Django database connection to use.
             traceback (str): The traceback string taken at the point of
                 exception (only passed if the task failed).
@@ -165,7 +168,9 @@ class TaskResultManager(ResultManager):
             'task_name': task_name,
             'task_args': task_args,
             'task_kwargs': task_kwargs,
-            'worker': worker
+            'worker': worker,
+            'queue': queue,
+            'retries': retries,
         }
         if 'date_started' in kwargs:
             fields['date_started'] = kwargs['date_started']

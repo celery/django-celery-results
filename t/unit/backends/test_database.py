@@ -791,6 +791,8 @@ class test_DatabaseBackend:
         request.kwargsrepr = "kwargsrepr"
         request.hostname = "celery@ip-0-0-0-0"
         request.periodic_task_name = "my_periodic_task"
+        request.retries = 0
+        request.delivery_info = {}
         request.ignore_result = False
         result = {"foo": "baz"}
 
@@ -841,6 +843,8 @@ class test_DatabaseBackend:
         request.kwargsrepr = "kwargsrepr"
         request.hostname = "celery@ip-0-0-0-0"
         request.periodic_task_name = "my_periodic_task"
+        request.retries = 0
+        request.delivery_info = {}
         request.ignore_result = False
         request.chord.id = cid
         result = {"foo": "baz"}
@@ -887,6 +891,8 @@ class test_DatabaseBackend:
         request.kwargsrepr = "kwargsrepr"
         request.hostname = "celery@ip-0-0-0-0"
         request.periodic_task_name = "my_periodic_task"
+        request.retries = 0
+        request.delivery_info = {}
         request.chord.id = cid
         result = {"foo": "baz"}
 
@@ -950,11 +956,49 @@ class test_DatabaseBackend:
         assert mindb.get('task_name') is None
         assert mindb.get('task_args') is None
         assert mindb.get('task_kwargs') is None
+        assert mindb.get('worker') is None
+        assert mindb.get('retries') is None
+        assert mindb.get('queue') is None
 
         # check task_result object
         tr = TaskResult.objects.get(task_id=tid2)
         assert tr.task_args is None
         assert tr.task_kwargs is None
+        assert tr.worker is None
+        assert tr.retries is None
+        assert tr.queue is None
+
+    def test_backend_result_extended_retries_and_queue(self):
+        tid2 = uuid()
+        request = Context(
+            id=tid2,
+            task='my_task',
+            args=['a', 1, True],
+            kwargs={'c': 6, 'd': 'e', 'f': False},
+            argsrepr=None,
+            kwargsrepr=None,
+            hostname='celery@ip-0-0-0-0',
+            retries=3,
+            delivery_info={'routing_key': 'celery'},
+        )
+        result = 'foo'
+
+        self.b.mark_as_done(tid2, result, request=request)
+
+        mindb = self.b.get_task_meta(tid2)
+
+        # check meta data
+        assert mindb.get('result') == 'foo'
+        assert mindb.get('task_name') == 'my_task'
+        assert mindb.get('worker') == 'celery@ip-0-0-0-0'
+        assert mindb.get('retries') == 3
+        assert mindb.get('queue') == 'celery'
+
+        # check task_result object
+        tr = TaskResult.objects.get(task_id=tid2)
+        assert tr.worker == 'celery@ip-0-0-0-0'
+        assert tr.retries == 3
+        assert tr.queue == 'celery'
 
     def test_custom_state(self):
         tid = uuid()
@@ -1033,6 +1077,8 @@ class ChordPartReturnTestCase(TransactionTestCase):
             request.kwargsrepr = "kwargsrepr"
             request.hostname = "celery@ip-0-0-0-0"
             request.periodic_task_name = "my_periodic_task"
+            request.retries = 0
+            request.delivery_info = {}
             request.ignore_result = False
             result = {"foo": "baz"}
 
