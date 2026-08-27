@@ -125,8 +125,8 @@ class TaskResultManager(ResultManager):
                      traceback=None, meta=None,
                      periodic_task_name=None,
                      task_name=None, task_args=None, task_kwargs=None,
-                     worker=None, queue=None, retries=None,
-                     using=None, **kwargs):
+                     worker=None, using=None, queue=None, retries=None,
+                     **kwargs):
         """Store the result and status of a task.
 
         Arguments:
