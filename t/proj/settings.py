@@ -175,6 +175,7 @@ USE_L10N = True
 
 USE_TZ = True
 DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH = 191
+DJANGO_CELERY_RESULTS_DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Static files (CSS, JavaScript, Images)
