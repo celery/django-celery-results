@@ -1,11 +1,13 @@
 """Model managers."""
 
 import warnings
+from collections.abc import Mapping
 from functools import wraps
 from itertools import count
 
 from celery.utils.time import maybe_timedelta
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.db import connections, models, router, transaction
 
 from .utils import now
@@ -101,6 +103,65 @@ class TaskResultManager(ResultManager):
 
     _last_id = None
 
+    def _get_model_field_names(self):
+        model_field_names = getattr(self, '_model_field_names', None)
+        if model_field_names is None:
+            model_field_names = set()
+
+            for field in self.model._meta.concrete_fields:
+                model_field_names.add(field.name)
+                model_field_names.add(field.attname)
+
+            self._model_field_names = model_field_names
+
+        return model_field_names
+
+    def _get_base_field_names(self):
+        base_field_names = getattr(self, '_base_field_names', None)
+        if base_field_names is None:
+            base_field_names = set()
+
+            for base in self.model.__mro__[1:]:
+                meta = getattr(base, '_meta', None)
+                if not meta or not meta.abstract:
+                    continue
+
+                for field in meta.local_fields:
+                    base_field_names.add(field.name)
+                    base_field_names.add(field.attname)
+
+            self._base_field_names = base_field_names
+
+        return base_field_names
+
+    def _validate_extra_fields(self, extra_fields):
+        if not isinstance(extra_fields, Mapping):
+            raise ImproperlyConfigured(
+                'extra_fields must be a mapping of custom TaskResult '
+                'model field names to values.'
+            )
+
+        extra_field_names = set(extra_fields)
+        reserved_field_names = (
+            extra_field_names & self._get_base_field_names()
+        )
+        if reserved_field_names:
+            field_names = ', '.join(sorted(reserved_field_names))
+            raise ImproperlyConfigured(
+                'extra_fields cannot override built-in TaskResult field(s): '
+                f'{field_names}'
+            )
+
+        unknown_field_names = (
+            extra_field_names - self._get_model_field_names()
+        )
+        if unknown_field_names:
+            field_names = ', '.join(sorted(unknown_field_names))
+            raise ImproperlyConfigured(
+                'extra_fields contains unknown TaskResult field(s): '
+                f'{field_names}'
+            )
+
     def get_task(self, task_id):
         """Get result for task by ``task_id``.
 
@@ -125,7 +186,7 @@ class TaskResultManager(ResultManager):
                      traceback=None, meta=None,
                      periodic_task_name=None,
                      task_name=None, task_args=None, task_kwargs=None,
-                     worker=None, using=None, **kwargs):
+                     worker=None, using=None, extra_fields=None, **kwargs):
         """Store the result and status of a task.
 
         Arguments:
@@ -146,6 +207,7 @@ class TaskResultManager(ResultManager):
                 exception (only passed if the task failed).
             meta (str): Serialized result meta data (this contains e.g.
                 children).
+            extra_fields (dict, optional): Extra (model) fields to store.
 
         Keyword Arguments:
             exception_retry_count (int): How many times to retry by
@@ -165,8 +227,13 @@ class TaskResultManager(ResultManager):
             'task_name': task_name,
             'task_args': task_args,
             'task_kwargs': task_kwargs,
-            'worker': worker
+            'worker': worker,
         }
+
+        if extra_fields is not None:
+            self._validate_extra_fields(extra_fields)
+            fields.update(extra_fields)
+
         if 'date_started' in kwargs:
             fields['date_started'] = kwargs['date_started']
 

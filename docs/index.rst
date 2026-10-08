@@ -11,6 +11,7 @@ Contents
     :maxdepth: 1
 
     getting_started
+    extending_task_results
     injecting_metadata
     copyright
 
