@@ -20,6 +20,8 @@ SPHINX_HTMLDIR="${SPHINX_BUILDDIR}/html"
 DOCUMENTATION=Documentation
 
 
+.PHONY: build
+
 all: help
 
 help:
@@ -53,13 +55,16 @@ clean: clean-docs clean-pyc clean-build
 clean-dist: clean clean-git-force
 
 bump:
-	bumpversion patch
+	$(PYTHON) -m pip install bump-my-version -q
+	bump-my-version bump patch
 
 bump-minor:
-	bumpversion minor
+	$(PYTHON) -m pip install bump-my-version -q
+	bump-my-version bump minor
 
 bump-major:
-	bumpversion major
+	$(PYTHON) -m pip install bump-my-version -q
+	bump-my-version bump major
 
 release:
 	python setup.py register sdist bdist_wheel upload --sign --identity="$(PGPIDENT)"
@@ -131,13 +136,14 @@ test-all: clean-pyc
 	$(TOX)
 
 test:
-	$(PYTHON) setup.py test
+	$(PYTEST)
 
 cov: covbuild
 	(cd $(TESTDIR); pytest -x --cov=django_celery_results --cov-report=html)
 
 build:
-	$(PYTHON) setup.py sdist bdist_wheel
+	$(PYTHON) -m pip install build
+	$(PYTHON) -m build
 
 distcheck: lint test clean
 
