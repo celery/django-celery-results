@@ -8,13 +8,13 @@ from celery.result import GroupResult, allow_join_result, result_from_tuple
 from celery.utils.log import get_logger
 from celery.utils.serialization import b64decode, b64encode
 from django.db import connection, router, transaction
-from django.db.models.functions import Now
 from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
 
 from ..models import ChordCounter
 from ..models import GroupResult as GroupResultModel
 from ..models import TaskResult
+from ..utils import now
 
 EXCEPTIONS_TO_CATCH = (InterfaceError,)
 
@@ -146,7 +146,7 @@ class DatabaseBackend(BaseDictBackend):
         )
 
         if status == states.STARTED:
-            task_props['date_started'] = Now()
+            task_props['date_started'] = now()
 
         self.TaskModel._default_manager.store_result(**task_props)
         return result

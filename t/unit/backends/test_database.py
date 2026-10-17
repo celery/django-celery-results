@@ -969,7 +969,6 @@ class test_DatabaseBackend:
         assert self.b.get_status(tid) == states.SUCCESS
         assert self.b.get_result(tid) == 42
 
-
 class DjangoCeleryResultRouter:
     route_app_labels = {"django_celery_results"}
 
