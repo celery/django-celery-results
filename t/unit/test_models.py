@@ -3,13 +3,16 @@ from unittest.mock import patch
 
 import pytest
 from celery import states, uuid
+from django.core.exceptions import ImproperlyConfigured
 from django.db import transaction
 from django.db.utils import InterfaceError
-from django.test import TransactionTestCase
+from django.test import TransactionTestCase, override_settings
 
 from django_celery_results.backends import DatabaseBackend
 from django_celery_results.models import GroupResult, TaskResult
+from django_celery_results.models.helpers import taskresult_model
 from django_celery_results.utils import now
+from t.result_models.models import ExtendedTaskResult
 
 
 @pytest.mark.usefixtures('depends_on_current_app')
@@ -225,6 +228,28 @@ class test_Models(TransactionTestCase):
 
         # All expired records should be gone
         assert TaskResult.objects.get_all_expired(0).count() == 0
+
+
+class test_ModelHelpers:
+
+    def test_taskresult_model_returns_default_model(self):
+        assert taskresult_model() is TaskResult
+
+    @override_settings(
+        CELERY_RESULTS_TASKRESULT_MODEL='result_models.ExtendedTaskResult'
+    )
+    def test_taskresult_model_returns_configured_model(self):
+        assert taskresult_model() is ExtendedTaskResult
+
+    @override_settings(CELERY_RESULTS_TASKRESULT_MODEL='invalid-model-path')
+    def test_taskresult_model_rejects_invalid_model_path(self):
+        with pytest.raises(ImproperlyConfigured):
+            taskresult_model()
+
+    @override_settings(CELERY_RESULTS_TASKRESULT_MODEL='result_models.Missing')
+    def test_taskresult_model_rejects_missing_model(self):
+        with pytest.raises(ImproperlyConfigured):
+            taskresult_model()
 
 
 @pytest.mark.usefixtures('depends_on_current_app')
