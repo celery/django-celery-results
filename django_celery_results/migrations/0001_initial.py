@@ -1,5 +1,11 @@
 from django.conf import settings
 from django.db import migrations, models
+from django.utils.module_loading import import_string
+
+from django_celery_results.conf import app_settings
+
+auto_field_class = import_string(
+    app_settings.DJANGO_CELERY_RESULTS_DEFAULT_AUTO_FIELD)
 
 
 class Migration(migrations.Migration):
@@ -13,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TaskResult',
             fields=[
-                ('id', models.AutoField(auto_created=True,
+                ('id', auto_field_class(auto_created=True,
                                         primary_key=True,
                                         serialize=False,
                                         verbose_name='ID')),
