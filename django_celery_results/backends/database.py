@@ -63,6 +63,8 @@ class DatabaseBackend(BaseDictBackend):
             'task_name': None,
             'traceback': None,
             'worker': None,
+            'queue': None,
+            'retries': None,
         }
         if request and self.app.conf.find_value_for_key('extended', 'result'):
 
@@ -96,6 +98,10 @@ class DatabaseBackend(BaseDictBackend):
                 'task_name': getattr(request, 'task', None),
                 'traceback': traceback,
                 'worker': getattr(request, 'hostname', None),
+                'retries': getattr(request, 'retries', None),
+                'queue': request.delivery_info.get('routing_key')
+                if hasattr(request, 'delivery_info') and request.delivery_info
+                else None,
             })
 
         return extended_props

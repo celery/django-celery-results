@@ -24,9 +24,9 @@ class TaskResultAdmin(admin.ModelAdmin):
     model = TaskResult
     date_hierarchy = 'date_done'
     list_display = ('task_id', 'periodic_task_name', 'task_name', 'date_done',
-                    'status', 'worker')
+                    'status', 'worker', 'queue', 'retries')
     list_filter = ('status', 'date_done', 'periodic_task_name', 'task_name',
-                   'worker')
+                   'worker', 'queue', 'retries')
     readonly_fields = ('date_created', 'date_started', 'date_done',
                        'result', 'meta')
     search_fields = ('task_name', 'task_id', 'status', 'task_args',
@@ -39,6 +39,8 @@ class TaskResultAdmin(admin.ModelAdmin):
                 'periodic_task_name',
                 'status',
                 'worker',
+                'queue',
+                'retries',
                 'content_type',
                 'content_encoding',
             ),
