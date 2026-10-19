@@ -12,9 +12,8 @@ from django.db.models.functions import Now
 from django.db.utils import InterfaceError
 from kombu.exceptions import DecodeError
 
-from ..models import ChordCounter
+from ..models import ChordCounter, TaskResult
 from ..models import GroupResult as GroupResultModel
-from ..models import TaskResult
 
 EXCEPTIONS_TO_CATCH = (InterfaceError,)
 
