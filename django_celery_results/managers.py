@@ -4,6 +4,7 @@ import warnings
 from functools import wraps
 from itertools import count
 
+from celery import states
 from celery.utils.time import maybe_timedelta
 from django.conf import settings
 from django.db import connections, models, router, transaction
@@ -173,6 +174,11 @@ class TaskResultManager(ResultManager):
         obj, created = self.using(using).get_or_create(task_id=task_id,
                                                        defaults=fields)
         if not created:
+            if obj.status == states.SUCCESS:
+                # Like Celery's key-value backends, such as Redis, ignore
+                # any write after a SUCCESS is saved, so a repeated run of
+                # the task doesn't replace its result.
+                return obj
             for k, v in fields.items():
                 setattr(obj, k, v)
             obj.save(using=using)

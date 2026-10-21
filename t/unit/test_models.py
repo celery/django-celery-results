@@ -96,6 +96,22 @@ class test_Models(TransactionTestCase):
         assert TaskResult.objects.get_task(m1.task_id).status != states.SUCCESS
         assert TaskResult.objects.get_task(m2.task_id).status == states.SUCCESS
 
+    def test_store_result_after_success_is_ignored(self):
+        # e.g. the task runs again after its worker was lost before the ack
+        m1 = self.create_task_result()
+        TaskResult.objects.store_result(
+            'application/json', 'utf-8', m1.task_id, 'first',
+            status=states.SUCCESS)
+        TaskResult.objects.store_result(
+            'application/json', 'utf-8', m1.task_id, None,
+            status=states.STARTED)
+        TaskResult.objects.store_result(
+            'application/json', 'utf-8', m1.task_id, 'second',
+            status=states.SUCCESS)
+        task = TaskResult.objects.get_task(m1.task_id)
+        assert task.status == states.SUCCESS
+        assert task.result == 'first'
+
     def test_retry_store_result_fails(self):
         """
         Test the retry logic for InterfaceErrors.
