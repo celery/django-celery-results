@@ -67,6 +67,17 @@ To use :pypi:`django-celery-results` with your project you need to follow these 
 
         CELERY_TASK_TRACK_STARTED = True
 
+    ``TaskResult.date_done`` is ``None`` until a task reaches ``SUCCESS``,
+    ``FAILURE``, or ``REVOKED``. Progress updates and retries do not set a
+    completion timestamp, and saving task metadata does not change it.
+    Only calculate processing and total times once ``date_done`` is set.
+
+    The migration clears existing ``date_done`` values for unfinished tasks
+    while preserving completed tasks' timestamps. Result cleanup uses
+    ``date_done`` for completed tasks and ``date_created`` for unfinished
+    tasks, so abandoned results can still expire. Unfinished results older
+    than :setting:`result_expires` can expire even while a task is running.
+
     For example, if you write [additional codes](https://github.com/celery/django-celery-results/issues/286#issuecomment-1789094153) to record when a task becomes PENDING,  you can calculate the waiting time in the queue or the actual processing time of the worker.
 
     .. code-block:: python

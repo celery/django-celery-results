@@ -34,7 +34,7 @@ class test_Models(TransactionTestCase):
         m3 = self.create_task_result()
         assert str(m1).startswith('<Task:')
         assert m1.task_id
-        assert isinstance(m1.date_done, datetime)
+        assert m1.date_done is None
 
         task = TaskResult.objects.get_task(m1.task_id)
         assert task._meta.get_field('task_id').max_length == 191
@@ -47,7 +47,6 @@ class test_Models(TransactionTestCase):
         assert TaskResult.objects.get_task(m1.task_id).status == states.SUCCESS
         assert TaskResult.objects.get_task(m2.task_id).status == states.SUCCESS
 
-        # Have to avoid save() because it applies the auto_now=True.
         TaskResult.objects.filter(
             task_id=m1.task_id
         ).update(date_done=now() - timedelta(days=10))
@@ -95,6 +94,32 @@ class test_Models(TransactionTestCase):
 
         assert TaskResult.objects.get_task(m1.task_id).status != states.SUCCESS
         assert TaskResult.objects.get_task(m2.task_id).status == states.SUCCESS
+        assert TaskResult.objects.get_task(m1.task_id).date_done is None
+        assert isinstance(
+            TaskResult.objects.get_task(m2.task_id).date_done, datetime)
+
+    def test_expire_unfinished_results_by_creation_time(self):
+        old = now() - timedelta(days=10)
+        unfinished = []
+        for state in (
+                states.PENDING, states.STARTED, states.RETRY, 'PROGRESS'):
+            result = TaskResult.objects.store_result(
+                'application/json', 'utf-8', uuid(), None,
+                status=state)
+            TaskResult.objects.filter(pk=result.pk).update(date_created=old)
+            unfinished.append(result)
+
+        recent = self.create_task_result()
+        completed = TaskResult.objects.store_result(
+            'application/json', 'utf-8', uuid(), True, status=states.SUCCESS)
+        TaskResult.objects.filter(pk=completed.pk).update(date_created=old)
+
+        expired = TaskResult.objects.get_all_expired(timedelta(days=1))
+        assert set(expired) == set(unfinished)
+
+        TaskResult.objects.delete_expired(timedelta(days=1), batch_size=2)
+
+        assert set(TaskResult.objects.all()) == {recent, completed}
 
     def test_retry_store_result_fails(self):
         """

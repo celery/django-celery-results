@@ -4,6 +4,7 @@ import warnings
 from functools import wraps
 from itertools import count
 
+from celery import states
 from celery.utils.time import maybe_timedelta
 from django.conf import settings
 from django.db import connections, models, router, transaction
@@ -81,8 +82,11 @@ class ResultManager(models.Manager):
             return settings.DATABASE_ENGINE
 
     def get_all_expired(self, expires):
-        """Get all expired results."""
-        return self.filter(date_done__lt=now() - maybe_timedelta(expires))
+        """Expire results by completion, falling back to creation."""
+        cutoff = now() - maybe_timedelta(expires)
+        completed = models.Q(date_done__lt=cutoff)
+        unfinished = models.Q(date_done__isnull=True, date_created__lt=cutoff)
+        return self.filter(completed | unfinished)
 
     def delete_expired(self, expires, batch_size=100000):
         """Delete all expired results."""
@@ -156,6 +160,7 @@ class TaskResultManager(ResultManager):
         """
         fields = {
             'status': status,
+            'date_done': now() if status in states.READY_STATES else None,
             'result': result,
             'traceback': traceback,
             'meta': meta,
