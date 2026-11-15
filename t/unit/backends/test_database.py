@@ -560,10 +560,9 @@ class test_DatabaseBackend:
         assert tr.status == states.PENDING
         assert isinstance(tr.date_created, datetime.datetime)
         assert tr.date_started is None
-        assert isinstance(tr.date_done, datetime.datetime)
+        assert tr.date_done is None
 
         date_created = tr.date_created
-        date_done = tr.date_done
 
         self.b.mark_as_started(tid2)
 
@@ -571,10 +570,15 @@ class test_DatabaseBackend:
         assert tr.status == states.STARTED
         assert date_created == tr.date_created
         assert isinstance(tr.date_started, datetime.datetime)
-        assert tr.date_done > date_done
+        assert tr.date_done is None
 
         date_started = tr.date_started
-        date_done = tr.date_done
+
+        for state in ('PROGRESS', states.RETRY):
+            self.b.store_result(tid2, None, state)
+            tr.refresh_from_db()
+            assert tr.date_started == date_started
+            assert tr.date_done is None
 
         self.b.mark_as_done(tid2, 42)
 
@@ -582,7 +586,51 @@ class test_DatabaseBackend:
         assert tr.status == states.SUCCESS
         assert tr.date_created == date_created
         assert tr.date_started == date_started
-        assert tr.date_done > date_done
+        assert isinstance(tr.date_done, datetime.datetime)
+        assert tr.date_done >= date_started
+
+    @pytest.mark.parametrize('initial_state', [None, states.STARTED])
+    @pytest.mark.parametrize('state', [
+        states.PENDING, states.RECEIVED, states.STARTED, states.RETRY,
+        states.REJECTED, states.IGNORED, 'PROGRESS',
+        states.SUCCESS, states.FAILURE, states.REVOKED,
+    ])
+    def test_date_done_only_set_for_ready_states(self, state, initial_state):
+        tid = uuid()
+        if initial_state is not None:
+            self.b.store_result(tid, None, initial_state)
+
+        before = datetime.datetime.now(datetime.timezone.utc)
+        self.b.store_result(tid, None, state)
+        after = datetime.datetime.now(datetime.timezone.utc)
+
+        tr = TaskResult.objects.get(task_id=tid)
+        if state in states.READY_STATES:
+            assert before <= tr.date_done <= after
+        else:
+            assert tr.date_done is None
+            assert self.b.get_task_meta(tid)['date_done'] is None
+
+    def test_date_done_preserved_when_saving_metadata(self):
+        tid = uuid()
+        self.b.mark_as_done(tid, 42)
+        tr = TaskResult.objects.get(task_id=tid)
+        date_done = tr.date_done
+
+        tr.task_name = 'renamed_task'
+        tr.save()
+        tr.refresh_from_db()
+
+        assert tr.date_done == date_done
+
+    def test_date_done_cleared_when_task_returns_to_unready_state(self):
+        tid = uuid()
+        self.b.mark_as_failure(tid, ValueError('failed'))
+        assert TaskResult.objects.get(task_id=tid).date_done is not None
+
+        self.b.mark_as_retry(tid, ValueError('retrying'))
+
+        assert TaskResult.objects.get(task_id=tid).date_done is None
 
     def xxx_backend(self):
         tid = uuid()
