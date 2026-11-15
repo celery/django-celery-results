@@ -1,2 +1,2 @@
-celery>=5.7.0
+celery>=5.5.0
 Django>=3.2.25
