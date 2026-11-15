@@ -57,6 +57,16 @@ class TaskResult(models.Model):
         max_length=100, default=None, null=True,
         verbose_name=_('Worker'), help_text=_('Worker that executes the task')
     )
+    queue = models.CharField(
+        max_length=255, default=None, null=True,
+        verbose_name=_('Queue'),
+        help_text=_('Queue the task was sent to')
+    )
+    retries = models.IntegerField(
+        default=None, null=True,
+        verbose_name=_('Retries'),
+        help_text=_('Number of times the task has been retried')
+    )
     content_type = models.CharField(
         max_length=128,
         verbose_name=_('Result Content Type'),
@@ -129,7 +139,9 @@ class TaskResult(models.Model):
             'date_done': self.date_done,
             'traceback': self.traceback,
             'meta': self.meta,
-            'worker': self.worker
+            'worker': self.worker,
+            'queue': self.queue,
+            'retries': self.retries,
         }
 
     def __str__(self):
