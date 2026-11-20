@@ -12,10 +12,12 @@ from celery.result import AsyncResult, GroupResult
 from celery.utils.serialization import b64decode
 from celery.worker.request import Request
 from celery.worker.strategy import hybrid_to_proto2
-from django.test import TransactionTestCase
+from django.core.exceptions import ImproperlyConfigured
+from django.test import TransactionTestCase, override_settings
 
 from django_celery_results.backends.database import DatabaseBackend
 from django_celery_results.models import ChordCounter, TaskResult
+from t.result_models.models import ExtendedTaskResult
 
 
 class SomeClass:
@@ -968,6 +970,106 @@ class test_DatabaseBackend:
         self.b.mark_as_done(tid, 42)
         assert self.b.get_status(tid) == states.SUCCESS
         assert self.b.get_result(tid) == 42
+
+    def test_extended_task_result_stores_callback_extra_fields(self):
+        def callback(request, task_props):
+            return {'tenant_id': request.kwargs['tenant_id']}
+
+        tid = uuid()
+        request = self._create_request(
+            task_id=tid,
+            name='my_task',
+            args=[],
+            kwargs={'tenant_id': 42},
+        )
+
+        with override_settings(
+            CELERY_RESULTS_TASKRESULT_MODEL='result_models.ExtendedTaskResult',
+            CELERY_RESULTS_EXTEND_TASK_PROPS_CALLBACK=callback,
+        ):
+            backend = DatabaseBackend(app=self.app)
+            backend.mark_as_done(tid, 'foo', request=request)
+
+        task_result = ExtendedTaskResult.objects.get(task_id=tid)
+        assert task_result.tenant_id == 42
+        assert task_result.status == states.SUCCESS
+        assert task_result.result == '"foo"'
+
+    def test_store_result_rejects_non_mapping_extra_fields(self):
+        tid = uuid()
+
+        with pytest.raises(ImproperlyConfigured):
+            TaskResult.objects.store_result(
+                'application/json',
+                'utf-8',
+                tid,
+                'foo',
+                states.SUCCESS,
+                extra_fields=['tenant_id'],
+            )
+
+    def test_store_result_rejects_extra_fields_for_builtin_fields(self):
+        tid = uuid()
+
+        with pytest.raises(ImproperlyConfigured):
+            TaskResult.objects.store_result(
+                'application/json',
+                'utf-8',
+                tid,
+                'foo',
+                states.SUCCESS,
+                extra_fields={'status': states.FAILURE},
+            )
+
+    def test_store_result_rejects_unknown_extra_fields_when_updating(self):
+        tid = uuid()
+        TaskResult.objects.store_result(
+            'application/json',
+            'utf-8',
+            tid,
+            'foo',
+            states.SUCCESS,
+        )
+
+        with pytest.raises(ImproperlyConfigured):
+            TaskResult.objects.store_result(
+                'application/json',
+                'utf-8',
+                tid,
+                'bar',
+                states.SUCCESS,
+                extra_fields={'tenantd_id': 42},
+            )
+
+    def test_extend_task_props_callback_receives_task_properties_once(self):
+        calls = []
+
+        def callback(request, task_props):
+            calls.append((request, task_props))
+            return {}
+
+        tid = uuid()
+        request = self._create_request(
+            task_id=tid,
+            name='my_task',
+            args=['a', 1, True],
+            kwargs={'c': 6, 'd': 'e', 'f': False},
+        )
+
+        with override_settings(
+            CELERY_RESULTS_EXTEND_TASK_PROPS_CALLBACK=callback
+        ):
+            self.b.mark_as_done(tid, 'foo', request=request)
+
+        assert len(calls) == 1
+        called_request, task_props = calls[0]
+        assert called_request is request
+        assert task_props['task_id'] == tid
+        assert task_props['status'] == states.SUCCESS
+        assert task_props['task_name'] == 'my_task'
+        assert task_props['content_type'] == 'application/json'
+        assert task_props['using'] is None
+        assert 'extra_fields' not in task_props
 
 
 class DjangoCeleryResultRouter:
