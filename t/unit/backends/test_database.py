@@ -2,6 +2,7 @@ import datetime
 import json
 import pickle
 import re
+import time
 from unittest import mock
 
 import celery
@@ -12,6 +13,7 @@ from celery.result import AsyncResult, GroupResult
 from celery.utils.serialization import b64decode
 from celery.worker.request import Request
 from celery.worker.strategy import hybrid_to_proto2
+from django.db import connections, router
 from django.test import TransactionTestCase
 
 from django_celery_results.backends.database import DatabaseBackend
@@ -24,7 +26,11 @@ class SomeClass:
         self.data = data
 
 
-@pytest.mark.django_db()
+class RequestTask(str):
+    ignore_result = False
+
+
+@pytest.mark.django_db
 @pytest.mark.usefixtures('depends_on_current_app')
 class test_DatabaseBackend:
 
@@ -59,7 +65,7 @@ class test_DatabaseBackend:
             body=body,
             sent_event=sent_event,
         )
-        request = Request(context, decoded=True, task=name)
+        request = Request(context, decoded=True, task=RequestTask(name))
         if task_protocol == 1:
             assert request.argsrepr is None
             assert request.kwargsrepr is None
@@ -550,6 +556,27 @@ class test_DatabaseBackend:
         # check task_result object
         tr = TaskResult.objects.get(task_id=tid2)
         assert json.loads(tr.meta) == {'key': 'value', 'children': []}
+
+    @pytest.mark.django_db(transaction=True)
+    def test_backend__task_result_closes_stale_connection(self):
+        tid = uuid()
+        request = self._create_request(
+            task_id=tid,
+            name='my_task',
+            args=[],
+            kwargs={},
+            task_protocol=1,
+        )
+        # simulate a stale connection by setting the close time
+        # to the current time
+        db_conn_wrapper = connections[router.db_for_write(self.b.TaskModel)]
+        db_conn_wrapper.ensure_connection()
+        db_conn_wrapper.close_at = time.monotonic()
+        current_db_connection = db_conn_wrapper.connection
+        self.b.mark_as_done(tid, None, request=request)
+        # Validate the connection was replaced in the process
+        # of saving the task
+        assert current_db_connection is not db_conn_wrapper.connection
 
     def test_backend__task_result_date(self):
         tid2 = uuid()
