@@ -7,6 +7,7 @@ from celery.exceptions import ChordError
 from celery.result import GroupResult, allow_join_result, result_from_tuple
 from celery.utils.log import get_logger
 from celery.utils.serialization import b64decode, b64encode
+from django.conf import settings
 from django.db import connection, router, transaction
 from django.db.models.functions import Now
 from django.db.utils import InterfaceError
@@ -93,12 +94,30 @@ class DatabaseBackend(BaseDictBackend):
                 'periodic_task_name': periodic_task_name,
                 'task_args': task_args,
                 'task_kwargs': task_kwargs,
-                'task_name': getattr(request, 'task', None),
+                'task_name': self._get_task_name(request),
                 'traceback': traceback,
                 'worker': getattr(request, 'hostname', None),
             })
 
         return extended_props
+
+    def _get_task_name(self, request):
+        """
+        Get the task name from the request, optionally using the shadow name.
+
+        If `DJANGO_CELERY_RESULTS_USE_SHADOW_NAME` is enabled and a shadow task
+        name is available, return the shadow task name; otherwise, return the
+        regular task name.
+        """
+        use_shadow_name = (
+            getattr(settings, "DJANGO_CELERY_RESULTS_USE_SHADOW_NAME", False)
+            is True
+        )
+        task_name = getattr(request, "task", None)
+        if not use_shadow_name:
+            return task_name
+        shadow_task_name = getattr(request, "shadow", None)
+        return shadow_task_name or task_name
 
     def _get_meta_from_request(self, request=None):
         """
